@@ -1,22 +1,33 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import classnames from 'classnames';
 import { Row, Col, CardTitle, CardText, Form, FormGroup, Label, Input, Button } from 'reactstrap';
 import { useForm } from 'react-hook-form';
 import { Eye, EyeOff } from 'react-feather';
+import { useLoginMutation } from '../api/loginSlice';
+import {toast} from 'react-toastify';
 
 const Login = () => {
-  const [isSigningIn] = useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [login,response] = useLoginMutation()
   const { register, formState: { errors }, handleSubmit } = useForm();
+  const { ref:emailRef, ...registerEmail } = register('username',{required:true, validate: (value) => value !== ''});
+  const { ref:passwordRef, ...registerPassword } = register('password',{required:true, validate: (value) => value !== ''});
   const [passwordVisible, setPasswordVisible] = useState(false);
-
+  const {isLoading,isSuccess} = response
   const onSubmit = (data) => {
-    console.log(data);
-    // Handle form submission logic here
+   login(data);
   };
-
+  useEffect(()=>{
+     if(response?.data?.responseCode === 200){
+       toast('Login Successfull')
+       console.log('success')  
+     }
+     else if (response.isError){
+      toast('Invalid Credentials')
+      console.log('failed')
+     }
+  },[response])
+  
   return (
     <div className='auth-wrapper auth-v2'>
       <Row className='auth-inner m-0'>
@@ -46,14 +57,12 @@ const Login = () => {
                   id='login-email'
                   name='login-email'
                   placeholder='user@example.com'
-                  onChange={(e) => setEmail(e.target.value)}
+                  // onChange={(e) => setEmail(e.target.value)}
                   className={classnames({
-                    'is-invalid': errors['login-email']
+                    'is-invalid': errors['email']
                   })}
-                  {...register('login-email',{
-                    required: true,
-                    validate: (value) => value !== ''
-                  })}
+                  innerRef={emailRef} {...registerEmail}
+  
                 />
               </FormGroup>
               <FormGroup>
@@ -71,14 +80,12 @@ const Login = () => {
                     id='login-password'
                     name='login-password'
                     placeholder='Enter Password'
-                    onChange={(e) => setPassword(e.target.value)}
+                    // onChange={(e) => setPassword(e.target.value)}
                     className={classnames({
-                      'is-invalid': errors['login-password']
+                      'is-invalid': errors['password']
                     })}
-                    {...register('login-password',{
-                      required: true,
-                      validate: (value) => value !== ''
-                    })}
+                    innerRef={passwordRef} {...registerPassword}
+                  
                   />
                   {passwordVisible ? (
                     <EyeOff
@@ -95,8 +102,8 @@ const Login = () => {
                   )}
                 </div>
               </FormGroup>
-              <Button type='submit' color='primary' block disabled={isSigningIn}>
-                {isSigningIn ? (
+              <Button type='submit' color='primary' block disabled={isLoading}>
+                {isLoading? (
                   <span className='spinner-border spinner-border-sm' role='status' aria-hidden='true'></span>
                 ) : (
                   'Sign in'
