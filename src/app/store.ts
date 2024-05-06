@@ -1,16 +1,16 @@
 import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
 import counterReducer from '../components/counter/counterSlice';
 import { loginApi } from '../api/loginSlice';
-import { generateOTP } from '../api/forgot-passwordSlice';
+import { forgotPasswordApi } from '../api/forgot-passwordSlice';
 
 export const store = configureStore({
   reducer: {
     counter: counterReducer,
     [loginApi.reducerPath]:loginApi.reducer,
-    [generateOTP.reducerPath]:generateOTP.reducer
+    [forgotPasswordApi.reducerPath]:forgotPasswordApi.reducer
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(loginApi.middleware).concat(generateOTP.middleware),
+    getDefaultMiddleware().concat(loginApi.middleware).concat(forgotPasswordApi.middleware),
     
 
 });

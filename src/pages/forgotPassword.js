@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ChevronLeft, Send } from 'react-feather';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   Row,
   Col,
@@ -17,9 +17,11 @@ import { toast } from 'react-toastify';
 import {
   useGenerateOTPMutation,
   useVerifyOTPMutation,
+  useChangePasswordMutation,
 } from '../api/forgot-passwordSlice';
 
 const ForgotPassword = () => {
+  const navigate = useNavigate();
   const [params, setParams] = useState({});
   const [email, setEmail] = useState('');
   const [otp, setOtp] = useState('');
@@ -33,7 +35,8 @@ const ForgotPassword = () => {
   const [timerCompleted, setTimerCompleted] = useState(false);
   const [resendAttempts, setResendAttempts] = useState(0);
   const [generateOtp, response] = useGenerateOTPMutation();
-  const [verifyOTP, verifyOTPResponse = response] = useVerifyOTPMutation();
+  const [verifyOTP, verifyOTPResponse] = useVerifyOTPMutation();
+  const [changePassword, changePasswordResponse] = useChangePasswordMutation();
 
   const handleDataSubmit = () => {
     let flag = false;
@@ -42,6 +45,7 @@ const ForgotPassword = () => {
     if (!email) {
       toast(`Please notice! Email field should not be empty!`, {
         hideProgressBar: true,
+        type: 'warning',
       });
       flag = true;
     } else {
@@ -63,6 +67,7 @@ const ForgotPassword = () => {
       ) {
         toast('Please insert correct email / phone number.', {
           hideProgressBar: true,
+          type: 'warning',
         });
         flag = true;
       }
@@ -79,6 +84,71 @@ const ForgotPassword = () => {
       generateOtp(params);
     } catch (err) {}
   };
+
+  const handlePasswordReset = async () => {
+    let flag = false;
+
+    if (
+      !/^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,16}$/.test(passwd)
+    ) {
+      flag = true;
+      toast(
+        'Password must contain a spacial charecter, capital letter, small letter and number must be at lease 6 character.',
+        { hideProgressBar: true, type: 'warning' }
+      );
+    }
+    if (passwd !== passwd2) {
+      flag = true;
+      toast('Password must match.', { hideProgressBar: true, type: 'warning' });
+    }
+
+    if (flag) {
+      return;
+    }
+
+    params.password = passwd;
+    params.password2 = passwd2;
+
+    changePassword(params);
+  };
+
+  const handleOtpVerify = () => {
+    params.otp = otp;
+    verifyOTP(params);
+  };
+
+  useEffect(() => {
+    let statusCode = changePasswordResponse?.data?.responseCode;
+    if (statusCode === 202) {
+      setEnterOtp(false);
+      setEnterPasscode(false);
+      setParams({});
+      navigate('/', { replace: true });
+    } else if (statusCode === 401 || statusCode === 403) {
+      setLogout(true);
+    } else if (response.isError) {
+      toast('Something went wrong.', {
+        hideProgressBar: true,
+        type: 'warning',
+      });
+    }
+  }, [changePasswordResponse]);
+
+  useEffect(() => {
+    let statusCode = verifyOTPResponse?.data?.responseCode;
+    if (statusCode === 200) {
+      setEnterOtp(false);
+      setEnterPasscode(true);
+    } else if (statusCode === 401 || statusCode === 403) {
+      setLogout(true);
+    } else {
+      toast(verifyOTPResponse?.error?.data?.data?.error?.detail, {
+        hideProgressBar: true,
+        type: 'error',
+      });
+    }
+  }, [verifyOTPResponse]);
+
   useEffect(() => {
     const statusCode = response?.data?.responseCode;
     if (resendAttempts < 2) {
@@ -87,20 +157,23 @@ const ForgotPassword = () => {
         setEnterOtp(true);
         toast(response?.data?.data?.result?.message, {
           hideProgressBar: true,
+          type: 'success',
         });
         setTimerCompleted(false); // Reset timer completion state
         setSeconds(60); // Reset timer
       } else if (statusCode === 401 || statusCode === 403) {
         setLogout(true);
       } else {
-        toast(response?.data?.data?.error?.detail, {
+        toast(response?.error?.data?.data?.error?.detail, {
           hideProgressBar: true,
+          type: 'error',
         });
       }
       setReOtp(reOtp - 1);
     } else {
-      toast(response?.data?.data?.error.detail, {
+      toast(response?.error?.data?.data?.error?.detail, {
         hideProgressBar: true,
+        type: 'error',
       });
     }
   }, [response]);
@@ -120,9 +193,12 @@ const ForgotPassword = () => {
     <div className="auth-wrapper auth-v2">
       <Row className="auth-inner m-0">
         <Col className="position-absolute">
-          <Link className="brand-logo text-decoration-none" to="/">
+          <Link
+            className="brand-logo text-decoration-none l-0 d-flex align-items-center gap-2"
+            to="/"
+          >
             <img src={'logo.ico'} alt="Avdhaan" />
-            <h2 className="brand-text text-primary ml-1 pt-1">AVDHAAN</h2>
+            <h4 className="brand-text text-primary ml-1 pt-1">AVDHAAN</h4>
           </Link>
         </Col>
         <Col className="d-none d-lg-flex align-items-center p-5" lg="8" sm="12">
@@ -161,7 +237,7 @@ const ForgotPassword = () => {
                     autoFocus
                   />
                 </FormGroup>
-                <Button color="primary" block>
+                <Button color="primary" block onClick={handleOtpVerify}>
                   Verify OTP
                 </Button>
               </Form>
@@ -172,6 +248,7 @@ const ForgotPassword = () => {
                     className="cursor-pointer align-middle text-danger"
                     // onClick={}
                     onClick={() => {
+                      setOtp('');
                       setResendAttempts(resendAttempts + 1);
                       generateOtp(params);
                     }}
@@ -230,7 +307,7 @@ const ForgotPassword = () => {
                     value={passwd2}
                   />
                 </FormGroup>
-                <Button color="primary" block>
+                <Button color="primary" block onClick={handlePasswordReset}>
                   Reset password
                 </Button>
               </Form>

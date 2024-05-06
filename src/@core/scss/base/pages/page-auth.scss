@@ -2,7 +2,9 @@
 @import '../components/include'; // Components includes
 
 $auth-1-inner-max-width: 400px !default;
-
+.cursor-pointer{
+  cursor: pointer;
+}
 .auth-wrapper {
   display: flex;
   flex-basis: 100%;
