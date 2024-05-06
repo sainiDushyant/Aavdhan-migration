@@ -1,7 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-const baseUrl =
-  process.env.REACT_APP_BASE_URL || 'https://api.avdhaan.grampower.com';
-console.log(baseUrl, 'base url');
+const baseUrl = process.env.REACT_APP_BASE_URL;
 // Define a service using a base URL and expected endpoints
 export const loginApi = createApi({
   reducerPath: 'loginApi',
