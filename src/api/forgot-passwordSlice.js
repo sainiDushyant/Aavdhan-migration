@@ -5,15 +5,15 @@ export const forgotPasswordApi = createApi({
   reducerPath: 'forgotPassword',
   baseQuery: fetchBaseQuery({
     baseUrl: baseUrl,
+    prepareHeaders: (headers) => {
+      headers.set('Vertical', 'forgot-password');
+    },
   }),
   endpoints: (builder) => ({
     generateOTP: builder.mutation({
       query: (data) => ({
         url: '/sso/users/otp-generation',
         method: 'POST',
-        headers: {
-          Vertical: 'forgot-password',
-        },
         body: { ...data },
       }),
     }),
@@ -21,9 +21,6 @@ export const forgotPasswordApi = createApi({
       query: (data) => ({
         url: '/sso/users/otp-verification',
         method: 'POST',
-        headers: {
-          Vertical: 'forgot-password',
-        },
         body: { ...data },
       }),
     }),
@@ -31,9 +28,6 @@ export const forgotPasswordApi = createApi({
       query: (data) => ({
         url: 'sso/users/change/password/',
         method: 'POST',
-        headers: {
-          Vertical: 'forgot-password',
-        },
         body: { ...data },
       }),
     }),

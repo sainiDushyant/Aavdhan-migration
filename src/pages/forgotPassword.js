@@ -113,6 +113,10 @@ const ForgotPassword = () => {
   };
 
   const handleOtpVerify = () => {
+    if (otp.length < 1) {
+      toast('Please enter the OTP', { hideProgressBar: true, type: 'warning' });
+      return;
+    }
     params.otp = otp;
     verifyOTP(params);
   };
@@ -246,7 +250,6 @@ const ForgotPassword = () => {
                 <p className="text-center mt-2">
                   <small
                     className="cursor-pointer align-middle text-danger"
-                    // onClick={}
                     onClick={() => {
                       setOtp('');
                       setResendAttempts(resendAttempts + 1);
@@ -256,7 +259,7 @@ const ForgotPassword = () => {
                     {resendAttempts > 2 ? (
                       ''
                     ) : (
-                      <h5 className="text-danger">Resend OTP</h5>
+                      <h5 className="text-danger cursor-pointer">Resend OTP</h5>
                     )}
                   </small>
                 </p>
