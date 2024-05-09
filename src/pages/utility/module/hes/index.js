@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import { TabContent, TabPane, Nav, NavItem, NavLink } from 'reactstrap';
+// import MeterAndCommandDropDown from './wrappers/meterAndCommandDropdown';
 import CommandHistory from './components/CommandHistory';
 import PushData from './components/PushData';
-import MeterProfile from './components/MeterProfile';
+import MeterProfile from './components/MeterProfile.js';
 
-const HesUtility = () => {
+const HesUtility = (props) => {
+  const [reloadCommandHistory, setReloadCommandHistory] = useState(false);
+  const [protocol, setProtocol] = useState('dlms');
   const [active, setActive] = useState('1');
 
   const toggle = (tab) => {
@@ -12,9 +15,22 @@ const HesUtility = () => {
       setActive(tab);
     }
   };
+
+  const refreshCommandHistory = () => {
+    setReloadCommandHistory(!reloadCommandHistory);
+  };
+
+  const doNotRefreshCommandHistory = () => {
+    setReloadCommandHistory(!reloadCommandHistory);
+  };
+
+  const protocolSelectedForCommandExecution = (val) => {
+    setProtocol(val);
+    refreshCommandHistory();
+  };
   return (
-    <React.Fragment>
-      <Nav tabs fill>
+    <div>
+      <Nav tabs justified className="cursor-pointer">
         <NavItem>
           <NavLink
             active={active === '1'}
@@ -22,7 +38,7 @@ const HesUtility = () => {
               toggle('1');
             }}
           >
-            Command History
+            Pull Data
           </NavLink>
         </NavItem>
         <NavItem>
@@ -42,16 +58,42 @@ const HesUtility = () => {
               toggle('3');
             }}
           >
-            Meter Profile
+            Meter Configuration
           </NavLink>
         </NavItem>
       </Nav>
+
       <TabContent className="py-50" activeTab={active}>
-        <TabPane tabId="1">{active === '1' && <CommandHistory />}</TabPane>
+        <TabPane tabId="1">
+          {active === '1' && (
+            <React.Fragment>
+              {/* <MeterAndCommandDropDown
+                refreshCommandHistory={refreshCommandHistory}
+                protocolSelectedForCommandExecution={
+                  protocolSelectedForCommandExecution
+                }
+              /> */}
+              <CommandHistory
+                protocol={protocol}
+                protocolSelectionOption={true}
+                reloadCommandHistory={reloadCommandHistory}
+                protocolSelectedForCommandExecution={
+                  protocolSelectedForCommandExecution
+                }
+                txtLen={12}
+                doNotRefreshCommandHistory={doNotRefreshCommandHistory}
+                refreshCommandHistory={refreshCommandHistory}
+                setActive={setActive}
+                activeTab={active}
+              />
+            </React.Fragment>
+          )}
+        </TabPane>
         <TabPane tabId="2">{active === '2' && <PushData />}</TabPane>
         <TabPane tabId="3">{active === '3' && <MeterProfile />}</TabPane>
       </TabContent>
-    </React.Fragment>
+    </div>
   );
 };
+
 export default HesUtility;

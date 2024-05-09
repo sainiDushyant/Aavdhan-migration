@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import classnames from 'classnames';
 import {
   Row,
@@ -20,6 +20,7 @@ import '../@core/scss/base/pages/page-auth.scss';
 
 const Login = () => {
   const [login, response] = useLoginMutation();
+  const navigate = useNavigate();
   const {
     register,
     formState: { errors },
@@ -42,6 +43,8 @@ const Login = () => {
   useEffect(() => {
     if (response?.data?.responseCode === 200) {
       toast('Login Successfull', { hideProgressBar: true, type: 'success' });
+      localStorage.setItem('token', response?.data?.data?.result?.access);
+      navigate('utility/lpdd/hes');
     } else if (response.isError) {
       toast('Invalid Credentials', { hideProgressBar: true, type: 'error' });
     }
