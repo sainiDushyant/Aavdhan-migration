@@ -60,7 +60,12 @@ const Login = () => {
             onClick={(e) => e.preventDefault()}
           >
             <img src={'logo.ico'} alt="Avdhaan" />
-            <h4 className="brand-text ml-1 pt-1">AVDHAAN</h4>
+            <h2
+              className="brand-text ml-1 pt-1"
+              style={{ color: 'rgb(115, 103, 240)' }}
+            >
+              AVDHAAN
+            </h2>
           </Link>
         </Col>
         <Col className="d-none d-lg-flex align-items-center p-5" lg="8" sm="12">

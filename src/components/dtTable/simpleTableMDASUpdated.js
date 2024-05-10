@@ -213,7 +213,7 @@ const SimpleDataTable = (props) => {
               {props.extra_in_center}
             </Col>
             <Col lg="5" xs="5" className="p-0">
-              <div style={{ float: 'right' }}>
+              <div style={{ float: 'right', display: 'flex', gap: '10px' }}>
                 {props.extraTextToShow ? (
                   <h5 className="d-inline-flex mt_7 ml-1 mr-1">
                     {props.extraTextToShow}

@@ -3,7 +3,15 @@ import { Heart } from 'react-feather';
 
 const Footer = () => {
   return (
-    <footer style={{ position: 'relative', marginLeft: '270px' }}>
+    <footer
+      style={{
+        position: 'fixed',
+        bottom: 20,
+        width: '100%',
+        marginLeft: '0px',
+        marginBottom: '0px',
+      }}
+    >
       <p className="mb-0">
         <span className="float-md-left d-block d-md-inline-block mt-25">
           COPYRIGHT © {new Date().getFullYear()}{' '}
@@ -19,7 +27,7 @@ const Footer = () => {
           </span>
         </span>
 
-        <small className="">
+        <small style={{ position: 'fixed', right: 50 }}>
           Version : HES - <span className="text-dark">1.2</span> | MDMS -{' '}
           <span className="text-dark">0.0.0.5</span> | Billing System -{' '}
           <span className="text-dark">0.0.0.5</span> | CIS/CRM -
