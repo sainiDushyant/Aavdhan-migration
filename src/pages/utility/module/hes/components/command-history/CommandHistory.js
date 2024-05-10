@@ -9,18 +9,18 @@ import {
   Button,
 } from 'reactstrap';
 import { useLocation } from 'react-router-dom';
-import SimpleDataTableMDAS from '../../../../../components/dtTable/simpleTableMDASUpdated';
+import SimpleDataTableMDAS from '../../../../../../components/dtTable/simpleTableMDASUpdated';
 import { Eye, X, Layers, Download } from 'react-feather';
 // import CreateTable from '@src/views/ui-elements/dtTable/createTable'
-import SimpleTableForDLMSCommandResponse from '../../../../../components/dtTable/simpleTableForDLMSCommandResponse';
-import Timeline from '../../../../../@core/components/timeline/index';
+import SimpleTableForDLMSCommandResponse from '../../../../../../components/dtTable/simpleTableForDLMSCommandResponse';
+import Timeline from '../../../../../../@core/components/timeline/index';
 // import SchedulerList from './meterConfigurationWrapper/schedulerList';
 // import FilterForm from '@src/views/project/utility/module/hes/wrappers/commandFilterWrapper/filterForm';
 import { useSelector, useDispatch } from 'react-redux';
-import CardInfo from '../../../../../components/ui-elements/cards/cardInfo';
+import CardInfo from '../../../../../../components/ui-elements/cards/cardInfo';
 
-import Loader from '../../../../../components/loader/loader';
-import { caseInsensitiveSort } from '../../../../../utils';
+import Loader from '../../../../../../components/loader/loader';
+import { caseInsensitiveSort } from '../../../../../../utils';
 
 // import CommandRetryConfig from './commandRetryConfigWrapper/commandRetryConfig';
 
@@ -29,21 +29,127 @@ import { caseInsensitiveSort } from '../../../../../utils';
 import moment from 'moment-timezone';
 
 // import { DLMSCommandMapping } from '../util'
-import { useLazyGetMdasDlmsCommandHistoryQuery } from '../../../../../api/command-historySlice';
+import {
+  useLazyGetMdasDlmsCommandHistoryQuery,
+  useLazyGetMdasTapCommandHistoryQuery,
+  useLazyGetMdasDlmsHistoryDataQuery,
+} from '../../../../../../api/command-historySlice';
+import {
+  useCommandInfoDLMSQuery,
+  useLazyCommandInfoAssetsQuery,
+} from '../../../../../../api/drop-downSlice';
+
+import { setMDASAssetList } from '../../../../../../app/redux/commandExecutionSlice';
 
 const CommandHistory = (props) => {
+  const dispatch = useDispatch();
+  const { data: commandInfoDLMSData } = useCommandInfoDLMSQuery();
+  const [getCommandInfoAsstes, commandInfoAssetsResponse] =
+    useLazyCommandInfoAssetsQuery();
+
   const [getDlmsCommandHistory, dlmsCommandHistoryResponse] =
     useLazyGetMdasDlmsCommandHistoryQuery();
-  const loading = dlmsCommandHistoryResponse.isFetching;
-  const hasError = dlmsCommandHistoryResponse.isError;
-  console.log(loading, 'loading');
-  // Logout User
+  const [getTapCommandHistory, tapCommandHistoryResponse] =
+    useLazyGetMdasTapCommandHistoryQuery();
+  const [getDlmsHistoryData, dlmsHistoryDataResponse] =
+    useLazyGetMdasDlmsHistoryDataQuery();
+  const loading =
+    dlmsCommandHistoryResponse.isFetching ||
+    tapCommandHistoryResponse.isFetching;
+  const hasError =
+    dlmsCommandHistoryResponse.isError || tapCommandHistoryResponse.isError; // Logout User
   const [logout, setLogout] = useState(false);
   useEffect(() => {
     if (logout) {
       console.log('perform logout logic');
     }
   }, [logout]);
+
+  useEffect(() => {
+    let statusCodeDLMS = commandInfoDLMSData?.responseCode;
+    let dlmsCommandList;
+    if (statusCodeDLMS) {
+      if (statusCodeDLMS === 200) {
+        dlmsCommandList = commandInfoDLMSData?.data?.data?.result;
+      } else if (statusCodeDLMS === 401 || statusCodeDLMS === 403) {
+        setLogout(true);
+      } else {
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    const params = {
+      project: projectName,
+      vertical: verticalName,
+    };
+    getCommandInfoAsstes(params);
+    const statusCode = commandInfoAssetsResponse?.data?.responseCode;
+    const pss_list = [];
+    const feeder_list = [];
+    const dtr_list = [];
+    if (statusCode) {
+      if (statusCode === 200) {
+        const data = commandInfoAssetsResponse?.data?.data?.result?.stat;
+
+        for (const pss of data['pss_list']) {
+          const temp = {};
+          temp['pss_name'] = pss['pss_name'];
+          temp['pss_id'] = pss['pss_id'];
+
+          pss_list.push(temp);
+        }
+
+        // Create Feeder list
+        for (const feeder of data['feeder_list']) {
+          const temp = {};
+          const parent_pss = feeder['pss_id'];
+          for (const pss of pss_list) {
+            if (pss['pss_id'] === parent_pss) {
+              temp['feeder_name'] = feeder['feeder_name'];
+              temp['feeder_id'] = feeder['feeder_id'];
+              temp['pss_name'] = pss['pss_name'];
+              temp['pss_id'] = pss['pss_id'];
+              feeder_list.push(temp);
+            }
+          }
+        }
+
+        // Create DTR List
+        for (const dtr of data['live_dt_list']) {
+          const temp = {};
+          const parent_feeder = dtr['feeder_id'];
+          for (const feeder of feeder_list) {
+            if (feeder['feeder_id'] === parent_feeder) {
+              temp['feeder_name'] = feeder['feeder_name'];
+              temp['feeder_id'] = feeder['feeder_id'];
+              temp['pss_name'] = feeder['pss_name'];
+              temp['pss_id'] = feeder['pss_id'];
+              temp['dtr_name'] = dtr['site_name'];
+              temp['dtr_id'] = dtr['site_id'];
+              dtr_list.push(temp);
+            }
+          }
+        }
+        const assets = {
+          pss_list,
+          feeder_list,
+          dtr_list,
+        };
+        console.log(assets, 'these are assets');
+        dispatch(setMDASAssetList(assets));
+      } else if (statusCode === 401 || statusCode === 403) {
+        setLogout(true);
+      } else {
+      }
+    }
+  }, []);
+
+  // const responseData = useSelector(
+  //   (state) => state.utilityMDASAssetList.responseData
+  // );
+
+  // console.log(responseData, 'this isrepsonse data');
 
   // const responseData = useSelector(state => state.UtilityMdmsFlowReducer)
   //   const responseData = useSelector(
@@ -58,7 +164,7 @@ const CommandHistory = (props) => {
     location.pathname.split('/')[2] === 'sbpdcl'
       ? 'ipcl'
       : location.pathname.split('/')[2];
-
+  const verticalName = location.pathname.split('/')[1];
   const [histyData, setHistyData] = useState();
   const [tapHistyData, setTapHistyData] = useState(undefined);
   const [centeredModal, setCenteredModal] = useState(false);
@@ -162,17 +268,31 @@ const CommandHistory = (props) => {
   //     }
   //   };
 
-  const fetchCommandHistoryDLMS = () => {
+  const fetchCommandHistory = () => {
     //   setLoading(true);
-    let params = {};
-    if (filterAppliedParams) {
-      if ('site_id' in filterAppliedParams) {
-        params = {
-          page: currentPage,
-          page_size: 10,
-          project: projectName,
-          ...filterAppliedParams, //Add Filter params
-        };
+    {
+      let params = {};
+      if (filterAppliedParams) {
+        if ('site_id' in filterAppliedParams) {
+          params = {
+            page: currentPage,
+            page_size: 10,
+            project: projectName,
+            ...filterAppliedParams, //Add Filter params
+          };
+        } else {
+          const dtr_list = '';
+          // for (let i = 0; i < responseData.responseData.dtr_list.length; i++) {
+          //   dtr_list += `${responseData.responseData.dtr_list[i]['dtr_id']},`
+          // }
+          params = {
+            page: currentPage,
+            page_size: 10,
+            project: projectName,
+            site_id: dtr_list,
+            ...filterAppliedParams, //Add Filter params
+          };
+        }
       } else {
         const dtr_list = '';
         // for (let i = 0; i < responseData.responseData.dtr_list.length; i++) {
@@ -183,137 +303,116 @@ const CommandHistory = (props) => {
           page_size: 10,
           project: projectName,
           site_id: dtr_list,
-          ...filterAppliedParams, //Add Filter params
+          asset_type: 'dtr',
         };
       }
-    } else {
-      const dtr_list = '';
-      // for (let i = 0; i < responseData.responseData.dtr_list.length; i++) {
-      //   dtr_list += `${responseData.responseData.dtr_list[i]['dtr_id']},`
-      // }
-      params = {
-        page: currentPage,
-        page_size: 10,
-        project: projectName,
-        site_id: dtr_list,
-        asset_type: 'dtr',
-      };
-    }
 
-    params = props.params ? props.params : params;
+      params = props.params ? props.params : params;
 
-    // console.log('Protocol Selected ....')
-    // console.log(props.protocol)
+      if (props.protocol === 'dlms') {
+        getDlmsCommandHistory(params);
+      } else if (props.protocol === 'tap') {
+        // Add Command Name for TAP Protocol
+        params['command'] =
+          'turn_relay_on,turn_relay_off,relay_manual_control,relay_auto_control';
 
-    if (props.protocol === 'dlms') {
-      getDlmsCommandHistory(params);
+        getTapCommandHistory(params);
+      }
     }
   };
   useEffect(() => {
-    fetchCommandHistoryDLMS();
+    fetchCommandHistory();
   }, [currentPage]);
+
   useEffect(() => {
-    let statusCode = dlmsCommandHistoryResponse?.data?.responseCode;
-    if (statusCode === 401 || statusCode === 403) {
-      setLogout(true);
-    } else if (statusCode === 200 || statusCode === 204) {
-      try {
-        dlmsCommandHistoryResponse?.data?.data?.result?.results?.map((item) => {
-          // Convert update_time string to a moment object
-          const updateMoment = moment(
-            item.update_time,
-            'YYYY-MM-DD HH:mm:ss'
-          ).tz('Asia/Kolkata');
+    if (dlmsCommandHistoryResponse) {
+      let statusCode = dlmsCommandHistoryResponse?.data?.responseCode;
+      if (statusCode === 401 || statusCode === 403) {
+        setLogout(true);
+      } else if (statusCode === 200 || statusCode === 204) {
+        try {
+          dlmsCommandHistoryResponse?.data?.data?.result?.results?.map(
+            (item) => {
+              // Convert update_time string to a moment object
+              const updateMoment = moment(
+                item.update_time,
+                'YYYY-MM-DD HH:mm:ss'
+              ).tz('Asia/Kolkata');
 
-          // console.log("Update Time:", updateMoment.format("YYYY-MM-DD HH:mm:ss"))
-          // Check if update_time is greater than the current time
-          // console.log(updateMoment.isAfter(currentTime))
-          if (updateMoment.isAfter(currentTime)) {
-            item.update_time = item.execution_start_time;
-            item.execution_status = 'In Progress';
-          }
-          // if (
-          //   item.command === 'LIVE_VERSION' ||
-          //   item.command === 'BLOCK_LOAD' ||
-          //   item.command === 'DAILY_LOAD' ||
-          //   item.command === 'EVENTS'
-          // ) {
-          //   const randomIndex1 = Math.floor(
-          //     Math.random() * diffTimeSec.length
-          //   );
-          //   const randomIndex2 = Math.floor(
-          //     Math.random() * diffTimeSec.length
-          //   );
+              // console.log("Update Time:", updateMoment.format("YYYY-MM-DD HH:mm:ss"))
+              // Check if update_time is greater than the current time
+              // console.log(updateMoment.isAfter(currentTime))
+              if (updateMoment.isAfter(currentTime)) {
+                item.update_time = item.execution_start_time;
+                item.execution_status = 'In Progress';
+              }
+              // if (
+              //   item.command === 'LIVE_VERSION' ||
+              //   item.command === 'BLOCK_LOAD' ||
+              //   item.command === 'DAILY_LOAD' ||
+              //   item.command === 'EVENTS'
+              // ) {
+              //   const randomIndex1 = Math.floor(
+              //     Math.random() * diffTimeSec.length
+              //   );
+              //   const randomIndex2 = Math.floor(
+              //     Math.random() * diffTimeSec.length
+              //   );
 
-          //   if (
-          //     !item.execution_start_time &&
-          //     item.execution_status === 'Success'
-          //   ) {
-          //     item.execution_start_time = moment(item.start_time)
-          //       .add(1, 'second')
-          //       .format('YYYY-MM-DD HH:mm:ss');
-          //     item.update_time = moment(item.execution_start_time)
-          //       .add(diffTimeSec[randomIndex2], 'second')
-          //       .format('YYYY-MM-DD HH:mm:ss');
-          //   } else if (
-          //     item.execution_start_time === item.start_time &&
-          //     item.start_time === item.update_time &&
-          //     item.execution_status === 'Success'
-          //   ) {
-          //     item.execution_start_time = moment(item.start_time)
-          //       .add(1, 'second')
-          //       .format('YYYY-MM-DD HH:mm:ss');
-          //     item.update_time = moment(item.execution_start_time)
-          //       .add(diffTimeSec[randomIndex2], 'second')
-          //       .format('YYYY-MM-DD HH:mm:ss');
-          //   }
-          // }
-          // console.log(item.execution_start_time, item.start_time, item.update_time)
-          return item;
-        });
-        setResponse(dlmsCommandHistoryResponse.data.data.result.results);
-        setTotalCount(dlmsCommandHistoryResponse.data.data.result.count);
-      } catch (error) {
-        setErrorMessage('Something went wrong, please retry');
+              //   if (
+              //     !item.execution_start_time &&
+              //     item.execution_status === 'Success'
+              //   ) {
+              //     item.execution_start_time = moment(item.start_time)
+              //       .add(1, 'second')
+              //       .format('YYYY-MM-DD HH:mm:ss');
+              //     item.update_time = moment(item.execution_start_time)
+              //       .add(diffTimeSec[randomIndex2], 'second')
+              //       .format('YYYY-MM-DD HH:mm:ss');
+              //   } else if (
+              //     item.execution_start_time === item.start_time &&
+              //     item.start_time === item.update_time &&
+              //     item.execution_status === 'Success'
+              //   ) {
+              //     item.execution_start_time = moment(item.start_time)
+              //       .add(1, 'second')
+              //       .format('YYYY-MM-DD HH:mm:ss');
+              //     item.update_time = moment(item.execution_start_time)
+              //       .add(diffTimeSec[randomIndex2], 'second')
+              //       .format('YYYY-MM-DD HH:mm:ss');
+              //   }
+              // }
+              // console.log(item.execution_start_time, item.start_time, item.update_time)
+              return item;
+            }
+          );
+          setResponse(dlmsCommandHistoryResponse.data.data.result.results);
+          setTotalCount(dlmsCommandHistoryResponse.data.data.result.count);
+        } catch (error) {
+          setErrorMessage('Something went wrong, please retry');
+        }
+      } else {
+        setErrorMessage('Network Error, please retry');
       }
-    } else {
-      setErrorMessage('Network Error, please retry');
     }
   }, [dlmsCommandHistoryResponse]);
 
-  // const fetchCommandHistoryTAP = async (params) => {
-  //   return await useJwt
-  //     .getMdasTapCommandHistory(params)
-  //     .then((res) => {
-  //       const status = res.status;
-  //       return [status, res];
-  //     })
-  //     .catch((err) => {
-  //       if (err.response) {
-  //         const status = err.response.status;
-  //         return [status, err];
-  //       } else {
-  //         return [0, err];
-  //       }
-  //     });
-  // };
-
-  // const fetchHistoryData = async (params) => {
-  //   return await useJwt
-  //     .getMdasDlmsHistoryData(params)
-  //     .then((res) => {
-  //       const status = res.status;
-  //       return [status, res];
-  //     })
-  //     .catch((err) => {
-  //       if (err.response) {
-  //         const status = err.response.status;
-  //         return [status, err];
-  //       } else {
-  //         return [0, err];
-  //       }
-  //     });
-  // };
+  useEffect(() => {
+    if (tapCommandHistoryResponse) {
+      let statusCode = tapCommandHistoryResponse?.data?.responseCode;
+      if (statusCode) {
+        if (statusCode === 401 || statusCode === 403) {
+          setLogout(true);
+        } else if (statusCode === 200 || statusCode === 204) {
+          setResponse(tapCommandHistoryResponse?.data?.data?.result?.results);
+          setTotalCount(tapCommandHistoryResponse?.data?.data?.result?.count);
+          props.doNotRefreshCommandHistory();
+        } else {
+          setErrorMessage('Network Error, please retry');
+        }
+      }
+    }
+  }, [tapCommandHistoryResponse]);
 
   // const fetchHistoryDataDetail = async (params) => {
   //   return await useJwt
@@ -331,172 +430,6 @@ const CommandHistory = (props) => {
   //       }
   //     });
   // };
-
-  // useEffect(async () => {
-  //   // console.log('Protocol Selected ....')
-  //   // console.log(props.protocol)
-
-  //   if (retry || props.reloadCommandHistory) {
-  //     //   setLoading(true);
-  //     let params = {};
-  //     if (filterAppliedParams) {
-  //       if ('site_id' in filterAppliedParams) {
-  //         params = {
-  //           page: currentPage,
-  //           page_size: 10,
-  //           project: projectName,
-  //           ...filterAppliedParams, //Add Filter params
-  //         };
-  //       } else {
-  //         const dtr_list = '';
-  //         // for (let i = 0; i < responseData.responseData.dtr_list.length; i++) {
-  //         //   dtr_list += `${responseData.responseData.dtr_list[i]['dtr_id']},`
-  //         // }
-  //         params = {
-  //           page: currentPage,
-  //           page_size: 10,
-  //           project: projectName,
-  //           site_id: dtr_list,
-  //           ...filterAppliedParams, //Add Filter params
-  //         };
-  //       }
-  //     } else {
-  //       const dtr_list = '';
-  //       // for (let i = 0; i < responseData.responseData.dtr_list.length; i++) {
-  //       //   dtr_list += `${responseData.responseData.dtr_list[i]['dtr_id']},`
-  //       // }
-  //       params = {
-  //         page: currentPage,
-  //         page_size: 10,
-  //         project: projectName,
-  //         site_id: dtr_list,
-  //         asset_type: 'dtr',
-  //       };
-  //     }
-
-  //     params = props.params ? props.params : params;
-
-  //     // console.log('Protocol Selected ....')
-  //     // console.log(props.protocol)
-
-  //     if (props.protocol === 'dlms') {
-  //       const [statusCode, response] = await fetchCommandHistoryDLMS(params);
-
-  //       if (statusCode === 401 || statusCode === 403) {
-  //         setLogout(true);
-  //       } else if (statusCode === 200 || statusCode === 204) {
-  //         // console.log('Fetching DLMS Protocol Data ....')
-
-  //         // console.log('DLMS Protocol Response ....')
-  //         // console.log(response)
-  //         try {
-  //           response?.data?.data?.result?.results?.map((item) => {
-  //             // Convert update_time string to a moment object
-  //             const updateMoment = moment(
-  //               item.update_time,
-  //               'YYYY-MM-DD HH:mm:ss'
-  //             ).tz('Asia/Kolkata');
-
-  //             // console.log("Update Time:", updateMoment.format("YYYY-MM-DD HH:mm:ss"))
-  //             // Check if update_time is greater than the current time
-  //             // console.log(updateMoment.isAfter(currentTime))
-  //             if (updateMoment.isAfter(currentTime)) {
-  //               item.update_time = item.execution_start_time;
-  //               item.execution_status = 'In Progress';
-  //             }
-  //             // if (
-  //             //   item.command === 'LIVE_VERSION' ||
-  //             //   item.command === 'BLOCK_LOAD' ||
-  //             //   item.command === 'DAILY_LOAD' ||
-  //             //   item.command === 'EVENTS'
-  //             // ) {
-  //             //   const randomIndex1 = Math.floor(
-  //             //     Math.random() * diffTimeSec.length
-  //             //   );
-  //             //   const randomIndex2 = Math.floor(
-  //             //     Math.random() * diffTimeSec.length
-  //             //   );
-
-  //             //   if (
-  //             //     !item.execution_start_time &&
-  //             //     item.execution_status === 'Success'
-  //             //   ) {
-  //             //     item.execution_start_time = moment(item.start_time)
-  //             //       .add(1, 'second')
-  //             //       .format('YYYY-MM-DD HH:mm:ss');
-  //             //     item.update_time = moment(item.execution_start_time)
-  //             //       .add(diffTimeSec[randomIndex2], 'second')
-  //             //       .format('YYYY-MM-DD HH:mm:ss');
-  //             //   } else if (
-  //             //     item.execution_start_time === item.start_time &&
-  //             //     item.start_time === item.update_time &&
-  //             //     item.execution_status === 'Success'
-  //             //   ) {
-  //             //     item.execution_start_time = moment(item.start_time)
-  //             //       .add(1, 'second')
-  //             //       .format('YYYY-MM-DD HH:mm:ss');
-  //             //     item.update_time = moment(item.execution_start_time)
-  //             //       .add(diffTimeSec[randomIndex2], 'second')
-  //             //       .format('YYYY-MM-DD HH:mm:ss');
-  //             //   }
-  //             // }
-  //             // console.log(item.execution_start_time, item.start_time, item.update_time)
-  //             return item;
-  //           });
-  //           setResponse(response.data.data.result.results);
-  //           setTotalCount(response.data.data.result.count);
-
-  //           // setReloadCommandHistory(true)
-  //           // setLoading(false);
-  //           // props.doNotRefreshCommandHistory();
-  //           setRetry(false);
-  //           setError(false);
-  //         } catch (error) {
-  //           // setLoading(false);
-  //           setRetry(false);
-  //           setError(true);
-  //           props.doNotRefreshCommandHistory();
-  //           setErrorMessage('Something went wrong, please retry');
-  //         }
-  //       } else {
-  //         //   setLoading(false);
-  //         setRetry(false);
-  //         setError(true);
-  //         props.doNotRefreshCommandHistory();
-  //         setErrorMessage('Network Error, please retry');
-  //       }
-  //     } else if (props.protocol === 'tap') {
-  //       // Add Command Name for TAP Protocol
-  //       // params['command'] = 'turn_relay_on,turn_relay_off,relay_manual_control,relay_auto_control'
-  //       const [statusCode, response] = await fetchCommandHistoryTAP(params);
-
-  //       if (statusCode) {
-  //         if (statusCode === 401 || statusCode === 403) {
-  //           setLogout(true);
-  //         } else if (statusCode === 200 || statusCode === 204) {
-  //           // console.log('Fetching DLMS Protocol Data ....')
-
-  //           // console.log('DLMS Protocol Response ....')
-  //           // console.log(response)
-
-  //           setResponse(response.data.data.result.results);
-  //           setTotalCount(response.data.data.result.count);
-  //           // setReloadCommandHistory(false)
-  //           props.doNotRefreshCommandHistory();
-  //           // setLoading(false);
-  //           setRetry(false);
-  //           setError(false);
-  //         } else {
-  //           // setLoading(false);
-  //           setRetry(false);
-  //           setError(true);
-  //           // props.doNotRefreshCommandHistory();
-  //           setErrorMessage('Network Error, please retry');
-  //         }
-  //       }
-  //     }
-  //   }
-  // }, [retry, props.reloadCommandHistory]);
 
   const tblColumn = () => {
     const column = [];
@@ -638,52 +571,50 @@ const CommandHistory = (props) => {
       //   }
       // };
 
-      // const showData = async (row) => {
-      //   // console.log("DLMS Data .....")
+      const showData = async (row) => {
+        const params = {
+          id: row.id,
+        };
+        getDlmsHistoryData(params);
+        setCenteredModal(true);
+        let statusCode = dlmsHistoryDataResponse?.data?.responseCode;
+        if (statusCode === 200 || statusCode === 202) {
+          let data = dlmsHistoryDataResponse?.data?.data?.result?.data;
+          if (Array.isArray(data)) {
+            const filteredData = data.filter(
+              (obj) => !obj.hasOwnProperty('MD_W_TOD_1')
+            );
 
-      //   const params = {
-      //     id: row.id,
-      //   };
-      //   const [statusCode, response] = await fetchHistoryData(params);
+            // let data = response.data.data.result.data
+            if (Array.isArray(filteredData)) {
+              data = filteredData.map((item) => {
+                for (const key in item) {
+                  if (item[key] === '65535-00-00 00:00:00') {
+                    item[key] = '--';
+                  }
+                  // if (key.includes("import_Wh") || key.includes("import_VAh")) {
+                  //   item[key] = item[key].toFixed(2)
+                  // }
+                }
 
-      //   setCenteredModal(true);
-      //   if (statusCode === 200 || statusCode === 202) {
-      //     let data = response?.data?.data?.result?.data;
-      //     if (Array.isArray(data)) {
-      //       const filteredData = data.filter(
-      //         (obj) => !obj.hasOwnProperty('MD_W_TOD_1')
-      //       );
+                return item;
+              });
+            }
+          }
 
-      //       // let data = response.data.data.result.data
-      //       if (Array.isArray(filteredData)) {
-      //         data = filteredData.map((item) => {
-      //           for (const key in item) {
-      //             if (item[key] === '65535-00-00 00:00:00') {
-      //               item[key] = '--';
-      //             }
-      //             // if (key.includes("import_Wh") || key.includes("import_VAh")) {
-      //             //   item[key] = item[key].toFixed(2)
-      //             // }
-      //           }
-
-      //           return item;
-      //         });
-      //       }
-      //     }
-
-      //     const cmdDetail = `Meter: ${row.meter_number}, Command: ${row.command}, Execution: ${row.start_time}`;
-      //     const newData = {
-      //       data,
-      //       cmd_detail: cmdDetail,
-      //     };
-      //     setCommandName(row.command);
-      //     setRowExecutionStatus(row);
-      //     setCommandSelectedToViewResponse(row.command);
-      //     setHistyData(newData);
-      //   } else if (statusCode === 401 || statusCode === 403) {
-      //     setLogout(true);
-      //   }
-      // };
+          const cmdDetail = `Meter: ${row.meter_number}, Command: ${row.command}, Execution: ${row.start_time}`;
+          const newData = {
+            data,
+            cmd_detail: cmdDetail,
+          };
+          setCommandName(row.command);
+          setRowExecutionStatus(row);
+          setCommandSelectedToViewResponse(row.command);
+          setHistyData(newData);
+        } else if (statusCode === 401 || statusCode === 403) {
+          setLogout(true);
+        }
+      };
 
       // const showTapData = async (row) => {
       //   // console.log("TAP Data .....")
@@ -736,7 +667,7 @@ const CommandHistory = (props) => {
                 <Eye
                   size="20"
                   className="ml-1 cursor-pointer"
-                  // onClick={() => showData(row)}
+                  onClick={() => showData(row)}
                 />
               );
             }
@@ -1099,9 +1030,7 @@ const CommandHistory = (props) => {
   };
 
   const retryAgain = () => {
-    setError(false);
-    setRetry(true);
-    props.refreshCommandHistory();
+    fetchCommandHistory();
   };
 
   const tapViewDetail = () => {
@@ -1126,7 +1055,7 @@ const CommandHistory = (props) => {
           props={{
             message: { errorMessage },
             retryFun: { retryAgain },
-            retry: { retry },
+            retry: { loading },
           }}
         />
       ) : (
@@ -1139,7 +1068,7 @@ const CommandHistory = (props) => {
                 tblData={response}
                 rowCount={10}
                 tableName={tableName}
-                refresh={fetchCommandHistoryDLMS}
+                refresh={fetchCommandHistory}
                 filter={!props.params && handleFilter}
                 status={loading}
                 currentPage={currentPage}
