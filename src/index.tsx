@@ -7,7 +7,15 @@ import reportWebVitals from './reportWebVitals';
 import './index.css';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'; // Don't forget to import the CSS
+import 'bootstrap/dist/css/bootstrap.min.css';
 
+// ** React Toastify
+// import '@styles/react/libs/toastify/toastify.scss'
+
+// // ** Core styles
+// import './@core/assets/fonts/feather/iconfont.css'
+import './@core/scss/core.scss';
+// import './assets/scss/style.scss'
 
 const container = document.getElementById('root')!;
 const root = createRoot(container);
@@ -16,7 +24,7 @@ root.render(
   <React.StrictMode>
     <Provider store={store}>
       <App />
-      <ToastContainer/>
+      <ToastContainer />
     </Provider>
   </React.StrictMode>
 );
