@@ -36,7 +36,10 @@ import { useSelector, useDispatch, batch } from 'react-redux';
 // import { useHistory } from 'react-router-dom'
 import CardInfo from '../../../../../components/ui-elements/cards/cardInfo';
 // import CommandTab from './commandExecuReplica';
-import { setMDASAssetList } from '../../../../../app/redux/commandExecutionSlice';
+import {
+  setMDASAssetList,
+  setMDASDlmsCommandList,
+} from '../../../../../app/redux/commandExecutionSlice';
 
 const MeterAndCommandDropDown = (props) => {
   const dispatch = useDispatch();
@@ -62,80 +65,79 @@ const MeterAndCommandDropDown = (props) => {
   const [retry, setRetry] = useState(false);
   const [selected_project, set_selected_project] = useState(undefined);
 
-  useEffect(() => {
-    let statusCodeDLMS = commandInfoDLMSData?.responseCode;
-    if (statusCodeDLMS) {
-      if (statusCodeDLMS === 200) {
-        let dlmsCommandList;
-        dlmsCommandList = commandInfoDLMSData?.data?.result;
-        console.log(dlmsCommandList, 'dlms command list');
-      } else if (statusCodeDLMS === 401 || statusCodeDLMS === 403) {
-        setLogout(true);
-      } else {
-      }
+  // useEffect(() => {
+  let statusCodeDLMS = commandInfoDLMSData?.responseCode;
+  if (statusCodeDLMS) {
+    if (statusCodeDLMS === 200) {
+      let dlmsCommandList;
+      dlmsCommandList = commandInfoDLMSData?.data?.result;
+      dispatch(setMDASDlmsCommandList(dlmsCommandList));
+    } else if (statusCodeDLMS === 401 || statusCodeDLMS === 403) {
+      setLogout(true);
+    } else {
     }
-  }, [commandInfoDLMSData]);
+  }
+  // }, [commandInfoDLMSData]);
 
-  useEffect(() => {
-    const statusCode = commandInfoAssetsResponse?.responseCode;
-    const pss_list = [];
-    const feeder_list = [];
-    const dtr_list = [];
-    if (statusCode) {
-      if (statusCode === 200) {
-        const data = commandInfoAssetsResponse?.data?.result?.stat;
-        console.log(data, 'assets data');
-        for (const pss of data['pss_list']) {
-          const temp = {};
-          temp['pss_name'] = pss['pss_name'];
-          temp['pss_id'] = pss['pss_id'];
+  // useEffect(() => {
+  const statusCode = commandInfoAssetsResponse?.responseCode;
+  const pss_list = [];
+  const feeder_list = [];
+  const dtr_list = [];
+  if (statusCode) {
+    if (statusCode === 200) {
+      const data = commandInfoAssetsResponse?.data?.result?.stat;
+      for (const pss of data['pss_list']) {
+        const temp = {};
+        temp['pss_name'] = pss['pss_name'];
+        temp['pss_id'] = pss['pss_id'];
 
-          pss_list.push(temp);
-        }
+        pss_list.push(temp);
+      }
 
-        // Create Feeder list
-        for (const feeder of data['feeder_list']) {
-          const temp = {};
-          const parent_pss = feeder['pss_id'];
-          for (const pss of pss_list) {
-            if (pss['pss_id'] === parent_pss) {
-              temp['feeder_name'] = feeder['feeder_name'];
-              temp['feeder_id'] = feeder['feeder_id'];
-              temp['pss_name'] = pss['pss_name'];
-              temp['pss_id'] = pss['pss_id'];
-              feeder_list.push(temp);
-            }
+      // Create Feeder list
+      for (const feeder of data['feeder_list']) {
+        const temp = {};
+        const parent_pss = feeder['pss_id'];
+        for (const pss of pss_list) {
+          if (pss['pss_id'] === parent_pss) {
+            temp['feeder_name'] = feeder['feeder_name'];
+            temp['feeder_id'] = feeder['feeder_id'];
+            temp['pss_name'] = pss['pss_name'];
+            temp['pss_id'] = pss['pss_id'];
+            feeder_list.push(temp);
           }
         }
+      }
 
-        // Create DTR List
-        for (const dtr of data['live_dt_list']) {
-          const temp = {};
-          const parent_feeder = dtr['feeder_id'];
-          for (const feeder of feeder_list) {
-            if (feeder['feeder_id'] === parent_feeder) {
-              temp['feeder_name'] = feeder['feeder_name'];
-              temp['feeder_id'] = feeder['feeder_id'];
-              temp['pss_name'] = feeder['pss_name'];
-              temp['pss_id'] = feeder['pss_id'];
-              temp['dtr_name'] = dtr['site_name'];
-              temp['dtr_id'] = dtr['site_id'];
-              dtr_list.push(temp);
-            }
+      // Create DTR List
+      for (const dtr of data['live_dt_list']) {
+        const temp = {};
+        const parent_feeder = dtr['feeder_id'];
+        for (const feeder of feeder_list) {
+          if (feeder['feeder_id'] === parent_feeder) {
+            temp['feeder_name'] = feeder['feeder_name'];
+            temp['feeder_id'] = feeder['feeder_id'];
+            temp['pss_name'] = feeder['pss_name'];
+            temp['pss_id'] = feeder['pss_id'];
+            temp['dtr_name'] = dtr['site_name'];
+            temp['dtr_id'] = dtr['site_id'];
+            dtr_list.push(temp);
           }
         }
-
-        const assets = {
-          pss_list,
-          feeder_list,
-          dtr_list,
-        };
-        dispatch(setMDASAssetList(assets));
-      } else if (statusCode === 401 || statusCode === 403) {
-        setLogout(true);
       }
+
+      const assets = {
+        pss_list,
+        feeder_list,
+        dtr_list,
+      };
+      dispatch(setMDASAssetList(assets));
+    } else if (statusCode === 401 || statusCode === 403) {
+      setLogout(true);
     }
-  }, [commandInfoAssetsResponse]);
+  }
+  // }, [commandInfoAssetsResponse]);
 
   // const currentSelectedModuleStatus = useSelector(
   //   (state) => state.CurrentSelectedModuleStatusReducer.responseData

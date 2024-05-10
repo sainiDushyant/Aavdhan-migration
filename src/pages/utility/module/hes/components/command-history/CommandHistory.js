@@ -39,7 +39,7 @@ const CommandHistory = (props) => {
   const responseData = useSelector(
     (state) => state.utilityMDASAssetList.responseData
   );
-
+  console.log(responseData, 'repsonseData');
   const [getDlmsCommandHistory, dlmsCommandHistoryResponse] =
     useLazyGetMdasDlmsCommandHistoryQuery();
   const [getTapCommandHistory, tapCommandHistoryResponse] =

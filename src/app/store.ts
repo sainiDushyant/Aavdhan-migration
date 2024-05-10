@@ -3,7 +3,7 @@ import { loginApi } from '../api/loginSlice';
 import { forgotPasswordApi } from '../api/forgot-passwordSlice';
 import { commandHistoryApi } from '../api/command-historySlice';
 import { dropdownsApi } from '../api/drop-downSlice';
-import utilityMDASAssetListReducer from '../app/redux/commandExecutionSlice'; // Import your reducer here
+import {utilityMDASAssetListReducer,utilityMDASDlmsCommandReducer} from '../app/redux/commandExecutionSlice'; // Import your reducer here
 
 
 export const store = configureStore({
@@ -12,7 +12,8 @@ export const store = configureStore({
     [forgotPasswordApi.reducerPath]:forgotPasswordApi.reducer,
     [commandHistoryApi.reducerPath]:commandHistoryApi.reducer,
     [dropdownsApi.reducerPath]:dropdownsApi.reducer,
-    utilityMDASAssetList:utilityMDASAssetListReducer
+    utilityMDASAssetList:utilityMDASAssetListReducer,
+    utilityMDASDlmsCommand:utilityMDASDlmsCommandReducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(loginApi.middleware).concat(forgotPasswordApi.middleware).concat(commandHistoryApi.middleware).concat(dropdownsApi.middleware),
