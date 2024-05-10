@@ -2,15 +2,17 @@ import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
 import { loginApi } from '../api/loginSlice';
 import { forgotPasswordApi } from '../api/forgot-passwordSlice';
 import { commandHistoryApi } from '../api/command-historySlice';
+import { dropdownsApi } from '../api/drop-downSlice';
 
 export const store = configureStore({
   reducer: {
     [loginApi.reducerPath]:loginApi.reducer,
     [forgotPasswordApi.reducerPath]:forgotPasswordApi.reducer,
-    [commandHistoryApi.reducerPath]:commandHistoryApi.reducer
+    [commandHistoryApi.reducerPath]:commandHistoryApi.reducer,
+    [dropdownsApi.reducerPath]:dropdownsApi.reducer
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(loginApi.middleware).concat(forgotPasswordApi.middleware).concat(commandHistoryApi.middleware),
+    getDefaultMiddleware().concat(loginApi.middleware).concat(forgotPasswordApi.middleware).concat(commandHistoryApi.middleware).concat(dropdownsApi.middleware),
     
 
 });

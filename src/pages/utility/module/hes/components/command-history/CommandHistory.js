@@ -145,9 +145,9 @@ const CommandHistory = (props) => {
     }
   }, []);
 
-  const responseData = useSelector(
-    (state) => state.utilityMDASAssetList.responseData
-  );
+  // const responseData = useSelector(
+  //   (state) => state.utilityMDASAssetList.responseData
+  // );
 
   // console.log(responseData, 'this isrepsonse data');
 
