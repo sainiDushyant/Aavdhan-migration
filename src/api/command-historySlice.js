@@ -25,13 +25,13 @@ export const commandHistoryApi = createApi({
     getMdasTapCommandHistory: builder.query({
       query: (params) => ({
         url: 'hes/api/hes/tap/command-history/',
-        params: {},
+        params: params,
       }),
     }),
     getMdasDlmsHistoryData: builder.query({
       query: (params) => ({
         url: 'hes/api/hes/dlms/execution-status-resp/',
-        params: {},
+        params: params,
       }),
     }),
     getCommandHistoryTAPDetail: builder.query({
@@ -47,7 +47,7 @@ export const commandHistoryApi = createApi({
 // auto-generated based on the defined endpoints
 export const {
   useLazyGetMdasDlmsCommandHistoryQuery,
-  useGetMdasTapCommandHistoryQuery,
-  useGetMdasDlmsHistoryDataQuery,
+  useLazyGetMdasTapCommandHistoryQuery,
+  useLazyGetMdasDlmsHistoryDataQuery,
   useGetCommandHistoryTAPDetailQuery,
 } = commandHistoryApi;

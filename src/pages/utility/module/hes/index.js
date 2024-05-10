@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { TabContent, TabPane, Nav, NavItem, NavLink } from 'reactstrap';
 // import MeterAndCommandDropDown from './wrappers/meterAndCommandDropdown';
-import CommandHistory from './components/CommandHistory';
+import CommandHistory from './components/command-history/CommandHistory';
 import PushData from './components/PushData';
 import MeterProfile from './components/MeterProfile.js';
 
