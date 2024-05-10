@@ -27,11 +27,13 @@ export const dropdownsApi = createApi({
         url: 'mdms/live/api/v1/get/gis/project/data',
         params: params,
       }),
+      providesTags: ['assets'],
+      invalidatesTags: ['asstes'],
     }),
   }),
 });
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
-export const { useCommandInfoDLMSQuery, useLazyCommandInfoAssetsQuery } =
+export const { useCommandInfoDLMSQuery, useCommandInfoAssetsQuery } =
   dropdownsApi;

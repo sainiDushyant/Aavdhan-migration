@@ -15,6 +15,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 // // ** Core styles
 // import './@core/assets/fonts/feather/iconfont.css'
 import './@core/scss/core.scss';
+import './assets/css/util.scss'
 // import './assets/scss/style.scss'
 
 const container = document.getElementById('root')!;

@@ -12,7 +12,6 @@ const utilityMDASAssetListSlice = createSlice({
   reducers: {
     setMDASAssetList(state, action) {
       const { assets } = action.payload;
-      console.log(assets);
       state.responseData = assets;
     },
   },
