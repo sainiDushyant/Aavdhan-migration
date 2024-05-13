@@ -1,6 +1,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 const baseUrl = process.env.REACT_APP_BASE_URL;
 const token = localStorage.getItem('token');
+const MDASUrl = process.env.REACT_APP_MDAS_URL;
 // Define a service using a base URL and expected endpoints
 export const commandHistoryApi = createApi({
   reducerPath: 'commandHistory',
@@ -12,42 +13,43 @@ export const commandHistoryApi = createApi({
       headers.set('project', 'lpdd');
       headers.set('username', 'abhishekaglave@grampower.com');
       headers.set('authorization', `Bearer ${token}`);
-      headers.set('Unique_id', '1WK33A7M');
+      headers.set('Unique_id', '1O7HZ4E3');
     },
   }),
   endpoints: (builder) => ({
     getMdasDlmsCommandHistory: builder.query({
       query: (params) => ({
-        url: 'hes/api/hes/dlms/command-history/',
+        url: `${MDASUrl}/api/hes/dlms/command-history/`,
         params: params,
       }),
     }),
     getMdasTapCommandHistory: builder.query({
       query: (params) => ({
-        url: 'hes/api/hes/tap/command-history/',
+        url: `${MDASUrl}/api/hes/tap/command-history/`,
         params: params,
       }),
     }),
     getMdasDlmsHistoryData: builder.query({
       query: (params) => ({
-        url: 'hes/api/hes/dlms/execution-status-resp/',
+        url: `${MDASUrl}/api/hes/dlms/execution-status-resp/`,
         params: params,
       }),
     }),
     getCommandHistoryTAPDetail: builder.query({
       query: (params) => ({
-        url: 'hes/api/hes/tap/command-history-resp/',
-        params: {},
+        url: `${MDASUrl}/api/hes/tap/command-history-resp/`,
+        params: params,
       }),
     }),
+    keepUnusedDataFor: 300000,
   }),
 });
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
 export const {
-  useLazyGetMdasDlmsCommandHistoryQuery,
-  useLazyGetMdasTapCommandHistoryQuery,
+  useGetMdasDlmsCommandHistoryQuery,
+  useGetMdasTapCommandHistoryQuery,
   useLazyGetMdasDlmsHistoryDataQuery,
   useGetCommandHistoryTAPDetailQuery,
 } = commandHistoryApi;

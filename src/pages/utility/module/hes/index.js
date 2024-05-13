@@ -4,7 +4,7 @@ import { TabContent, TabPane, Nav, NavItem, NavLink } from 'reactstrap';
 import CommandHistory from './components/command-history/CommandHistory';
 import PushData from './components/PushData';
 import MeterProfile from './components/MeterProfile.js';
-// import MeterAndCommandDropDown from './components/meterAndCommandDropdown';
+import MeterAndCommandDropDown from './components/meterAndCommandDropdown';
 
 const HesUtility = (props) => {
   const [reloadCommandHistory, setReloadCommandHistory] = useState(false);
@@ -63,17 +63,18 @@ const HesUtility = (props) => {
           </NavLink>
         </NavItem>
       </Nav>
-
       <TabContent className="py-50" activeTab={active}>
         <TabPane tabId="1">
           {active === '1' && (
             <React.Fragment>
-              {/* <MeterAndCommandDropDown
-                refreshCommandHistory={refreshCommandHistory}
-                protocolSelectedForCommandExecution={
-                  protocolSelectedForCommandExecution
-                }
-              /> */}
+              <div className="d-none">
+                <MeterAndCommandDropDown
+                  refreshCommandHistory={refreshCommandHistory}
+                  protocolSelectedForCommandExecution={
+                    protocolSelectedForCommandExecution
+                  }
+                />
+              </div>
               <CommandHistory
                 protocol={protocol}
                 protocolSelectionOption={true}

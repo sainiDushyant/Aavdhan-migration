@@ -1,53 +1,76 @@
-import { Button, Col, Row, Form, FormGroup, Label, Input, CustomInput } from "reactstrap"
-import Select from "react-select"
-import { useSelector, useDispatch, batch } from "react-redux"
-import { useEffect, useState } from "react"
-import { handleMDASCommandHistoryWithFilter } from "@store/actions/UtilityProject/MDAS/commandHistoryWithFilter"
-
+import {
+  Button,
+  Col,
+  Row,
+  Form,
+  FormGroup,
+  Label,
+  Input,
+  CustomInput,
+} from 'reactstrap';
+import Select from 'react-select';
+import { useSelector, useDispatch, batch } from 'react-redux';
+import { useEffect, useState } from 'react';
+import '../../../../../../assets/css/util.scss';
 const FilterForm = (props) => {
   // console.log('Filter Applied')
   // console.log(props.filterAppliedParams)
 
-  const [assetUnSelectedOnPurpose, setAssetUnSelectedOnPurpose] = useState(false)
-  const [commandNameUnSelectedOnPurpose, setCommandNameUnSelectedOnPurpose] = useState(false)
-  const [commandStatusUnSelectedOnPurpose, setCommandStatusUnSelectedOnPurpose] = useState(false)
-  const [supplyTypeUnSelectedOnPurpose, setSupplyTypeUnSelectedOnPurpose] = useState(false)
+  const [assetUnSelectedOnPurpose, setAssetUnSelectedOnPurpose] =
+    useState(false);
+  const [commandNameUnSelectedOnPurpose, setCommandNameUnSelectedOnPurpose] =
+    useState(false);
+  const [
+    commandStatusUnSelectedOnPurpose,
+    setCommandStatusUnSelectedOnPurpose,
+  ] = useState(false);
+  const [supplyTypeUnSelectedOnPurpose, setSupplyTypeUnSelectedOnPurpose] =
+    useState(false);
 
   // Store to access DTR List
-  const responseData = useSelector((state) => state.UtilityMDASAssetListReducer)
-
+  const responseData = useSelector(
+    (state) => state.utilityMDASAssetList.responseData
+  );
   // DLMS and TAP Command List
-  const responseDLSMCommandList = useSelector((state) => state.UtilityMDASDlmsCommandReducer)
-  const repsonseTAPCommandList = useSelector((state) => state.UtilityMDASTapCommandReducer)
+  const responseDLSMCommandList = useSelector(
+    (state) => state.utilityMDASDlmsCommand
+  );
+  // const repsonseTAPCommandList = useSelector((state) => state.UtilityMDASTapCommandReducer)
 
   // console.log('DLMS Command List ....')
   // console.log(responseDLSMCommandList.responseData)
 
   // PSS,DTR and Feeder Asset List
-  const responseAssetList = useSelector((state) => state.UtilityMDASAssetListReducer.responseData)
+  const responseAssetList = useSelector(
+    (state) => state.utilityMDASAssetList.responseData
+  );
 
   // Toggle to display search meter serial number or dtr selection drop down
-  const [toggleSearch, setToggleSearch] = useState(null)
+  const [toggleSearch, setToggleSearch] = useState(null);
 
-  if (props.filterAppliedParams && "asset_type" in props.filterAppliedParams) {
+  if (props.filterAppliedParams && 'asset_type' in props.filterAppliedParams) {
     if (toggleSearch === null && !assetUnSelectedOnPurpose) {
-      if (props.filterAppliedParams.asset_type === "dtr") {
-        setToggleSearch(false)
-      } else if (props.filterAppliedParams.asset_type === "meter") {
-        setToggleSearch(true)
+      if (props.filterAppliedParams.asset_type === 'dtr') {
+        setToggleSearch(false);
+      } else if (props.filterAppliedParams.asset_type === 'meter') {
+        setToggleSearch(true);
       }
     }
   }
 
   // Asset Type Selected
-  const [selected, setSelected] = useState(false)
+  const [selected, setSelected] = useState(false);
   // const [props.selectedAssetType, setSelectedAssetType] = useState('dtr')
 
   // console.log(props.selectedAssetType)
-  if (props.filterAppliedParams && "asset_type" in props.filterAppliedParams && selected) {
+  if (
+    props.filterAppliedParams &&
+    'asset_type' in props.filterAppliedParams &&
+    selected
+  ) {
     // console.log(props.filterAppliedParams)
     if (props.filterAppliedParams.asset_type !== props.selectedAssetType) {
-      props.setSelectedAssetType(props.filterAppliedParams.asset_type)
+      props.setSelectedAssetType(props.filterAppliedParams.asset_type);
       // setSelected(!selected)
     }
   }
@@ -56,17 +79,17 @@ const FilterForm = (props) => {
   // console.log(props.selectedAssetType)
 
   // Selected Asset Item List
-  const [selectedAssetNameList, setSelectedAssetNameList] = useState([])
+  const [selectedAssetNameList, setSelectedAssetNameList] = useState([]);
   // console.log(props.filterAppliedParams)
   // Asset Name
-  const [assetName, setAssetName] = useState(null)
-  if (props.filterAppliedParams && "asset_type" in props.filterAppliedParams) {
+  const [assetName, setAssetName] = useState(null);
+  if (props.filterAppliedParams && 'asset_type' in props.filterAppliedParams) {
     if (assetName === null && !assetUnSelectedOnPurpose) {
-      if ("site_id" in props.filterAppliedParams) {
-        setAssetName(props.filterAppliedParams.site_id)
+      if ('site_id' in props.filterAppliedParams) {
+        setAssetName(props.filterAppliedParams.site_id);
         // setCheck(props.filterAppliedParams.site_id )
-      } else if ("meter" in props.filterAppliedParams) {
-        setAssetName(props.filterAppliedParams.meter)
+      } else if ('meter' in props.filterAppliedParams) {
+        setAssetName(props.filterAppliedParams.meter);
       }
     }
 
@@ -78,10 +101,10 @@ const FilterForm = (props) => {
   // setProtocol(props.protocol)
 
   // Command Selected
-  const [selectedCommandName, setSelectedCommandName] = useState(null)
-  if (props.filterAppliedParams && "command" in props.filterAppliedParams) {
+  const [selectedCommandName, setSelectedCommandName] = useState(null);
+  if (props.filterAppliedParams && 'command' in props.filterAppliedParams) {
     if (selectedCommandName === null && !commandNameUnSelectedOnPurpose) {
-      setSelectedCommandName(props.filterAppliedParams.command)
+      setSelectedCommandName(props.filterAppliedParams.command);
     }
   }
 
@@ -89,98 +112,103 @@ const FilterForm = (props) => {
   // console.log(selectedCommandName)
 
   // Local State Management for command status selected
-  const [commandStatus, setCommandStatus] = useState(null)
-  if (props.filterAppliedParams && "execution_status" in props.filterAppliedParams) {
+  const [commandStatus, setCommandStatus] = useState(null);
+  if (
+    props.filterAppliedParams &&
+    'execution_status' in props.filterAppliedParams
+  ) {
     if (commandStatus === null && !commandStatusUnSelectedOnPurpose) {
-      setCommandStatus(props.filterAppliedParams.execution_status)
+      setCommandStatus(props.filterAppliedParams.execution_status);
     }
   }
 
   // Local State Management for Supply Type Selection
-  const [supplyType, setSupplyType] = useState(null)
-  if (props.filterAppliedParams && "meter_type" in props.filterAppliedParams) {
+  const [supplyType, setSupplyType] = useState(null);
+  if (props.filterAppliedParams && 'meter_type' in props.filterAppliedParams) {
     if (supplyType === null && !supplyTypeUnSelectedOnPurpose) {
-      setSupplyType(props.filterAppliedParams.meter_type)
+      setSupplyType(props.filterAppliedParams.meter_type);
     }
   }
 
   // Local State Management for Communication Protocol
-  const [communicationProtocol, setCommunicationProtocol] = useState(undefined)
+  const [communicationProtocol, setCommunicationProtocol] = useState(undefined);
 
   // populate based on protocol selected
-  const [commandList, setCommandList] = useState([])
+  const [commandList, setCommandList] = useState([]);
 
   // populated based on protocol selected
-  const [commandExecutionStatusList, setCommandExecutionStatusList] = useState([])
+  const [commandExecutionStatusList, setCommandExecutionStatusList] = useState(
+    []
+  );
 
   // Command Status DLMS
   const execution_status_dlms = [
     {
-      value: "INITIATE",
-      label: "INITIATE"
+      value: 'INITIATE',
+      label: 'INITIATE',
     },
     {
-      value: "IN_QUEUE",
-      label: "IN_QUEUE"
+      value: 'IN_QUEUE',
+      label: 'IN_QUEUE',
     },
     {
-      value: "IN_PROGRESS",
-      label: "IN_PROGRESS"
+      value: 'IN_PROGRESS',
+      label: 'IN_PROGRESS',
     },
     {
-      value: "SUCCESS",
-      label: "SUCCESS"
+      value: 'SUCCESS',
+      label: 'SUCCESS',
     },
     {
-      value: "FAILED",
-      label: "FAILED"
-    }
-  ]
+      value: 'FAILED',
+      label: 'FAILED',
+    },
+  ];
 
   // Command Status for TAP
   const execution_status_tap = [
     {
-      value: "EXECUTED",
-      label: "EXECUTED"
+      value: 'EXECUTED',
+      label: 'EXECUTED',
     },
     {
-      value: "TIMEOUT",
-      label: "TIMEOUT"
+      value: 'TIMEOUT',
+      label: 'TIMEOUT',
     },
     {
-      value: "PROCESSING",
-      label: "PROCESSING"
-    }
-  ]
+      value: 'PROCESSING',
+      label: 'PROCESSING',
+    },
+  ];
 
   // Meter Type
   const meter_type = [
-    { value: "1-Ph", label: "1-Ph" },
-    { value: "3-Ph", label: "3-Ph" }
-  ]
+    { value: '1-Ph', label: '1-Ph' },
+    { value: '3-Ph', label: '3-Ph' },
+  ];
 
   // Communication Protocol
   const communication_protocol = [
     {
-      value: "MQTT",
-      label: "MQTT"
+      value: 'MQTT',
+      label: 'MQTT',
     },
     {
-      value: "TCP",
-      label: "TCP"
-    }
-  ]
+      value: 'TCP',
+      label: 'TCP',
+    },
+  ];
 
   // Fetch All PSS List
-  let pss_list = []
+  let pss_list = [];
   if (responseAssetList) {
-    pss_list = responseAssetList.pss_list
+    pss_list = responseAssetList.pss_list;
   }
 
   // Fetch All Feeder List
-  let feeder_list = []
+  let feeder_list = [];
   if (responseAssetList) {
-    feeder_list = responseAssetList.feeder_list
+    feeder_list = responseAssetList.feeder_list;
   }
 
   // Fetch All DTR List
@@ -190,9 +218,9 @@ const FilterForm = (props) => {
   // }
 
   // Updated Code to fetch and inflate dtr list
-  let dtr_list = []
+  let dtr_list = [];
   if (responseData) {
-    dtr_list = responseData.responseData.dtr_list
+    dtr_list = responseData.dtr_list;
   }
 
   // Asset Name Selected
@@ -201,75 +229,76 @@ const FilterForm = (props) => {
     // console.log(selection)
 
     if (selection) {
-      setAssetName(selection["value"])
+      setAssetName(selection['value']);
     } else {
-      setAssetName(null)
-      setAssetUnSelectedOnPurpose(true)
+      setAssetName(null);
+      setAssetUnSelectedOnPurpose(true);
       // props.AppliedFilterparams(undefined, true)
     }
-  }
+  };
 
   // populate Asset List based on asset type selected
   useEffect(() => {
-    const asset_list = []
-    if (props.selectedAssetType === "pss") {
+    const asset_list = [];
+    if (props.selectedAssetType === 'pss') {
       for (const asset of pss_list) {
-        const temp = {}
-        temp["value"] = asset["pss_id"]
-        temp["label"] = asset["pss_name"]
-        temp["isFixed"] = "true"
-        asset_list.push(temp)
+        const temp = {};
+        temp['value'] = asset['pss_id'];
+        temp['label'] = asset['pss_name'];
+        temp['isFixed'] = 'true';
+        asset_list.push(temp);
       }
-      setSelectedAssetNameList(asset_list)
-    } else if (props.selectedAssetType === "feeder") {
+      setSelectedAssetNameList(asset_list);
+    } else if (props.selectedAssetType === 'feeder') {
       for (const asset of feeder_list) {
-        const temp = {}
-        temp["value"] = asset["feeder_id"]
-        temp["label"] = asset["feeder_name"]
-        temp["isFixed"] = "true"
-        asset_list.push(temp)
+        const temp = {};
+        temp['value'] = asset['feeder_id'];
+        temp['label'] = asset['feeder_name'];
+        temp['isFixed'] = 'true';
+        asset_list.push(temp);
       }
-      setSelectedAssetNameList(asset_list)
-    } else if (props.selectedAssetType === "dtr") {
+      setSelectedAssetNameList(asset_list);
+    } else if (props.selectedAssetType === 'dtr') {
       for (const asset of dtr_list) {
-        const temp = {}
+        const temp = {};
         // temp['value'] = asset['dtr_id']
         // temp['label'] = asset['dtr_name']
 
         // Updated Code
-        temp["value"] = asset["dtr_id"]
-        temp["label"] = asset["dtr_name"]
+        temp['value'] = asset['dtr_id'];
+        temp['label'] = asset['dtr_name'];
 
-        temp["isFixed"] = "true"
-        asset_list.push(temp)
+        temp['isFixed'] = 'true';
+        asset_list.push(temp);
       }
-      setSelectedAssetNameList(asset_list)
+      setSelectedAssetNameList(asset_list);
     }
-  }, [props.selectedAssetType])
+  }, [props.selectedAssetType]);
 
   // populate command list based on protocol Selected
   useEffect(() => {
     if (props.protocol) {
-      if (props.protocol === "dlms") {
+      if (props.protocol === 'dlms') {
         if (responseDLSMCommandList.responseData) {
           if (responseDLSMCommandList.responseData.length > 0) {
-            setCommandList(responseDLSMCommandList.responseData)
-            setCommandExecutionStatusList(execution_status_dlms)
-          }
-        }
-      } else if (props.protocol === "tap") {
-        if (repsonseTAPCommandList.responseData) {
-          if (repsonseTAPCommandList.responseData.length > 0) {
-            setCommandList(repsonseTAPCommandList.responseData)
-            setCommandExecutionStatusList(execution_status_tap)
+            setCommandList(responseDLSMCommandList.responseData);
+            setCommandExecutionStatusList(execution_status_dlms);
           }
         }
       }
+      // else if (props.protocol === 'tap') {
+      //   if (repsonseTAPCommandList.responseData) {
+      //     if (repsonseTAPCommandList.responseData.length > 0) {
+      //       setCommandList(repsonseTAPCommandList.responseData);
+      //       setCommandExecutionStatusList(execution_status_tap);
+      //     }
+      //   }
+      // }
     } else {
-      setCommandList([])
-      setCommandExecutionStatusList([])
+      setCommandList([]);
+      setCommandExecutionStatusList([]);
     }
-  }, [props.protocol])
+  }, [props.protocol]);
 
   // Command Selected
   const commandSelected = (selection) => {
@@ -277,61 +306,61 @@ const FilterForm = (props) => {
     // console.log()
 
     if (selection) {
-      setSelectedCommandName(selection["value"])
+      setSelectedCommandName(selection['value']);
     } else {
-      setCommandNameUnSelectedOnPurpose(true)
-      setSelectedCommandName(null)
-      setCommandStatus(null)
-      setSupplyType(null)
-      setAssetName(null)
+      setCommandNameUnSelectedOnPurpose(true);
+      setSelectedCommandName(null);
+      setCommandStatus(null);
+      setSupplyType(null);
+      setAssetName(null);
     }
-  }
+  };
 
   // Command Status Selected
   const commandStatusSelected = (selection) => {
     if (selection) {
-      setCommandStatus(selection["value"])
+      setCommandStatus(selection['value']);
     } else {
-      setCommandStatusUnSelectedOnPurpose(true)
-      setCommandStatus(null)
-      setSupplyType(null)
-      setAssetName(null)
+      setCommandStatusUnSelectedOnPurpose(true);
+      setCommandStatus(null);
+      setSupplyType(null);
+      setAssetName(null);
     }
-  }
+  };
 
   // Supply Type Selected
   const supplyTypeSelected = (selection) => {
     if (selection) {
-      setSupplyType(selection["value"])
+      setSupplyType(selection['value']);
     } else {
-      setSupplyTypeUnSelectedOnPurpose(true)
-      setSupplyType(null)
+      setSupplyTypeUnSelectedOnPurpose(true);
+      setSupplyType(null);
     }
-  }
+  };
 
   // Communication Protocol Selected
   const communicationProtocolSelected = (selection) => {
     if (selection) {
-      setCommunicationProtocol(selection["value"])
+      setCommunicationProtocol(selection['value']);
     } else {
-      setAssetUnSelectedOnPurpose(true)
-      setCommunicationProtocol(undefined)
+      setAssetUnSelectedOnPurpose(true);
+      setCommunicationProtocol(undefined);
     }
-  }
+  };
 
   const handleChange = (event) => {
     if (event.target.value) {
-      setAssetName(event.target.value)
+      setAssetName(event.target.value);
     } else {
-      setAssetName(null)
+      setAssetName(null);
     }
-  }
+  };
 
   // On Filter Apply Button clicked
   const onApplyButtonClicked = () => {
-    props.handleFilter()
+    props.handleFilter();
 
-    const params = {}
+    const params = {};
 
     // console.log('Selected Asset Type ....')
     // console.log(props.selectedAssetType)
@@ -340,119 +369,122 @@ const FilterForm = (props) => {
     // console.log(assetName)
 
     if (props.selectedAssetType) {
-      if (props.selectedAssetType === "pss") {
+      if (props.selectedAssetType === 'pss') {
         if (assetName) {
-          params["pss_id"] = assetName
-          params["asset_type"] = "pss"
+          params['pss_id'] = assetName;
+          params['asset_type'] = 'pss';
         }
-      } else if (props.selectedAssetType === "feeder") {
+      } else if (props.selectedAssetType === 'feeder') {
         if (assetName) {
-          params["feeder_id"] = assetName
-          params["asset_type"] = "feeder"
+          params['feeder_id'] = assetName;
+          params['asset_type'] = 'feeder';
         }
-      } else if (props.selectedAssetType === "dtr") {
+      } else if (props.selectedAssetType === 'dtr') {
         if (assetName) {
-          params["site_id"] = assetName
-          params["asset_type"] = "dtr"
+          params['site_id'] = assetName;
+          params['asset_type'] = 'dtr';
         }
-      } else if (props.selectedAssetType === "meter") {
+      } else if (props.selectedAssetType === 'meter') {
         if (assetName) {
-          params["meter"] = assetName
-          params["asset_type"] = "meter"
+          params['meter'] = assetName;
+          params['asset_type'] = 'meter';
         }
       }
     }
 
     if (selectedCommandName) {
-      params["command"] = selectedCommandName
+      params['command'] = selectedCommandName;
     }
 
     if (commandStatus) {
-      params["execution_status"] = commandStatus
+      params['execution_status'] = commandStatus;
     }
 
     if (supplyType) {
-      params["meter_type"] = supplyType
+      params['meter_type'] = supplyType;
     }
 
     if (communicationProtocol) {
-      params["communication_protocol"] = communicationProtocol
+      params['communication_protocol'] = communicationProtocol;
     }
 
     if (!Object.values(params).some((v) => v)) {
       // Since No Filter params selected reset command History
-      props.AppliedFilterparams(undefined, true)
+      props.AppliedFilterparams(undefined, true);
     } else {
-      props.AppliedFilterparams(params, false)
+      props.AppliedFilterparams(params, false);
     }
-  }
+  };
 
   const onResetButtonClicked = () => {
-    props.handleFilter()
-    props.AppliedFilterparams(undefined, true)
-  }
+    props.handleFilter();
+    props.AppliedFilterparams(undefined, true);
+  };
 
   // Dummy variable for commAND STATUS
 
   // Handl default value for command status
-  const command_status = {}
-  if (props.filterAppliedParams && "execution_status" in props.filterAppliedParams) {
-    command_status["defaultValue"] = {
+  const command_status = {};
+  if (
+    props.filterAppliedParams &&
+    'execution_status' in props.filterAppliedParams
+  ) {
+    command_status['defaultValue'] = {
       value: props.filterAppliedParams.execution_status,
-      label: props.filterAppliedParams.execution_status
-    }
+      label: props.filterAppliedParams.execution_status,
+    };
   }
 
   // Handle default value for site id
-  const select_site_id = {}
-  if (props.filterAppliedParams && "site_id" in props.filterAppliedParams) {
-    select_site_id["defaultValue"] = {
+  const select_site_id = {};
+  if (props.filterAppliedParams && 'site_id' in props.filterAppliedParams) {
+    select_site_id['defaultValue'] = {
       value: props.filterAppliedParams.site_id,
-      label: props.filterAppliedParams.site_id
-    }
+      label: props.filterAppliedParams.site_id,
+    };
   }
 
   // Handle default value for meter serial number
-  const select_meter = {}
-  if (props.filterAppliedParams && "meter" in props.filterAppliedParams) {
-    select_meter["defaultValue"] = props.filterAppliedParams.meter
+  const select_meter = {};
+  if (props.filterAppliedParams && 'meter' in props.filterAppliedParams) {
+    select_meter['defaultValue'] = props.filterAppliedParams.meter;
   }
 
   // Handle default value for command
-  const select_command = {}
-  if (props.filterAppliedParams && "command" in props.filterAppliedParams) {
-    select_command["defaultValue"] = {
+  const select_command = {};
+  if (props.filterAppliedParams && 'command' in props.filterAppliedParams) {
+    select_command['defaultValue'] = {
       value: props.filterAppliedParams.command,
-      label: props.filterAppliedParams.command
-    }
+      label: props.filterAppliedParams.command,
+    };
   }
 
   // Asset Type Selected
   const assetTypeSelected = (_toggleSearch, selection) => {
     if (selection) {
-      setToggleSearch(_toggleSearch)
-      props.setSelectedAssetType(selection)
-      setAssetName("")
+      setToggleSearch(_toggleSearch);
+      props.setSelectedAssetType(selection);
+      setAssetName('');
     } else {
-      props.setSelectedAssetType("")
+      props.setSelectedAssetType('');
       // setSelected(true)
     }
-  }
+  };
 
   // Handle default value for Supply Type/ Meter Type
-  const select_meter_type = {}
-  if (props.filterAppliedParams && "meter_type" in props.filterAppliedParams) {
-    select_meter_type["defaultValue"] = {
+  const select_meter_type = {};
+  if (props.filterAppliedParams && 'meter_type' in props.filterAppliedParams) {
+    select_meter_type['defaultValue'] = {
       value: props.filterAppliedParams.meter_type,
-      label: props.filterAppliedParams.meter_type
-    }
+      label: props.filterAppliedParams.meter_type,
+    };
   }
 
   return (
-    <Row className='mb-1'>
+    <Row className="mb-1">
       {/* Radio Button Group to select asset type */}
-      <Col className='mb-2'>
-        <div className='demo-inline-spacing'>
+      <Col className="mb-2">
+        <div className="demo-inline-spacing">
           {/* <FormGroup check inline className='mt-0'>
             <Label check onClick={() => assetTypeSelected(false, 'pss')}>
               <Input type='radio' name='asset_type' /> <span style={{ fontSize: '15px' }}>PSS</span>
@@ -463,16 +495,24 @@ const FilterForm = (props) => {
               <Input type='radio' name='asset_type' /> <span style={{ fontSize: '15px' }}>Feeder</span>
             </Label>
           </FormGroup> */}
-          <FormGroup inline className='mt-0 ml-2'>
-            <Label onClick={() => assetTypeSelected(false, "dtr")}>
-              <Input type='radio' name='asset_type' checked={props.selectedAssetType === "dtr"} />{" "}
-              <span style={{ fontSize: "15px" }}>DTR</span>
+          <FormGroup inline className="mt-0 ml-2">
+            <Label onClick={() => assetTypeSelected(false, 'dtr')}>
+              <Input
+                type="radio"
+                name="asset_type"
+                checked={props.selectedAssetType === 'dtr'}
+              />{' '}
+              <span style={{ fontSize: '15px' }}>DTR</span>
             </Label>
           </FormGroup>
-          <FormGroup inline className='mt-0 ml-1'>
-            <Label onClick={() => assetTypeSelected(true, "meter")}>
-              <Input type='radio' name='asset_type' checked={props.selectedAssetType === "meter"} />{" "}
-              <span style={{ fontSize: "15px" }}>Meter</span>
+          <FormGroup inline className="mt-0 ml-1">
+            <Label onClick={() => assetTypeSelected(true, 'meter')}>
+              <Input
+                type="radio"
+                name="asset_type"
+                checked={props.selectedAssetType === 'meter'}
+              />{' '}
+              <span style={{ fontSize: '15px' }}>Meter</span>
             </Label>
           </FormGroup>
         </div>
@@ -480,17 +520,17 @@ const FilterForm = (props) => {
 
       {/* Asset Selection dropdown/Search based on asset selection */}
       {toggleSearch ? (
-        <Col sm='12' className='mb-2'>
+        <Col sm="12" className="mb-2">
           <Input
-            id='textInput'
-            type='text'
+            id="textInput"
+            type="text"
             {...select_meter}
             onChange={handleChange}
-            placeholder='Search meter serial/Consumer ID/Sc No ...'
+            placeholder="Search meter serial/Consumer ID/Sc No ..."
           />
         </Col>
       ) : (
-        <Col sm='12' className='mb-2'>
+        <Col sm="12" className="mb-2">
           <Select
             isClearable={true}
             {...select_site_id}
@@ -498,15 +538,15 @@ const FilterForm = (props) => {
             onChange={assetNameSelected}
             isSearchable
             options={selectedAssetNameList}
-            className='react-select border-secondary rounded'
-            classNamePrefix='select'
-            placeholder='Select Asset ...'
+            className="react-select border-secondary rounded"
+            classNamePrefix="select"
+            placeholder="Select Asset ..."
           />
         </Col>
       )}
 
       {/* Select Command Name */}
-      <Col sm='12' className='mb-2'>
+      <Col sm="12" className="mb-2">
         <Select
           isClearable={true}
           closeMenuOnSelect={true}
@@ -514,14 +554,14 @@ const FilterForm = (props) => {
           {...select_command}
           isSearchable
           options={commandList}
-          className='react-select border-secondary rounded'
-          classNamePrefix='select'
-          placeholder='Select command name ...'
+          className="react-select border-secondary rounded"
+          classNamePrefix="select"
+          placeholder="Select command name ..."
         />
       </Col>
 
       {/* Select Command Status */}
-      <Col sm='12' className='mb-2'>
+      <Col sm="12" className="mb-2">
         <Select
           isClearable={true}
           closeMenuOnSelect={true}
@@ -529,9 +569,9 @@ const FilterForm = (props) => {
           onChange={commandStatusSelected}
           {...command_status}
           options={commandExecutionStatusList}
-          className='react-select border-secondary rounded'
-          classNamePrefix='select'
-          placeholder='Select command status ...'
+          className="react-select border-secondary rounded"
+          classNamePrefix="select"
+          placeholder="Select command status ..."
         />
       </Col>
 
@@ -565,20 +605,28 @@ const FilterForm = (props) => {
       </Col> */}
 
       {/* Apply Button */}
-      <Col sm='6' className='mb-2'>
-        <Button.Ripple className='btn-block' color='primary' onClick={onApplyButtonClicked}>
+      <Col sm="6" className="mb-2">
+        <Button
+          className="btn-block"
+          color="primary"
+          onClick={onApplyButtonClicked}
+        >
           Apply
-        </Button.Ripple>
+        </Button>
       </Col>
 
       {/* Reset Button */}
-      <Col sm='6' className='mb-2'>
-        <Button.Ripple className='btn-block' color='primary' onClick={onResetButtonClicked}>
+      <Col sm="6" className="mb-2">
+        <Button
+          className="btn-block"
+          color="primary"
+          onClick={onResetButtonClicked}
+        >
           Reset
-        </Button.Ripple>
+        </Button>
       </Col>
     </Row>
-  )
-}
+  );
+};
 
-export default FilterForm
+export default FilterForm;

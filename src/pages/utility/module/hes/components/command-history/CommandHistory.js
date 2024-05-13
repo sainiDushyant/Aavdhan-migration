@@ -30,41 +30,17 @@ import moment from 'moment-timezone';
 
 // import { DLMSCommandMapping } from '../util'
 import {
-  useLazyGetMdasDlmsCommandHistoryQuery,
-  useLazyGetMdasTapCommandHistoryQuery,
+  useGetMdasDlmsCommandHistoryQuery,
+  useGetMdasTapCommandHistoryQuery,
   useLazyGetMdasDlmsHistoryDataQuery,
 } from '../../../../../../api/command-historySlice';
+import FilterForm from './filterForm';
 
 const CommandHistory = (props) => {
-  const responseData = useSelector(
-    (state) => state.utilityMDASAssetList.responseData
-  );
-  console.log(responseData, 'repsonseData');
-  const [getDlmsCommandHistory, dlmsCommandHistoryResponse] =
-    useLazyGetMdasDlmsCommandHistoryQuery();
-  const [getTapCommandHistory, tapCommandHistoryResponse] =
-    useLazyGetMdasTapCommandHistoryQuery();
   const [getDlmsHistoryData, dlmsHistoryDataResponse] =
     useLazyGetMdasDlmsHistoryDataQuery();
-  const loading =
-    dlmsCommandHistoryResponse.isFetching ||
-    tapCommandHistoryResponse.isFetching;
-  const hasError =
-    dlmsCommandHistoryResponse.isError || tapCommandHistoryResponse.isError; // Logout User
-  const [logout, setLogout] = useState(false);
-  useEffect(() => {
-    if (logout) {
-      console.log('perform logout logic');
-    }
-  }, [logout]);
 
-  // const responseData = useSelector(state => state.UtilityMdmsFlowReducer)
-  //   const responseData = useSelector(
-  //     (state) => state.UtilityMDASAssetListReducer
-  //   );
-  //   const currentSelectedModuleStatus = useSelector(
-  //     (state) => state.CurrentSelectedModuleStatusReducer.responseData
-  //   );
+  const [logout, setLogout] = useState(false);
 
   const location = useLocation();
   const projectName =
@@ -85,9 +61,7 @@ const CommandHistory = (props) => {
   const [tableName, setTableName] = useState('Command History');
   const [tableNameUpdated, setTableNameUpdated] = useState(false);
 
-  const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const [retry, setRetry] = useState(true);
   const [selectedAssetType, setSelectedAssetType] = useState('dtr');
   const [rowExecutionStatus, setRowExecutionStatus] = useState([]);
 
@@ -106,8 +80,83 @@ const CommandHistory = (props) => {
 
   const currentTime = moment().tz('Asia/Kolkata');
 
-  // Format the time
-  // const istTime = currentTime.format('YYYY-MM-DD HH:mm:ss');
+  useEffect(() => {
+    if (logout) {
+      console.log('perform logout logic');
+    }
+  }, [logout]);
+
+  const getParams = () => {
+    let params = {};
+    if (filterAppliedParams) {
+      if ('site_id' in filterAppliedParams) {
+        params = {
+          page: currentPage,
+          page_size: 10,
+          project: projectName,
+          ...filterAppliedParams, // Add Filter params
+        };
+      } else {
+        const dtr_list = '';
+        // for (let i = 0; i < responseData.responseData.dtr_list.length; i++) {
+        //   dtr_list += `${responseData.responseData.dtr_list[i]['dtr_id']},`
+        // }
+        params = {
+          page: currentPage,
+          page_size: 10,
+          project: projectName,
+          site_id: dtr_list,
+          ...filterAppliedParams, // Add Filter params
+        };
+      }
+    } else {
+      const dtr_list = '';
+      // for (let i = 0; i < responseData.responseData.dtr_list.length; i++) {
+      //   dtr_list += `${responseData.responseData.dtr_list[i]['dtr_id']},`
+      // }
+      params = {
+        page: currentPage,
+        page_size: 10,
+        project: projectName,
+        site_id: dtr_list,
+        asset_type: 'dtr',
+      };
+    }
+    if (props.protocol === 'dlms') {
+      return params;
+    } else if (props.protocol === 'tap') {
+      // Add Command Name for TAP Protocol
+      params['command'] =
+        'turn_relay_on,turn_relay_off,relay_manual_control,relay_auto_control';
+
+      return params;
+    }
+  };
+
+  //conditional fetching based on protocol
+
+  const getDlmsCommandHistoryQuery =
+    props.protocol === 'dlms' ? useGetMdasDlmsCommandHistoryQuery : null;
+  const getTapCommandHistoryQuery =
+    props.protocol === 'tap' ? useGetMdasTapCommandHistoryQuery : null;
+
+  const dlmsCommandHistoryQuery =
+    getDlmsCommandHistoryQuery && getDlmsCommandHistoryQuery(getParams());
+  const tapCommandHistoryQuery =
+    getTapCommandHistoryQuery && getTapCommandHistoryQuery(getParams());
+
+  const dlmsCommandHistoryResponse = dlmsCommandHistoryQuery?.data;
+  const dlmsCommandHistoryLoading = dlmsCommandHistoryQuery?.isLoading;
+  const dlmsCommandHistoryError = dlmsCommandHistoryQuery?.isError;
+  const fetchCommandHistory = dlmsCommandHistoryQuery?.refetch;
+
+  const tapCommandHistoryResponse = tapCommandHistoryQuery?.data;
+  const tapCommandHistoryLoading = tapCommandHistoryQuery?.isLoading;
+  const tapCommandHistoryError = tapCommandHistoryQuery?.isError;
+  const fetchTapCommandHistory = tapCommandHistoryQuery?.refetch;
+
+  const loading = dlmsCommandHistoryLoading || tapCommandHistoryLoading;
+  const hasError = dlmsCommandHistoryError || tapCommandHistoryError;
 
   const handleReportDownloadModal = () => {
     setShowReportDownloadModal(!showReportDownloadModal);
@@ -144,156 +193,87 @@ const CommandHistory = (props) => {
   //   }
   // }
 
-  //   const AppliedFilterparams = (params, resetcalled) => {
-  //     // console.log('Filtered Params Dictionary ...')
-  //     // console.log(params)
-
-  //     if (resetcalled) {
-  //       setFilterAppliedParams(params);
-  //       // setReloadCommandHistory(true)
-  //       setRetry(true);
-  //       props.refreshCommandHistory();
-  //       setCurrentPage(1);
-  //       setResponse([]);
-  //       setTotalCount(0);
-  //       setRetry(true);
-  //       props.refreshCommandHistory();
-  //       setCurrentPage(1);
-  //       setResponse([]);
-  //       setTotalCount(0);
-  //     } else {
-  //       if (params) {
-  //         setFilterAppliedParams(params);
-  //         setRetry(true);
-  //         // setReloadCommandHistory(true)
-  //         props.refreshCommandHistory();
-  //         setRetry(true);
-  //         setCurrentPage(1);
-  //         setResponse([]);
-  //         setTotalCount(0);
-  //       }
-  //     }
-  //   };
-
-  const fetchCommandHistory = () => {
-    {
-      let params = {};
-      if (filterAppliedParams) {
-        if ('site_id' in filterAppliedParams) {
-          params = {
-            page: currentPage,
-            page_size: 10,
-            project: projectName,
-            ...filterAppliedParams, //Add Filter params
-          };
-        } else {
-          const dtr_list = '';
-          // for (let i = 0; i < responseData.responseData.dtr_list.length; i++) {
-          //   dtr_list += `${responseData.responseData.dtr_list[i]['dtr_id']},`
-          // }
-          params = {
-            page: currentPage,
-            page_size: 10,
-            project: projectName,
-            site_id: dtr_list,
-            ...filterAppliedParams, //Add Filter params
-          };
-        }
-      } else {
-        const dtr_list = '';
-        // for (let i = 0; i < responseData.responseData.dtr_list.length; i++) {
-        //   dtr_list += `${responseData.responseData.dtr_list[i]['dtr_id']},`
-        // }
-        params = {
-          page: currentPage,
-          page_size: 10,
-          project: projectName,
-          site_id: dtr_list,
-          asset_type: 'dtr',
-        };
-      }
-
-      params = props.params ? props.params : params;
-
+  const AppliedFilterparams = (params, resetcalled) => {
+    if (resetcalled) {
+      setFilterAppliedParams(params);
+      setCurrentPage(1);
+      setResponse([]);
+      setTotalCount(0);
       if (props.protocol === 'dlms') {
-        getDlmsCommandHistory(params);
-      } else if (props.protocol === 'tap') {
-        // Add Command Name for TAP Protocol
-        params['command'] =
-          'turn_relay_on,turn_relay_off,relay_manual_control,relay_auto_control';
-
-        getTapCommandHistory(params);
+        fetchCommandHistory();
+      } else {
+        fetchTapCommandHistory();
       }
+    } else if (params) {
+      setFilterAppliedParams(params);
+      setCurrentPage(1);
+      setResponse([]);
+      setTotalCount(0);
     }
   };
-  useEffect(() => {
-    fetchCommandHistory();
-  }, [currentPage]);
 
   useEffect(() => {
     if (dlmsCommandHistoryResponse) {
-      let statusCode = dlmsCommandHistoryResponse?.data?.responseCode;
+      let statusCode = dlmsCommandHistoryResponse?.responseCode;
       if (statusCode === 401 || statusCode === 403) {
         setLogout(true);
       } else if (statusCode === 200 || statusCode === 204) {
         try {
-          dlmsCommandHistoryResponse?.data?.data?.result?.results?.map(
-            (item) => {
-              // Convert update_time string to a moment object
-              const updateMoment = moment(
-                item.update_time,
-                'YYYY-MM-DD HH:mm:ss'
-              ).tz('Asia/Kolkata');
+          dlmsCommandHistoryResponse?.data?.result?.results?.map((item) => {
+            // Convert update_time string to a moment object
+            const updateMoment = moment(
+              item.update_time,
+              'YYYY-MM-DD HH:mm:ss'
+            ).tz('Asia/Kolkata');
 
-              // console.log("Update Time:", updateMoment.format("YYYY-MM-DD HH:mm:ss"))
-              // Check if update_time is greater than the current time
-              // console.log(updateMoment.isAfter(currentTime))
-              if (updateMoment.isAfter(currentTime)) {
-                item.update_time = item.execution_start_time;
-                item.execution_status = 'In Progress';
-              }
-              // if (
-              //   item.command === 'LIVE_VERSION' ||
-              //   item.command === 'BLOCK_LOAD' ||
-              //   item.command === 'DAILY_LOAD' ||
-              //   item.command === 'EVENTS'
-              // ) {
-              //   const randomIndex1 = Math.floor(
-              //     Math.random() * diffTimeSec.length
-              //   );
-              //   const randomIndex2 = Math.floor(
-              //     Math.random() * diffTimeSec.length
-              //   );
-
-              //   if (
-              //     !item.execution_start_time &&
-              //     item.execution_status === 'Success'
-              //   ) {
-              //     item.execution_start_time = moment(item.start_time)
-              //       .add(1, 'second')
-              //       .format('YYYY-MM-DD HH:mm:ss');
-              //     item.update_time = moment(item.execution_start_time)
-              //       .add(diffTimeSec[randomIndex2], 'second')
-              //       .format('YYYY-MM-DD HH:mm:ss');
-              //   } else if (
-              //     item.execution_start_time === item.start_time &&
-              //     item.start_time === item.update_time &&
-              //     item.execution_status === 'Success'
-              //   ) {
-              //     item.execution_start_time = moment(item.start_time)
-              //       .add(1, 'second')
-              //       .format('YYYY-MM-DD HH:mm:ss');
-              //     item.update_time = moment(item.execution_start_time)
-              //       .add(diffTimeSec[randomIndex2], 'second')
-              //       .format('YYYY-MM-DD HH:mm:ss');
-              //   }
-              // }
-              // console.log(item.execution_start_time, item.start_time, item.update_time)
-              return item;
+            // console.log("Update Time:", updateMoment.format("YYYY-MM-DD HH:mm:ss"))
+            // Check if update_time is greater than the current time
+            // console.log(updateMoment.isAfter(currentTime))
+            if (updateMoment.isAfter(currentTime)) {
+              item.update_time = item.execution_start_time;
+              item.execution_status = 'In Progress';
             }
-          );
-          setResponse(dlmsCommandHistoryResponse.data.data.result.results);
-          setTotalCount(dlmsCommandHistoryResponse.data.data.result.count);
+            // if (
+            //   item.command === 'LIVE_VERSION' ||
+            //   item.command === 'BLOCK_LOAD' ||
+            //   item.command === 'DAILY_LOAD' ||
+            //   item.command === 'EVENTS'
+            // ) {
+            //   const randomIndex1 = Math.floor(
+            //     Math.random() * diffTimeSec.length
+            //   );
+            //   const randomIndex2 = Math.floor(
+            //     Math.random() * diffTimeSec.length
+            //   );
+
+            //   if (
+            //     !item.execution_start_time &&
+            //     item.execution_status === 'Success'
+            //   ) {
+            //     item.execution_start_time = moment(item.start_time)
+            //       .add(1, 'second')
+            //       .format('YYYY-MM-DD HH:mm:ss');
+            //     item.update_time = moment(item.execution_start_time)
+            //       .add(diffTimeSec[randomIndex2], 'second')
+            //       .format('YYYY-MM-DD HH:mm:ss');
+            //   } else if (
+            //     item.execution_start_time === item.start_time &&
+            //     item.start_time === item.update_time &&
+            //     item.execution_status === 'Success'
+            //   ) {
+            //     item.execution_start_time = moment(item.start_time)
+            //       .add(1, 'second')
+            //       .format('YYYY-MM-DD HH:mm:ss');
+            //     item.update_time = moment(item.execution_start_time)
+            //       .add(diffTimeSec[randomIndex2], 'second')
+            //       .format('YYYY-MM-DD HH:mm:ss');
+            //   }
+            // }
+            // console.log(item.execution_start_time, item.start_time, item.update_time)
+            return item;
+          });
+          setResponse(dlmsCommandHistoryResponse.data.result.results);
+          setTotalCount(dlmsCommandHistoryResponse.data.result.count);
         } catch (error) {
           setErrorMessage('Something went wrong, please retry');
         }
@@ -868,15 +848,8 @@ const CommandHistory = (props) => {
     );
   };
 
-  const updateCommandHistoryStatus = () => {
-    // console.log('command history api calling ..........')
-    props.refreshCommandHistory();
-    setRetry(true);
-  };
-
   const onNextPageClicked = (page) => {
     setCurrentPage(page + 1);
-    setRetry(true);
   };
 
   // ** Function to handle Modal toggle
@@ -928,7 +901,9 @@ const CommandHistory = (props) => {
   };
 
   const retryAgain = () => {
-    fetchCommandHistory();
+    props.protocol === 'dlms'
+      ? fetchCommandHistory()
+      : fetchTapCommandHistory();
   };
 
   const tapViewDetail = () => {
@@ -1047,7 +1022,7 @@ const CommandHistory = (props) => {
         contentClassName="pt-0"
       >
         <ModalHeader
-          className="mb-3"
+          className="d-flex gap-100 mb-3"
           toggle={handleFilter}
           close={CloseBtn}
           tag="div"
@@ -1055,14 +1030,14 @@ const CommandHistory = (props) => {
           <h4 className="modal-title">Command history - Filter</h4>
         </ModalHeader>
         <ModalBody className="flex-grow-1">
-          {/* <FilterForm
+          <FilterForm
             handleFilter={handleFilter}
             protocol={props.protocol}
             AppliedFilterparams={AppliedFilterparams}
             filterAppliedParams={filterAppliedParams}
             selectedAssetType={selectedAssetType}
             setSelectedAssetType={setSelectedAssetType}
-          /> */}
+          />
         </ModalBody>
       </Modal>
 

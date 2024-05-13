@@ -31,11 +31,7 @@ const LayoutWrapper = ({ children }) => {
             transition: 'width 0.3s ease',
           }}
         >
-          <SideBar
-            collapsed={sidebarCollapsed}
-            toggleSidebar={toggleSidebar}
-            className="d-block"
-          />
+          <SideBar collapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />
         </div>
         <div
           className={`col-md-${sidebarCollapsed ? '11' : '10'} offset-md-${

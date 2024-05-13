@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 const baseUrl = process.env.REACT_APP_BASE_URL;
+const loginUrl = process.env.REACT_APP_LOGIN_URL;
 // Define a service using a base URL and expected endpoints
 export const forgotPasswordApi = createApi({
   reducerPath: 'forgotPassword',
@@ -12,21 +13,21 @@ export const forgotPasswordApi = createApi({
   endpoints: (builder) => ({
     generateOTP: builder.mutation({
       query: (data) => ({
-        url: '/sso/users/otp-generation',
+        url: `${loginUrl}/users/otp-generation`,
         method: 'POST',
         body: { ...data },
       }),
     }),
     verifyOTP: builder.mutation({
       query: (data) => ({
-        url: '/sso/users/otp-verification',
+        url: `${loginUrl}/users/otp-verification`,
         method: 'POST',
         body: { ...data },
       }),
     }),
     changePassword: builder.mutation({
       query: (data) => ({
-        url: 'sso/users/change/password/',
+        url: `${loginUrl}/users/change/password/`,
         method: 'POST',
         body: { ...data },
       }),

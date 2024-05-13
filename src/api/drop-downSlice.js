@@ -2,6 +2,9 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 const baseUrl = process.env.REACT_APP_BASE_URL;
 const token = localStorage.getItem('token');
+const MDASUrl = process.env.REACT_APP_MDAS_URL;
+const MDMSUrl = process.env.REACT_APP_OTHER_MODULES_URL;
+
 // Define a service using a base URL and expected endpoints
 export const dropdownsApi = createApi({
   reducerPath: 'dropdownsApi',
@@ -19,12 +22,12 @@ export const dropdownsApi = createApi({
   endpoints: (builder) => ({
     commandInfoDLMS: builder.query({
       query: () => ({
-        url: 'hes/api/hes/dlms/command-info/',
+        url: `${MDASUrl}/api/hes/dlms/command-info/`,
       }),
     }),
     commandInfoAssets: builder.query({
       query: (params) => ({
-        url: 'mdms/live/api/v1/get/gis/project/data',
+        url: `${MDMSUrl}/api/v1/get/gis/project/data`,
         params: params,
       }),
     }),

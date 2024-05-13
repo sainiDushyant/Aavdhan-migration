@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 const baseUrl = process.env.REACT_APP_BASE_URL;
+const loginUrl = process.env.REACT_APP_LOGIN_URL;
 // Define a service using a base URL and expected endpoints
 export const loginApi = createApi({
   reducerPath: 'loginApi',
@@ -7,7 +8,7 @@ export const loginApi = createApi({
   endpoints: (builder) => ({
     login: builder.mutation({
       query: (loginDetails) => ({
-        url: '/sso/users/auth/login/',
+        url: `${loginUrl}/users/auth/login/`,
         method: 'POST',
         body: { ...loginDetails },
       }),
