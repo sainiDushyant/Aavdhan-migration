@@ -37,6 +37,9 @@ import {
 import FilterForm from './filterForm';
 
 const CommandHistory = (props) => {
+  // const [getTapCommandHistory, tapCommandHistoryResponse] =
+  //   useLazyGetMdasTapCommandHistoryQuery();
+
   const [getDlmsHistoryData, dlmsHistoryDataResponse] =
     useLazyGetMdasDlmsHistoryDataQuery();
 
@@ -133,30 +136,15 @@ const CommandHistory = (props) => {
     }
   };
 
-  //conditional fetching based on protocol
+  const {
+    data: dlmsCommandHistoryResponse,
+    isFetching: dlmsCommandHistoryLoading,
+    isError: dlmsCommandHistoryError,
+    refetch: fetchCommandHistory,
+  } = useGetMdasDlmsCommandHistoryQuery(getParams());
 
-  const getDlmsCommandHistoryQuery =
-    props.protocol === 'dlms' ? useGetMdasDlmsCommandHistoryQuery : null;
-  const getTapCommandHistoryQuery =
-    props.protocol === 'tap' ? useGetMdasTapCommandHistoryQuery : null;
-
-  const dlmsCommandHistoryQuery =
-    getDlmsCommandHistoryQuery && getDlmsCommandHistoryQuery(getParams());
-  const tapCommandHistoryQuery =
-    getTapCommandHistoryQuery && getTapCommandHistoryQuery(getParams());
-
-  const dlmsCommandHistoryResponse = dlmsCommandHistoryQuery?.data;
-  const dlmsCommandHistoryLoading = dlmsCommandHistoryQuery?.isLoading;
-  const dlmsCommandHistoryError = dlmsCommandHistoryQuery?.isError;
-  const fetchCommandHistory = dlmsCommandHistoryQuery?.refetch;
-
-  const tapCommandHistoryResponse = tapCommandHistoryQuery?.data;
-  const tapCommandHistoryLoading = tapCommandHistoryQuery?.isLoading;
-  const tapCommandHistoryError = tapCommandHistoryQuery?.isError;
-  const fetchTapCommandHistory = tapCommandHistoryQuery?.refetch;
-
-  const loading = dlmsCommandHistoryLoading || tapCommandHistoryLoading;
-  const hasError = dlmsCommandHistoryError || tapCommandHistoryError;
+  const loading = dlmsCommandHistoryLoading;
+  const hasError = dlmsCommandHistoryError; // Logout User
 
   const handleReportDownloadModal = () => {
     setShowReportDownloadModal(!showReportDownloadModal);
@@ -199,18 +187,27 @@ const CommandHistory = (props) => {
       setCurrentPage(1);
       setResponse([]);
       setTotalCount(0);
-      if (props.protocol === 'dlms') {
-        fetchCommandHistory();
-      } else {
-        fetchTapCommandHistory();
-      }
-    } else if (params) {
-      setFilterAppliedParams(params);
       setCurrentPage(1);
       setResponse([]);
       setTotalCount(0);
+    } else {
+      if (params) {
+        setFilterAppliedParams(params);
+        setCurrentPage(1);
+        setResponse([]);
+        setTotalCount(0);
+      }
     }
   };
+
+  // const fetchCommandHistory = () => {
+  //   {
+
+  // }
+  // };
+  // useEffect(() => {
+  //   fetchCommandHistory();
+  // }, [currentPage, filterAppliedParams]);
 
   useEffect(() => {
     if (dlmsCommandHistoryResponse) {
@@ -283,22 +280,22 @@ const CommandHistory = (props) => {
     }
   }, [dlmsCommandHistoryResponse]);
 
-  useEffect(() => {
-    if (tapCommandHistoryResponse) {
-      let statusCode = tapCommandHistoryResponse?.data?.responseCode;
-      if (statusCode) {
-        if (statusCode === 401 || statusCode === 403) {
-          setLogout(true);
-        } else if (statusCode === 200 || statusCode === 204) {
-          setResponse(tapCommandHistoryResponse?.data?.data?.result?.results);
-          setTotalCount(tapCommandHistoryResponse?.data?.data?.result?.count);
-          props.doNotRefreshCommandHistory();
-        } else {
-          setErrorMessage('Network Error, please retry');
-        }
-      }
-    }
-  }, [tapCommandHistoryResponse]);
+  // useEffect(() => {
+  //   if (tapCommandHistoryResponse) {
+  //     let statusCode = tapCommandHistoryResponse?.data?.responseCode;
+  //     if (statusCode) {
+  //       if (statusCode === 401 || statusCode === 403) {
+  //         setLogout(true);
+  //       } else if (statusCode === 200 || statusCode === 204) {
+  //         setResponse(tapCommandHistoryResponse?.data?.data?.result?.results);
+  //         setTotalCount(tapCommandHistoryResponse?.data?.data?.result?.count);
+  //         props.doNotRefreshCommandHistory();
+  //       } else {
+  //         setErrorMessage('Network Error, please retry');
+  //       }
+  //     }
+  //   }
+  // }, [tapCommandHistoryResponse]);
 
   // const fetchHistoryDataDetail = async (params) => {
   //   return await useJwt
@@ -901,9 +898,7 @@ const CommandHistory = (props) => {
   };
 
   const retryAgain = () => {
-    props.protocol === 'dlms'
-      ? fetchCommandHistory()
-      : fetchTapCommandHistory();
+    fetchCommandHistory();
   };
 
   const tapViewDetail = () => {
