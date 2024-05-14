@@ -27,7 +27,7 @@ import {
   DropdownItem,
 } from 'reactstrap';
 import { DownloadCSV, DownloadPDF } from './downloadTableData';
-import CardInfo from '@src/views/ui-elements/cards/actions/NoDataCardInfo';
+import CardInfo from '../../components/ui-elements/cards/NoDataCardInfo';
 
 const SimpleDataTablePaginated = (props) => {
   const data = props.tblData;
@@ -35,7 +35,7 @@ const SimpleDataTablePaginated = (props) => {
 
   // ** States
   const [modal, setModal] = useState(false);
-  //   const [currentPage, setCurrentPage] = useState(0)
+  const [currentPage, setCurrentPage] = useState(0);
   const [searchValue, setSearchValue] = useState('');
   const [filteredData, setFilteredData] = useState([]);
   const [downloadTooltipOpen, setDownloadTooltipOpen] = useState(false);

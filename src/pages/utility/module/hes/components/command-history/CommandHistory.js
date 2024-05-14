@@ -23,8 +23,7 @@ import Loader from '../../../../../../components/loader/loader';
 import { caseInsensitiveSort } from '../../../../../../utils';
 
 import CommandRetryConfig from './command-retry-config/commandRetryConfig';
-// import CommandHistoryDataDownloadWrapper from './dataDownloadWrapper/commandHistoryDataDownloadWrapper';
-
+import CommandHistoryDataDownloadWrapper from './commandHistoryDataDownloadWrapper';
 import moment from 'moment-timezone';
 
 // import { DLMSCommandMapping } from '../util'
@@ -930,8 +929,8 @@ const CommandHistory = (props) => {
                 extras={commandRetryConfiguration()}
                 // extras={SlaReport}
                 // showSLAReport={true}
-                // isDownloadModal={props.protocol === 'dlms' ? 'yes' : ''}
-                // handleReportDownloadModal={handleReportDownloadModal}
+                isDownloadModal={props.protocol === 'dlms' ? 'yes' : ''}
+                handleReportDownloadModal={handleReportDownloadModal}
                 // extra_in_center={SlaReport()}
               />
             </div>
@@ -1039,7 +1038,7 @@ const CommandHistory = (props) => {
           <h4 className="modal-title">Download (Command History Data)</h4>
         </ModalHeader>
         <ModalBody className="flex-grow-1">
-          {/* <CommandHistoryDataDownloadWrapper /> */}
+          <CommandHistoryDataDownloadWrapper />
         </ModalBody>
       </Modal>
     </div>
