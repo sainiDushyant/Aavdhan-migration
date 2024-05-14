@@ -22,8 +22,7 @@ import CardInfo from '../../../../../../components/ui-elements/cards/cardInfo';
 import Loader from '../../../../../../components/loader/loader';
 import { caseInsensitiveSort } from '../../../../../../utils';
 
-// import CommandRetryConfig from './commandRetryConfigWrapper/commandRetryConfig';
-
+import CommandRetryConfig from './command-retry-config/commandRetryConfig';
 // import CommandHistoryDataDownloadWrapper from './dataDownloadWrapper/commandHistoryDataDownloadWrapper';
 
 import moment from 'moment-timezone';
@@ -865,17 +864,6 @@ const CommandHistory = (props) => {
     />
   );
 
-  // const scheduler = () => {
-  //   return (
-  //     <Fragment>
-  //       <Layers className='ml-1 float-right mt_9' id='scheduler' size='14' onClick={() => setCenteredSchedulerModal(true)} />
-  //       <Tooltip placement='top' isOpen={schedulerState} target='scheduler' toggle={() => setSchedulerState(!schedulerState)}>
-  //         Scheduled command list !
-  //       </Tooltip>
-  //     </Fragment>
-  //   )
-  // }
-
   const commandRetryConfiguration = () => {
     return (
       <Fragment>
@@ -885,12 +873,7 @@ const CommandHistory = (props) => {
           size="14"
           onClick={() => setCommandRetryConfigModal(true)}
         />
-        <UncontrolledTooltip
-          placement="top"
-          // isOpen={commandRetryConfigModal}
-          target="cmdRetries"
-        >
-          {/* toggle={() => setCommandRetryConfigModal(!commandRetryConfigModal)}> */}
+        <UncontrolledTooltip placement="top" target="cmdRetries">
           Command Retry Configuration
         </UncontrolledTooltip>
       </Fragment>
@@ -944,7 +927,7 @@ const CommandHistory = (props) => {
                 onNextPageClicked={onNextPageClicked}
                 protocolSelected={protocolSelected}
                 protocol={props.protocol}
-                // extras={commandRetryConfiguration()}
+                extras={commandRetryConfiguration()}
                 // extras={SlaReport}
                 // showSLAReport={true}
                 // isDownloadModal={props.protocol === 'dlms' ? 'yes' : ''}
@@ -1005,7 +988,10 @@ const CommandHistory = (props) => {
         >
           Command Retry Configuration
         </ModalHeader>
-        <ModalBody className="p-0">{/* <CommandRetryConfig /> */}</ModalBody>
+        <ModalBody className="p-0">
+          {' '}
+          <CommandRetryConfig />
+        </ModalBody>
       </Modal>
 
       {/* Command filter modal (Protocol 1 & 2) */}

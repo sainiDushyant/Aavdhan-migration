@@ -41,6 +41,21 @@ export const commandHistoryApi = createApi({
         params: params,
       }),
     }),
+    getCommandRetryConfigData: builder.query({
+      query: (params) => ({
+        url: `${MDASUrl}/api/hes/dlms/read-command-retry/`,
+        params: params,
+      }),
+      providesTags: ['CommandRetryConfigData'],
+    }),
+    updateDLMSCommandRetryCommand: builder.mutation({
+      query: (params) => ({
+        url: `${MDASUrl}/api/hes/dlms/update-command-retry/`,
+        method: 'POST',
+        body: params,
+      }),
+      invalidatesTags: ['CommandRetryConfigData'],
+    }),
     keepUnusedDataFor: 300000,
   }),
 });
@@ -52,4 +67,6 @@ export const {
   useGetMdasTapCommandHistoryQuery,
   useLazyGetMdasDlmsHistoryDataQuery,
   useGetCommandHistoryTAPDetailQuery,
+  useGetCommandRetryConfigDataQuery,
+  useUpdateDLMSCommandRetryCommandMutation,
 } = commandHistoryApi;

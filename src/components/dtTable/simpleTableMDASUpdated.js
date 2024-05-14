@@ -295,6 +295,7 @@ const SimpleDataTable = (props) => {
                       <Label check onClick={() => onProtocolSelection('dlms')}>
                         <Input
                           type="radio"
+                          disabled
                           name="protocol_type"
                           defaultChecked={'dlms' === props.protocol}
                         />{' '}

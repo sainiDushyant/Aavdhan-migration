@@ -17,6 +17,7 @@ const HesUtility = (props) => {
     }
   };
 
+  // need to remove these functions once the development has been completed
   const refreshCommandHistory = () => {
     setReloadCommandHistory(!reloadCommandHistory);
   };
@@ -27,7 +28,6 @@ const HesUtility = (props) => {
 
   const protocolSelectedForCommandExecution = (val) => {
     setProtocol(val);
-    refreshCommandHistory();
   };
   return (
     <div>
@@ -67,7 +67,7 @@ const HesUtility = (props) => {
         <TabPane tabId="1">
           {active === '1' && (
             <React.Fragment>
-              <div className="d-none">
+              <div>
                 <MeterAndCommandDropDown
                   refreshCommandHistory={refreshCommandHistory}
                   protocolSelectedForCommandExecution={

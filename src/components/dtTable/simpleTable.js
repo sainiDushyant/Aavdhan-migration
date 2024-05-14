@@ -289,8 +289,8 @@ const SimpleDataTable = (props) => {
                 )}
               </Col>
             )}
-            <Col className="p-0 ">
-              <span className="float-right">
+            <Col className="p-0 d-flex align-items-center justify-center">
+              <span className="float-right d-flex">
                 {props.refresh && (
                   <Fragment>
                     {props.status ? (

@@ -382,7 +382,7 @@ const MeterAndCommandDropDown = (props) => {
                 id="positionTop"
                 outline
                 color="danger"
-                // onClick={(e) => toggleCommandExecutionModal(e)}
+                onClick={(e) => toggleCommandExecutionModal(e)}
               >
                 <X size={16} />
               </Button>
@@ -433,7 +433,7 @@ const MeterAndCommandDropDown = (props) => {
       <div
         className="notch"
         id="notch"
-        // onClick={(e) => toggleCommandExecutionModal(e)}
+        onClick={(e) => toggleCommandExecutionModal(e)}
       >
         <ChevronDown className="ChevronDown_ico" size={20} />
       </div>
