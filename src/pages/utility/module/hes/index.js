@@ -67,14 +67,12 @@ const HesUtility = (props) => {
         <TabPane tabId="1">
           {active === '1' && (
             <React.Fragment>
-              <div>
-                <MeterAndCommandDropDown
-                  refreshCommandHistory={refreshCommandHistory}
-                  protocolSelectedForCommandExecution={
-                    protocolSelectedForCommandExecution
-                  }
-                />
-              </div>
+              <MeterAndCommandDropDown
+                refreshCommandHistory={refreshCommandHistory}
+                protocolSelectedForCommandExecution={
+                  protocolSelectedForCommandExecution
+                }
+              />
               <CommandHistory
                 protocol={protocol}
                 protocolSelectionOption={true}

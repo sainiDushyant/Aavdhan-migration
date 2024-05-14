@@ -6,10 +6,9 @@ const Footer = () => {
     <footer
       style={{
         position: 'fixed',
-        bottom: 20,
+        bottom: 10,
         width: '100%',
-        marginLeft: '0px',
-        marginBottom: '0px',
+        marginLeft: '15px',
       }}
     >
       <p className="mb-0">

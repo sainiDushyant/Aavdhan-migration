@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Login from './pages/login';
 import ForgotPassword from './pages/forgotPassword';
 import HesUtility from './pages/utility/module/hes';
-import LayoutWrapper from './components/layout/layoutWrapper';
+import LayoutWrapper from './components/layout/LayoutWrapper';
 
 const App = () => {
   return (
