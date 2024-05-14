@@ -21,7 +21,7 @@ import CardInfo from '../../../../../../components/ui-elements/cards/cardInfo';
 import { toast } from 'react-toastify';
 import { Download } from 'react-feather';
 import {
-  usePostDLMSDataDownloadRequestMutation,
+  useLazyDLMSDataDownloadRequestQuery,
   useGetDLMSDataDownloadRequestHistoryQuery,
 } from '../../../../../../api/command-historySlice';
 
@@ -44,6 +44,7 @@ const CommandHistoryDataDownloadWrapper = () => {
   const [selectedMeter, setSelectedMeter] = useState(undefined);
   const [commandSelected, setCommandSelected] = useState(undefined);
   const [cmdStatusSelected, setCmdStatusSelected] = useState(undefined);
+  const [dtrList, setDtrList] = useState([]);
 
   const [disableDtrSelection, setDisableDtrSelection] = useState(false);
   const [disableMeterSelection, setDisableMeterSelection] = useState(false);
@@ -63,6 +64,49 @@ const CommandHistoryDataDownloadWrapper = () => {
   );
 
   // Command Status DLMS
+
+  // DTR List
+  useEffect(() => {
+    if (responseAssetList) {
+      const dtr_list = responseAssetList.map((e) => {
+        return { value: e.dtr_id, label: e.dtr_name };
+      });
+      setDtrList(dtr_list);
+    }
+  }, []);
+
+  const params = {};
+  params['page'] = currentPage;
+  params['page_size'] = pageSize;
+  params['project'] = projectName;
+
+  //RTK Query hooks for data fetching
+
+  const {
+    data: dlmsDownloadRequestHistoryResponse,
+    isFetching: dlmsDownloadRequestHistoryLoading,
+    isError: dlmsDownloadRequestHistoryError,
+    refetch: fetchDownloadRequestHistory,
+  } = useGetDLMSDataDownloadRequestHistoryQuery(params);
+
+  const loading = dlmsDownloadRequestHistoryLoading;
+  const hasError = dlmsDownloadRequestHistoryError;
+
+  const [requestReport, requestReportResponse] =
+    useLazyDLMSDataDownloadRequestQuery();
+
+  useEffect(() => {
+    const statusCode = dlmsDownloadRequestHistoryResponse?.responseCode;
+    if (statusCode === 200) {
+      setTotalCount(dlmsDownloadRequestHistoryResponse?.data?.result?.count);
+      setResponse(dlmsDownloadRequestHistoryResponse?.data?.result?.results);
+    } else if (statusCode === 401 || statusCode === 403) {
+      setLogout(true);
+    } else {
+      setErrorMessage('Network Error, please retry');
+    }
+  }, [dlmsDownloadRequestHistoryResponse]);
+
   const execution_status_dlms = [
     {
       value: 'INITIATE',
@@ -85,61 +129,6 @@ const CommandHistoryDataDownloadWrapper = () => {
       label: 'FAILED',
     },
   ];
-  console.log(responseAssetList, 'response assets list');
-  // DTR List
-  let dtr_list = [];
-  if (responseAssetList) {
-    // dtr_list = responseAssetList.dtr_list
-    for (let i = 0; i < responseAssetList.length; i++) {
-      responseAssetList[i]['value'] = responseAssetList[i]['dtr_id'];
-      responseAssetList[i]['label'] = responseAssetList[i]['dtr_name'];
-    }
-    dtr_list = responseAssetList;
-  }
-
-  const params = {};
-  params['page'] = currentPage;
-  params['page_size'] = pageSize;
-  params['project'] = projectName;
-
-  const {
-    data: dlmsDownloadRequestHistoryResponse,
-    isFetching: dlmsDownloadRequestHistoryLoading,
-    isError: dlmsDownloadRequestHistoryError,
-    refetch: fetchDownloadRequestHistory,
-  } = useGetDLMSDataDownloadRequestHistoryQuery(params);
-
-  const loading = dlmsDownloadRequestHistoryLoading;
-  const hasError = dlmsDownloadRequestHistoryError; // Logout User
-
-  // const requestReport = async (params) => {
-  //   return await useJwt
-  //     .postCommandHistoryDLMSDataDownloadRequest(params)
-  //     .then((res) => {
-  //       const status = res.status;
-
-  //       return [status, res];
-  //     })
-  //     .catch((err) => {
-  //       if (err.response) {
-  //         const status = err.response.status;
-  //         return [status, err];
-  //       } else {
-  //         return [0, err];
-  //       }
-  //     });
-  // };
-  useEffect(() => {
-    const statusCode = dlmsDownloadRequestHistoryResponse?.responseCode;
-    if (statusCode === 200) {
-      setTotalCount(dlmsDownloadRequestHistoryResponse?.data?.result?.count);
-      setResponse(dlmsDownloadRequestHistoryResponse?.data?.result?.results);
-    } else if (statusCode === 401 || statusCode === 403) {
-      setLogout(true);
-    } else {
-      setErrorMessage('Network Error, please retry');
-    }
-  }, [dlmsDownloadRequestHistoryResponse]);
 
   const tblColumn = () => {
     const column = [];
@@ -342,7 +331,6 @@ const CommandHistoryDataDownloadWrapper = () => {
   };
   const reloadData = () => {
     setCurrentPage(1);
-    fetchDownloadRequestHistory();
   };
 
   const onSubmitButtonClicked = async () => {
@@ -372,24 +360,29 @@ const CommandHistoryDataDownloadWrapper = () => {
       params['command_status'] = '';
     }
 
-    // const [statusCode, response] = await requestReport(params);
-    let statusCode;
-    if (statusCode === 200) {
-      toast('Request submitted successfully ....', {
-        hideProgressBar: true,
-        type: 'success',
-      });
-    } else if (statusCode === 401 || statusCode === 403) {
-      setLogout(true);
-    } else {
-      toast(
-        'Something went wrong please retry .....',
-
-        { hideProgressBar: true, type: 'warning' }
-      );
-    }
+    requestReport(params);
   };
 
+  useEffect(() => {
+    if (requestReportResponse.isSuccess) {
+      const statusCode = requestReportResponse?.currentData?.responseCode;
+      if (statusCode === 200) {
+        fetchDownloadRequestHistory();
+        toast('Request submitted successfully ....', {
+          hideProgressBar: true,
+          type: 'success',
+        });
+      } else if (statusCode === 401 || statusCode === 403) {
+        setLogout(true);
+      } else {
+        toast(
+          'Something went wrong please retry .....',
+
+          { hideProgressBar: true, type: 'warning' }
+        );
+      }
+    }
+  }, [requestReportResponse.isSuccess]);
   const retryAgain = () => {
     fetchDownloadRequestHistory();
   };
@@ -409,7 +402,7 @@ const CommandHistoryDataDownloadWrapper = () => {
             // value={pssSelected}
             closeMenuOnSelect={true}
             onChange={onDTRSelected}
-            options={dtr_list}
+            options={dtrList}
             isClearable={true}
             isDisabled={disableDtrSelection}
             placeholder="Select Site Name"

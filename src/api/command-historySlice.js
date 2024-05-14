@@ -63,14 +63,14 @@ export const commandHistoryApi = createApi({
       }),
       providesTags: ['DLMSDataDownloadRequestHistory'],
     }),
-    postDLMSDataDownloadRequest: builder.mutation({
+    DLMSDataDownloadRequest: builder.query({
       query: (params) => ({
         url: `${MDASUrl}/api/hes/dlms/command-history-report-download/`,
-        method: 'POST',
-        body: params,
+        params: params,
       }),
       invalidatesTags: ['DLMSDataDownloadRequestHistory'],
     }),
+
     keepUnusedDataFor: 300000,
   }),
 });
@@ -85,5 +85,5 @@ export const {
   useGetCommandRetryConfigDataQuery,
   useUpdateDLMSCommandRetryCommandMutation,
   useGetDLMSDataDownloadRequestHistoryQuery,
-  usePostDLMSDataDownloadRequestMutation,
+  useLazyDLMSDataDownloadRequestQuery,
 } = commandHistoryApi;
