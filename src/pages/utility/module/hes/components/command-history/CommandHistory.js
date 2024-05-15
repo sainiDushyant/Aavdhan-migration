@@ -9,14 +9,10 @@ import {
   Button,
 } from 'reactstrap';
 import { useLocation } from 'react-router-dom';
-import SimpleDataTableMDAS from '../../../../../../components/dtTable/simpleTableMDASUpdated';
 import { Eye, X, Layers, Download } from 'react-feather';
-// import CreateTable from '@src/views/ui-elements/dtTable/createTable'
 import SimpleTableForDLMSCommandResponse from '../../../../../../components/dtTable/simpleTableForDLMSCommandResponse';
-import Timeline from '../../../../../../@core/components/timeline/index';
-// import SchedulerList from './meterConfigurationWrapper/schedulerList';
-// import FilterForm from '@src/views/project/utility/module/hes/wrappers/commandFilterWrapper/filterForm';
-import { useSelector, useDispatch } from 'react-redux';
+import DataTableV1 from '../../../../../../components/datatable/DataTableV1';
+
 import CardInfo from '../../../../../../components/ui-elements/cards/cardInfo';
 
 import Loader from '../../../../../../components/loader/loader';
@@ -26,7 +22,6 @@ import CommandRetryConfig from './command-retry-config/commandRetryConfig';
 import CommandHistoryDataDownloadWrapper from './commandHistoryDataDownloadWrapper';
 import moment from 'moment-timezone';
 
-// import { DLMSCommandMapping } from '../util'
 import {
   useGetMdasDlmsCommandHistoryQuery,
   useGetMdasTapCommandHistoryQuery,
@@ -167,18 +162,6 @@ const CommandHistory = (props) => {
     setFilterAppliedParams(undefined);
   };
 
-  // if (currentSelectedModuleStatus.prev_project) {
-  //   if (
-  //     selected_project !== currentSelectedModuleStatus.project &&
-  //     currentSelectedModuleStatus.prev_project !==
-  //       currentSelectedModuleStatus.project
-  //   ) {
-  //     set_selected_project(currentSelectedModuleStatus.project);
-  //     setError(false);
-  //     protocolSelected('dlms');
-  //   }
-  // }
-
   const AppliedFilterparams = (params, resetcalled) => {
     if (resetcalled) {
       setFilterAppliedParams(params);
@@ -197,15 +180,6 @@ const CommandHistory = (props) => {
       }
     }
   };
-
-  // const fetchCommandHistory = () => {
-  //   {
-
-  // }
-  // };
-  // useEffect(() => {
-  //   fetchCommandHistory();
-  // }, [currentPage, filterAppliedParams]);
 
   useEffect(() => {
     if (dlmsCommandHistoryResponse) {
@@ -312,10 +286,17 @@ const CommandHistory = (props) => {
   //     });
   // };
 
-  const tblColumn = () => {
-    const column = [];
-    const custom_width = ['timestamp', 'execution_time'];
-    const columnPosition = {
+  function createColumns() {
+    const columns = [];
+    const ignoreColumns = ['id', 'sc_no', 'parameter'];
+    const disableSortings = [
+      'site id',
+      'Parameter',
+      'Command',
+      'Current status',
+      'Created at',
+    ];
+    const customPositions = {
       meter_number: 1,
       command: 2,
       start_time: 3,
@@ -323,82 +304,60 @@ const CommandHistory = (props) => {
       update_time: 5,
       execution_status: 6,
     };
-
-    if (response.length > 0) {
+    if (response?.length > 0) {
       for (const i in response[0]) {
-        const col_config = {};
-        if (i !== 'id') {
-          col_config.name = `${i.charAt(0).toUpperCase()}${i.slice(
-            1
-          )}`.replaceAll('_', ' ');
-          col_config.serch = i;
-          // col_config.selector = i
-          col_config.selector = (row) => row[i];
-          col_config.sortFunction = (rowA, rowB) =>
-            caseInsensitiveSort(rowA, rowB, i);
-          col_config.sortable = true;
-          col_config.reorder = true;
-          col_config.wrap = true;
-          col_config.compact = false;
-          col_config.position = columnPosition[i] || 1000;
-          col_config.width = '180px';
-          if (
-            (i === 'command' || i === 'params') &&
-            props.protocol === 'dlms'
-          ) {
-            col_config.width = '250px';
-          } else if (
-            (i === 'command' || i === 'params') &&
-            props.protocol === 'tap'
-          ) {
-            col_config.width = '200px';
-          } else if (i.toLowerCase() === 'user') {
-            col_config.width = '200px';
-          }
-          // col_config.style = {
-          //   maxWidth:'200000px'
-          // }
-          // col_config.style = {
-          //   minHeight: '40px',
-          //   maxHeight: '60px'
-          // }
+        const column = {};
+        if (!ignoreColumns.includes(i)) {
+          column.name = `${i.charAt(0).toUpperCase()}${i.slice(1)}`.replaceAll(
+            '_',
+            ' '
+          );
+          column.sortable = !disableSortings.includes(i);
+          column.selector = (row) => row[i];
+          column.reorder = true;
+          column.position = customPositions[i] || 1000;
+          column.minWidth = '190px';
+          column.wrap = true;
 
-          if (custom_width.includes(i)) {
-            col_config.width = '200px';
-          }
-
-          col_config.cell = (row) => {
-            return (
-              <div className="d-flex">
-                <span
-                  className="d-block font-weight-bold "
-                  title={
-                    row[i]
-                      ? row[i]
-                        ? row[i] !== ''
-                          ? row[i].toString().length > 20
-                            ? row[i]
-                            : ''
-                          : '-'
-                        : '-'
-                      : '-'
-                  }
-                >
-                  {row[i] !== 0
-                    ? row[i] && row[i] !== ''
-                      ? row[i].toString().substring(0, 25) +
-                        (row[i].toString().length > 25 ? '...' : '')
-                      : '-'
-                    : row[i]}
-                </span>
-              </div>
-            );
+          column.cell = (row) => {
+            if (row[i] || [0, '0'].includes(row[i])) {
+              if (Array.isArray(row[i])) {
+                row[i] = row[i].join(' , ');
+              }
+              if (row[i].toString()?.length > 25) {
+                return (
+                  <span
+                    onClick={(event) => {
+                      if (event.target.textContent.toString()?.length <= 29) {
+                        event.target.textContent = row[i];
+                        event.target.style.overflowY = 'scroll';
+                      } else {
+                        event.target.textContent = `${row[i]
+                          .toString()
+                          .substring(0, 25)}...`;
+                        event.target.style.overflowY = 'visible';
+                      }
+                    }}
+                    style={{
+                      cursor: 'pointer',
+                      maxHeight: '200px',
+                    }}
+                    className="webi_scroller"
+                    title={'click to expand text'}
+                  >
+                    {row[i].toString().substring(0, 25)}...
+                  </span>
+                );
+              }
+            } else {
+              return '-';
+            }
+            return row[i];
           };
-          column.push(col_config);
+          columns.push(column);
         }
       }
-
-      column.push({
+      columns.push({
         name: 'Response Time',
         width: '140px',
         position: 5,
@@ -425,26 +384,6 @@ const CommandHistory = (props) => {
           }
         },
       });
-
-      // const showData = async (row) => {
-      //   const params = {
-      //     id: row.id
-      //   };
-      //   const [statusCode, response] = await fetchHistoryData(params);
-      //   setCenteredModal(true);
-      //   if (statusCode === 200) {
-      //     const data = response.data.data.result;
-      //     data[
-      //       "cmd_detail"
-      //     ] = `Meter:  ${row.meter_number}, Command: ${row.command}, Execution: ${row.start_time}`;
-      //     // DLMSCommandMapping(row.command, response.data.data.result)
-      //     setCommandSelectedToViewResponse(row.command);
-      //     setHistyData(response.data.data.result);
-      //   } else if (statusCode === 401 || statusCode === 403) {
-      //     setLogout(true);
-      //   }
-      // };
-
       const showData = async (row) => {
         const params = {
           id: row.id,
@@ -489,30 +428,8 @@ const CommandHistory = (props) => {
           setLogout(true);
         }
       };
-
-      // const showTapData = async (row) => {
-      //   // console.log("TAP Data .....")
-
-      //   const params = {
-      //     id: row.id,
-      //     project: projectName,
-      //   };
-      //   const [statusCode, response] = await fetchHistoryDataDetail(params);
-      //   setTapViewModal(true);
-      //   if (statusCode === 200) {
-      //     const data = response.data.data.result;
-      //     data['cmd_detail'] = {
-      //       meter_serial: row.meter_serial,
-      //       command: row.command,
-      //       execution: row.execution_time,
-      //     };
-      //     setTapHistyData(data);
-      //   } else if (statusCode === 401 || statusCode === 403) {
-      //     setLogout(true);
-      //   }
-      // };
       if (props.protocol === 'dlms') {
-        column.push({
+        columns.push({
           name: 'Action',
           maxWidth: '100px',
           style: {
@@ -550,7 +467,7 @@ const CommandHistory = (props) => {
       }
 
       if (props.protocol === 'tap') {
-        column.push({
+        columns.push({
           name: 'Action',
           maxWidth: '100px',
           style: {
@@ -569,7 +486,7 @@ const CommandHistory = (props) => {
         });
       }
     }
-    column.sort((a, b) => {
+    const sortedColumns = columns.sort((a, b) => {
       if (a.position < b.position) {
         return -1;
       } else if (a.position > b.position) {
@@ -577,21 +494,19 @@ const CommandHistory = (props) => {
       }
       return 0;
     });
-    column.unshift({
-      name: 'Sr No.',
+    sortedColumns.unshift({
+      name: 'Sr No',
       width: '90px',
-      sortable: false,
       cell: (row, i) => {
         return (
-          <div className="d-flex justify-content-center">
+          <div className="d-flex w-100 justify-content-center">
             {i + 1 + 10 * (currentPage - 1)}
           </div>
         );
       },
     });
-
-    return column;
-  };
+    return sortedColumns;
+  }
 
   const isArray = (a) => {
     return !!a && a.constructor === Array;
@@ -867,9 +782,9 @@ const CommandHistory = (props) => {
     return (
       <Fragment>
         <Layers
-          className="ml-1 float-right mt_9"
+          className="ml-1 float-right"
           id="cmdRetries"
-          size="14"
+          size="18"
           onClick={() => setCommandRetryConfigModal(true)}
         />
         <UncontrolledTooltip placement="top" target="cmdRetries">
@@ -913,25 +828,28 @@ const CommandHistory = (props) => {
           {loading && <Loader hight="min-height-475" />}
           {!loading && (
             <div className="table-wrapper">
-              <SimpleDataTableMDAS
-                columns={tblColumn()}
-                tblData={response}
+              <DataTableV1
+                columns={createColumns()}
+                data={response}
                 rowCount={10}
                 tableName={tableName}
-                refresh={fetchCommandHistory}
-                filter={!props.params && handleFilter}
-                status={loading}
+                showDownloadButton={true}
+                showRefreshButton={true}
+                refreshFn={fetchCommandHistory}
+                showAddButton={false}
                 currentPage={currentPage}
-                totalCount={totalCount}
-                onNextPageClicked={onNextPageClicked}
+                totalRowsCount={totalCount}
+                onPageChange={onNextPageClicked}
+                isLoading={loading}
+                //setShowForm={setShowForm}
+                pointerOnHover={true}
+                filter={!props.params && handleFilter}
+                extraTextToShow={commandRetryConfiguration()}
                 protocolSelected={protocolSelected}
                 protocol={props.protocol}
-                extras={commandRetryConfiguration()}
-                // extras={SlaReport}
-                // showSLAReport={true}
-                isDownloadModal={props.protocol === 'dlms' ? 'yes' : ''}
                 handleReportDownloadModal={handleReportDownloadModal}
-                // extra_in_center={SlaReport()}
+                isDownloadModal={props.protocol === 'dlms' ? 'yes' : ''}
+                //onDownload={onDownload}
               />
             </div>
           )}

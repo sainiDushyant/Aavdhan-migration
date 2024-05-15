@@ -10,8 +10,8 @@ import {
   Badge,
   UncontrolledTooltip,
 } from 'reactstrap';
-import SimpleDataTablePaginated from '../../../../../../components/dtTable/simpleTablePaginated';
-
+//import SimpleDataTablePaginated from '../../../../../../components/dtTable/simpleTablePaginated';
+import DataTableV1 from '../../../../../../components/datatable/DataTableV1';
 import { caseInsensitiveSort } from '../../../../../../utils';
 
 import { useSelector, useDispatch } from 'react-redux';
@@ -130,86 +130,70 @@ const CommandHistoryDataDownloadWrapper = () => {
     },
   ];
 
-  const tblColumn = () => {
-    const column = [];
+  function createColumns() {
+    const columns = [];
+    const ignoreColumns = ['id', 'sc_no', 'parameter'];
+    const disableSortings = [
+      'site id',
+      'Parameter',
+      'Command',
+      'Current status',
+      'Created at',
+    ];
 
-    if (response) {
+    if (response?.length > 0) {
       for (const i in response[0]) {
-        const col_config = {};
+        const column = {};
+        if (!ignoreColumns.includes(i)) {
+          column.name = `${i.charAt(0).toUpperCase()}${i.slice(1)}`.replaceAll(
+            '_',
+            ' '
+          );
+          column.sortable = !disableSortings.includes(i);
+          column.selector = (row) => row[i];
+          column.reorder = true;
+          column.minWidth = '200px';
+          column.wrap = true;
 
-        if (i !== 'project' && i !== 'csv_url') {
-          col_config.name = `${i.charAt(0).toUpperCase()}${i.slice(
-            1
-          )}`.replaceAll('_', ' ');
-          col_config.serch = i;
-          col_config.sortable = true;
-          col_config.selector = (row) => row[i];
-          col_config.sortFunction = (rowA, rowB) =>
-            caseInsensitiveSort(rowA, rowB, i);
-          // col_config.style = {
-          //   width: '400px'
-          // }
-          col_config.width = '200px';
-
-          col_config.cell = (row) => {
-            return (
-              <div className="d-flex">
-                <span
-                  className="d-block font-weight-bold  cursor-pointer"
-                  title={row[i]}
-                  onClick={() => {
-                    // setData(row)
-                    // setCenteredModal(true)
-                  }}
-                >
-                  {row[i] && row[i] !== ''
-                    ? row[i].toString().substring(0, 25)
-                    : '-'}
-                  {row[i] && row[i] !== ''
-                    ? row[i].toString().length > 25
-                      ? '...'
-                      : ''
-                    : '-'}
-                </span>
-              </div>
-            );
+          column.cell = (row) => {
+            if (row[i] || [0, '0'].includes(row[i])) {
+              if (Array.isArray(row[i])) {
+                row[i] = row[i].join(' , ');
+              }
+              if (row[i].toString()?.length > 25) {
+                return (
+                  <span
+                    onClick={(event) => {
+                      if (event.target.textContent.toString()?.length <= 29) {
+                        event.target.textContent = row[i];
+                        event.target.style.overflowY = 'scroll';
+                      } else {
+                        event.target.textContent = `${row[i]
+                          .toString()
+                          .substring(0, 25)}...`;
+                        event.target.style.overflowY = 'visible';
+                      }
+                    }}
+                    style={{
+                      cursor: 'pointer',
+                      maxHeight: '200px',
+                    }}
+                    className="webi_scroller"
+                    title={'click to expand text'}
+                  >
+                    {row[i].toString().substring(0, 25)}...
+                  </span>
+                );
+              }
+            } else {
+              return '-';
+            }
+            return row[i];
           };
-          column.push(col_config);
+          columns.push(column);
         }
       }
-
-      column.push({
-        name: 'Status',
-        width: '120px',
-        cell: (row) => {
-          if (row.execution_status === 'Success') {
-            return (
-              <>
-                <Badge pill color="light-success" className="">
-                  {row.execution_status}
-                </Badge>
-              </>
-            );
-          } else if (row.execution_status === 'In_Progress') {
-            return (
-              <>
-                <Badge pill color="light-warning" className="">
-                  {row.execution_status}
-                </Badge>
-              </>
-            );
-          } else if (row.execution_status === 'Failed') {
-            return (
-              <>
-                <Badge pill color="light-danger" className="">
-                  {row.execution_status}
-                </Badge>
-              </>
-            );
-          }
-        },
-      });
-      column.push({
+      columns.push({
         name: 'Download ',
         width: '120px',
         cell: (row) => {
@@ -281,9 +265,27 @@ const CommandHistoryDataDownloadWrapper = () => {
         },
       });
     }
-
-    return column;
-  };
+    const sortedColumns = columns.sort((a, b) => {
+      if (a.position < b.position) {
+        return -1;
+      } else if (a.position > b.position) {
+        return 1;
+      }
+      return 0;
+    });
+    sortedColumns.unshift({
+      name: 'Sr No',
+      width: '70px',
+      cell: (row, i) => {
+        return (
+          <div className="d-flex w-100 justify-content-center">
+            {i + 1 + 10 * (currentPage - 1)}
+          </div>
+        );
+      },
+    });
+    return sortedColumns;
+  }
 
   const onDTRSelected = (val) => {
     if (val) {
@@ -331,6 +333,7 @@ const CommandHistoryDataDownloadWrapper = () => {
   };
   const reloadData = () => {
     setCurrentPage(1);
+    fetchDownloadRequestHistory();
   };
 
   const onSubmitButtonClicked = async () => {
@@ -481,17 +484,22 @@ const CommandHistoryDataDownloadWrapper = () => {
         />
       ) : (
         !loading && (
-          <SimpleDataTablePaginated
-            columns={tblColumn()}
-            tblData={response}
+          <DataTableV1
+            columns={createColumns()}
+            data={response}
             rowCount={pageSize}
             tableName={'Command History Download Request'}
-            refresh={reloadData}
+            showDownloadButton={true}
+            showRefreshButton={true}
+            refreshFn={reloadData}
+            showAddButton={false}
             currentPage={currentPage}
-            totalCount={totalCount}
-            onNextPageClicked={onNextPageClicked}
-            // showRequestDownloadModal={true}
-            // handleReportDownloadModal={handleReportDownloadModal}
+            totalRowsCount={totalCount}
+            onPageChange={onNextPageClicked}
+            isLoading={loading}
+            //setShowForm={setShowForm}
+            pointerOnHover={true}
+            //onDownload={onDownload}
           />
         )
       )}

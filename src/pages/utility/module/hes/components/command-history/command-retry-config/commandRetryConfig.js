@@ -1,5 +1,4 @@
-import SimpleDataTable from '../../../../../../../components/dtTable/simpleTable';
-
+import DataTableV1 from '../../../../../../../components/datatable/DataTableV1';
 import {
   Col,
   Row,
@@ -40,6 +39,8 @@ const CommandRetryConfig = () => {
   const [errorMessage, setErrorMessage] = useState('');
 
   const [logout, setLogout] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalCount, setTotalCount] = useState();
 
   const params = {
     project,
@@ -55,6 +56,7 @@ const CommandRetryConfig = () => {
         try {
           const resp = data?.data?.result;
           setCommandRetryResponse(resp);
+          setTotalCount(resp?.length);
         } catch (error) {
           setErrorMessage('Network Error, please retry');
         }
@@ -84,62 +86,115 @@ const CommandRetryConfig = () => {
     // setFetchingData(true);
   };
 
-  const tblColumn = () => {
-    const column = [];
+  function createColumns() {
+    const columns = [];
+    const ignoreColumns = ['id', 'sc_no', 'parameter'];
+    const disableSortings = [
+      'site id',
+      'Parameter',
+      'Command',
+      'Current status',
+      'Created at',
+    ];
 
-    if (commandRetryResponse && commandRetryResponse.length > 0) {
+    if (commandRetryResponse?.length > 0) {
       for (const i in commandRetryResponse[0]) {
-        const col_config = {};
-        if (i !== 'id') {
-          col_config.name = `${i.charAt(0).toUpperCase()}${i.slice(
-            1
-          )}`.replaceAll('_', ' ');
-          col_config.serch = i;
-          col_config.sortable = true;
-          col_config.sortFunction = (rowA, rowB) =>
-            caseInsensitiveSort(rowA, rowB, i);
-          // col_config.style = {
-          //   width: '400px'
-          // }
-          col_config.cell = (row) => {
-            return (
-              <div className="d-flex">
-                <span
-                  className="d-block font-weight-bold "
-                  // style={{ width: '18vh' }}
-                  // onClick={() => handleRowClick(row.id, row.feeder_id, row.pss_id)}
-                >
-                  {row[i]}
-                </span>
-              </div>
-            );
+        const column = {};
+        if (!ignoreColumns.includes(i)) {
+          column.name = `${i.charAt(0).toUpperCase()}${i.slice(1)}`.replaceAll(
+            '_',
+            ' '
+          );
+          column.sortable = !disableSortings.includes(i);
+          //column.sortFunction = !disableSortings.includes(i)
+          //? (rowA, rowB) => caseInsensitiveSort(rowA, rowB, i)
+          //: null;
+          column.selector = (row) => row[i];
+          column.reorder = true;
+          //column.position = customPositions[i] || 1000;
+          column.minWidth = '200px';
+          column.wrap = true;
+
+          column.cell = (row) => {
+            if (row[i] || [0, '0'].includes(row[i])) {
+              if (Array.isArray(row[i])) {
+                row[i] = row[i].join(' , ');
+              }
+              if (row[i].toString()?.length > 25) {
+                return (
+                  <span
+                    onClick={(event) => {
+                      if (event.target.textContent.toString()?.length <= 29) {
+                        event.target.textContent = row[i];
+                        event.target.style.overflowY = 'scroll';
+                      } else {
+                        event.target.textContent = `${row[i]
+                          .toString()
+                          .substring(0, 25)}...`;
+                        event.target.style.overflowY = 'visible';
+                      }
+                    }}
+                    style={{
+                      cursor: 'pointer',
+                      maxHeight: '200px',
+                    }}
+                    className="webi_scroller"
+                    title={'click to expand text'}
+                  >
+                    {row[i].toString().substring(0, 25)}...
+                  </span>
+                );
+              }
+            } else {
+              return '-';
+            }
+            return row[i];
           };
-          column.push(col_config);
+          columns.push(column);
         }
       }
+      columns.push({
+        name: 'Edit Retry Count',
+        maxWidth: '100px',
+        style: {
+          minHeight: '40px',
+          maxHeight: '40px',
+        },
+        cell: (row) => {
+          return (
+            <Edit
+              size="20"
+              className="ml-1 cursor-pointer"
+              onClick={() => rowSelected(row)}
+            />
+          );
+        },
+      });
     }
-
-    column.push({
-      name: 'Edit Retry Count',
-      maxWidth: '100px',
-      style: {
-        minHeight: '40px',
-        maxHeight: '40px',
-      },
-      cell: (row) => {
-        return (
-          <Edit
-            size="20"
-            className="ml-1 cursor-pointer"
-            onClick={() => rowSelected(row)}
-          />
-        );
-      },
+    const sortedColumns = columns.sort((a, b) => {
+      if (a.position < b.position) {
+        return -1;
+      } else if (a.position > b.position) {
+        return 1;
+      }
+      return 0;
     });
-
-    return column;
+    // sortedColumns.unshift({
+    //   name: 'Sr No',
+    //   width: '70px',
+    //   cell: (row, i) => {
+    //     return (
+    //       <div className="d-flex w-100 justify-content-center">
+    //         {i + 1 + 10 * (currentPage - 1)}
+    //       </div>
+    //     );
+    //   },
+    // });
+    return sortedColumns;
+  }
+  const onNextPageClicked = (number) => {
+    setCurrentPage(number + 1);
   };
-
   return (
     <>
       {isFetching ? (
@@ -154,14 +209,20 @@ const CommandRetryConfig = () => {
         />
       ) : (
         !isFetching && (
-          <SimpleDataTable
-            columns={tblColumn()}
-            tblData={commandRetryResponse}
+          <DataTableV1
+            columns={createColumns()}
+            data={commandRetryResponse}
             rowCount={10}
             tableName={'Command Retry Configuration'}
-            refresh={refetch}
-            // totalCount={totalCount}
-            // onNextPageClicked={onNextPageClicked}
+            showDownloadButton={true}
+            showRefreshButton={true}
+            refreshFn={refetch}
+            showAddButton={false}
+            currentPage={currentPage}
+            totalRowsCount={totalCount}
+            onPageChange={onNextPageClicked}
+            isLoading={isFetching}
+            pointerOnHover={true}
           />
         )
       )}

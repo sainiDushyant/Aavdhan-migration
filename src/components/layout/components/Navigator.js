@@ -1,10 +1,11 @@
 import React from 'react';
 import { Sidebar, Menu, MenuItem, SubMenu } from 'react-pro-sidebar';
+import { ChevronLeft, ChevronRight } from 'react-feather';
 import { Award } from 'react-feather';
-function SideBar() {
+function SideBar({ collapsed, setCollapsed }) {
   return (
     <div className="pt-1">
-      <Sidebar>
+      <Sidebar collapsed={collapsed}>
         <Menu>
           <SubMenu icon={<Award size={18} />} label="Charts">
             <MenuItem icon={<Award size={18} />}>one</MenuItem>
@@ -24,6 +25,25 @@ function SideBar() {
           </MenuItem>
         </Menu>
       </Sidebar>
+      {collapsed ? (
+        <ChevronRight
+          onClick={() => setCollapsed(false)}
+          className="mb-0 d-flex justify-content-end"
+          style={{
+            position: 'absolute',
+            bottom: '0px',
+          }}
+        />
+      ) : (
+        <ChevronLeft
+          onClick={() => setCollapsed(true)}
+          className="mb-0 d-flex justify-content-end"
+          style={{
+            position: 'absolute',
+            bottom: '0px',
+          }}
+        />
+      )}
     </div>
   );
 }
