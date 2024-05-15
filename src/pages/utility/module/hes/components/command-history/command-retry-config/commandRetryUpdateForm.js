@@ -68,21 +68,6 @@ const CommandRetryUpDateForm = (props) => {
           cmd_retry: retryCount,
         };
         updateCommandRetry(params);
-        let statusCode = response?.data?.responseCode;
-        if (statusCode === 202) {
-          // props.reloadTableAfterUpdate()
-          toast('Retry count updated successfully .....', {
-            hideProgressBar: true,
-            type: 'success',
-          });
-        } else if (statusCode === 401 || statusCode === 403) {
-          setLogout(true);
-        } else {
-          toast('Something went wrong, please retry ....', {
-            hideProgressBar: true,
-            type: 'warning',
-          });
-        }
       }
     } else {
       toast('Enter retry count ....', {
@@ -91,6 +76,26 @@ const CommandRetryUpDateForm = (props) => {
       });
     }
   };
+
+  useEffect(() => {
+    if (response.isSuccess) {
+      let statusCode = response?.data?.responseCode;
+      if (statusCode === 202) {
+        props.setShowDataEdit(false);
+        toast('Retry count updated successfully .....', {
+          hideProgressBar: true,
+          type: 'success',
+        });
+      } else if (statusCode === 401 || statusCode === 403) {
+        setLogout(true);
+      } else {
+        toast('Something went wrong, please retry ....', {
+          hideProgressBar: true,
+          type: 'warning',
+        });
+      }
+    }
+  }, [response]);
 
   return (
     <Card className="mb-0">

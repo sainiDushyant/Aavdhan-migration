@@ -7,8 +7,8 @@ function SideBar() {
       <Sidebar>
         <Menu>
           <SubMenu icon={<Award size={18} />} label="Charts">
-            <MenuItem>one</MenuItem>
-            <MenuItem>two</MenuItem>
+            <MenuItem icon={<Award size={18} />}>one</MenuItem>
+            <MenuItem icon={<Award size={18} />}>two</MenuItem>
           </SubMenu>
           <MenuItem>
             <Award size={18} /> &nbsp; Documentation

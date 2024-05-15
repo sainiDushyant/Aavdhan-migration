@@ -10,15 +10,15 @@ function LayoutWrapper({ children }) {
     <div className="App">
       <Drawer SideBar={SideBar} />
       <div className="layout">
-        <aside className="aside border">
+        <div className="aside border">
           <SideBar />
-        </aside>
+        </div>
         <Navbar />
         <main>
-          <div className="m-2">{children}</div>
-          <footer>
+          <div className="m-2">
+            {children}
             <Footer />
-          </footer>
+          </div>
         </main>
       </div>
     </div>

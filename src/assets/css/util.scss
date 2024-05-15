@@ -390,9 +390,9 @@ body::-webkit-scrollbar-thumb:hover {
 // style for MDAS command floating
 .meter_command_floating {
   position: absolute;
+  width: calc(100% - 255px);
   top: 80px;
   right: 0;
-  width: 100%;
   z-index: 100;
   box-shadow: 0 5px 5px -5px #ccc;
   transition: 0.5s;
@@ -619,6 +619,7 @@ body::-webkit-scrollbar-thumb:hover {
 // }
 
 @media only screen and (max-width: 600px) {
+
   .table-wrapper {
     width: 100%;
   }
@@ -676,6 +677,7 @@ body::-webkit-scrollbar-thumb:hover {
 }
 // Extra Small devices (landscape phones, 300px and up)
 @media (min-width: 300px) {
+ 
   .forground {
     top: 65px;
     left: 0;
@@ -693,6 +695,7 @@ body::-webkit-scrollbar-thumb:hover {
 
 // Small devices (landscape phones, 576px and up)
 @media (min-width: 576px) {
+   
   .forground {
     top: 65px;
     left: 0;
@@ -710,6 +713,7 @@ body::-webkit-scrollbar-thumb:hover {
 
 // Medium devices (tablets, 768px and up)
 @media (min-width: 768px) {
+
   .forground {
     top: 100px;
     left: 250px;
@@ -744,6 +748,7 @@ body::-webkit-scrollbar-thumb:hover {
 
 // Medium large devices (large desktops, 1200px and up)
 @media (min-width: 1200px) {
+  
   .forground {
     top: 100px;
     left: 500px;

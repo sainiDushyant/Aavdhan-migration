@@ -5,13 +5,19 @@ const Footer = () => {
   return (
     <footer
       style={{
-        position: 'fixed',
         bottom: 10,
         width: '100%',
         marginLeft: '15px',
       }}
     >
-      <p className="mb-0">
+      <p
+        className="mb-0"
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          marginRight: '10px',
+        }}
+      >
         <span className="float-md-left d-block d-md-inline-block mt-25">
           COPYRIGHT © {new Date().getFullYear()}{' '}
           <a
@@ -26,7 +32,7 @@ const Footer = () => {
           </span>
         </span>
 
-        <small style={{ position: 'fixed', right: 50 }}>
+        <small>
           Version : HES - <span className="text-dark">1.2</span> | MDMS -{' '}
           <span className="text-dark">0.0.0.5</span> | Billing System -{' '}
           <span className="text-dark">0.0.0.5</span> | CIS/CRM -

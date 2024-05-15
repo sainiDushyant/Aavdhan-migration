@@ -382,7 +382,7 @@ const CommandHistoryDataDownloadWrapper = () => {
         );
       }
     }
-  }, [requestReportResponse.isSuccess]);
+  }, [requestReportResponse]);
   const retryAgain = () => {
     fetchDownloadRequestHistory();
   };

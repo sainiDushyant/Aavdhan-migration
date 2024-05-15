@@ -177,7 +177,10 @@ const CommandRetryConfig = () => {
             : ''}
         </ModalHeader>
         <ModalBody className="p-0">
-          <CommandRetryUpDateForm rowSelected={commandSelectedForUpdate} />
+          <CommandRetryUpDateForm
+            rowSelected={commandSelectedForUpdate}
+            setShowDataEdit={setShowDataEdit}
+          />
         </ModalBody>
       </Modal>
     </>
