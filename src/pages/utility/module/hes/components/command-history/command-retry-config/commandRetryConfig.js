@@ -158,7 +158,7 @@ const CommandRetryConfig = () => {
             columns={tblColumn()}
             tblData={commandRetryResponse}
             rowCount={10}
-            // tableName={'Command Retry Configuration'}
+            tableName={'Command Retry Configuration'}
             refresh={refetch}
             // totalCount={totalCount}
             // onNextPageClicked={onNextPageClicked}

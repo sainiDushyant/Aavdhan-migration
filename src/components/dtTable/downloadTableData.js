@@ -66,26 +66,41 @@ export function DownloadCSV(
   column = false,
   additional_columns = false
 ) {
-  // console.log('Data for csv download .....')
-  // console.log(data)
+  console.log('Data for csv download .....');
+  console.log(data);
 
   if (!data.length) {
     return true;
   }
 
-  for (let i = 0; i < data.length; i++) {
-    for (const key in data[i]) {
+  //   for (let i = 0; i < data.length; i++) {
+  //     for (const key in data[i]) {
+  //       if (
+  //         data[i][key] === '' ||
+  //         data[i][key] === null ||
+  //         data[i][key] === undefined ||
+  //         data[i][key] === 'NaT' ||
+  //         data[i][key] === 'nan'
+  //       ) {
+  //         data[i][key] = '--';
+  //       }
+  //     }
+  //   }
+  const filtererdData = data.map((e) => {
+    const newObj = { ...e };
+    for (const key in newObj) {
       if (
-        data[i][key] === '' ||
-        data[i][key] === null ||
-        data[i][key] === undefined ||
-        data[i][key] === 'NaT' ||
-        data[i][key] === 'nan'
+        newObj[key] === '' ||
+        newObj[key] === null ||
+        newObj[key] === undefined ||
+        newObj[key] === 'NaT' ||
+        newObj[key] === 'nan'
       ) {
-        data[i][key] = '--';
+        newObj[key] = '--';
       }
     }
-  }
+    return newObj;
+  });
 
   // console.log('Updated Data for csv download ....')
   // console.log(data)
@@ -104,7 +119,11 @@ export function DownloadCSV(
   }
 
   const link = document.createElement('a');
-  let csv = convertArrayOfObjectsToCSV(data, column, additional_columns);
+  let csv = convertArrayOfObjectsToCSV(
+    filtererdData,
+    column,
+    additional_columns
+  );
   if (csv === null) return;
 
   const filename = `${csv_name}.csv`;
@@ -170,11 +189,7 @@ export const DownloadPDF = (tableName, columns, tblData) => {
   const orientation = columns.length < 6 ? 'portrait' : 'landscape'; // portrait or landscape
 
   const marginLeft = 40;
-  const doc = new jsPDF({
-    orientation: orientation,
-    unit: unit,
-    format: [4, 2],
-  });
+  const doc = new jsPDF(orientation, unit, size);
 
   doc.setFontSize(15);
 
@@ -226,7 +241,7 @@ export const DownloadPDF = (tableName, columns, tblData) => {
       doc.setFontSize(10);
 
       // Add the footer text and line
-      doc.text(footerText, marginLeft, 10);
+      doc.text(footerText, marginLeft, footerY + 15);
       doc.line(
         marginLeft,
         footerY,

@@ -272,11 +272,11 @@ const SimpleDataTable = (props) => {
             {props.flatPicker ? (
               <>
                 <Col className="p-0">
-                  {props.smHeading ? (
-                    <h5 className="table_header">{props.tableName}</h5>
-                  ) : (
-                    <h4 className="table_header">{props.tableName}</h4>
-                  )}
+                  {props.smHeading
+                    ? // <h5 className="table_header">{props.tableName}</h5>
+                      ''
+                    : // <h4 className="table_header">{props.tableName}</h4>'
+                      ''}
                 </Col>
                 <Col>{props.flatPicker}</Col>
               </>
