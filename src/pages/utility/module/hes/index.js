@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { TabContent, TabPane, Nav, NavItem, NavLink } from 'reactstrap';
 // import MeterAndCommandDropDown from './wrappers/meterAndCommandDropdown';
 import CommandHistory from './components/command-history/CommandHistory';
-import PushData from './components/PushData';
+import PushData from './components/push-data/PushData.js';
 import MeterProfile from './components/MeterProfile.js';
 import MeterAndCommandDropDown from './components/meterAndCommandDropdown';
 

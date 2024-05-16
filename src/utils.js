@@ -873,3 +873,21 @@ export const DLMSCommandMapping = (commandName, DataForTable) => {
   }
   return DataForTable;
 };
+
+export const getDefaultDateTimeRange = () => {
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  let mm = today.getMonth() + 1; // Months start at 0!
+  let dd = today.getDate();
+
+  if (dd < 10) dd = '0'.concat(dd);
+  if (mm < 10) mm = '0'.concat(mm);
+
+  let start_date = '';
+  let end_date = '';
+
+  start_date = start_date.concat(yyyy, '-', mm, '-', '01', ' 00:00:00');
+  end_date = end_date.concat(yyyy, '-', mm, '-', dd, ' 23:59:59');
+
+  return { startDateTime: start_date, endDateTime: end_date };
+};

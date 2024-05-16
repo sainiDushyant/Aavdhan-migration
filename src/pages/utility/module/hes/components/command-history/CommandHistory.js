@@ -11,7 +11,7 @@ import {
 import { useLocation } from 'react-router-dom';
 import { Eye, X, Layers, Download } from 'react-feather';
 import SimpleTableForDLMSCommandResponse from '../../../../../../components/dtTable/simpleTableForDLMSCommandResponse';
-import DataTableV1 from '../../../../../../components/datatable/DataTableV1';
+import DataTableV1 from '../../../../../../components/dtTable/DataTableV1';
 
 import CardInfo from '../../../../../../components/ui-elements/cards/cardInfo';
 
@@ -183,74 +183,74 @@ const CommandHistory = (props) => {
 
   useEffect(() => {
     if (dlmsCommandHistoryResponse) {
+      console.log(dlmsCommandHistoryResponse, 'hello');
       let statusCode = dlmsCommandHistoryResponse?.responseCode;
       if (statusCode === 401 || statusCode === 403) {
         setLogout(true);
       } else if (statusCode === 200 || statusCode === 204) {
-        try {
-          dlmsCommandHistoryResponse?.data?.result?.results?.map((item) => {
-            // Convert update_time string to a moment object
-            const updateMoment = moment(
-              item.update_time,
-              'YYYY-MM-DD HH:mm:ss'
-            ).tz('Asia/Kolkata');
+        dlmsCommandHistoryResponse?.data?.result?.results?.map((item) => {
+          let newItem = { ...item };
+          // Convert update_time string to a moment object
+          const updateMoment = moment(
+            newItem.update_time,
+            'YYYY-MM-DD HH:mm:ss'
+          ).tz('Asia/Kolkata');
 
-            // console.log("Update Time:", updateMoment.format("YYYY-MM-DD HH:mm:ss"))
-            // Check if update_time is greater than the current time
-            // console.log(updateMoment.isAfter(currentTime))
-            if (updateMoment.isAfter(currentTime)) {
-              item.update_time = item.execution_start_time;
-              item.execution_status = 'In Progress';
-            }
-            // if (
-            //   item.command === 'LIVE_VERSION' ||
-            //   item.command === 'BLOCK_LOAD' ||
-            //   item.command === 'DAILY_LOAD' ||
-            //   item.command === 'EVENTS'
-            // ) {
-            //   const randomIndex1 = Math.floor(
-            //     Math.random() * diffTimeSec.length
-            //   );
-            //   const randomIndex2 = Math.floor(
-            //     Math.random() * diffTimeSec.length
-            //   );
+          // console.log("Update Time:", updateMoment.format("YYYY-MM-DD HH:mm:ss"))
+          // Check if update_time is greater than the current time
+          // console.log(updateMoment.isAfter(currentTime))
+          if (updateMoment.isAfter(currentTime)) {
+            newItem.update_time = newItem.execution_start_time;
+            newItem.execution_status = 'In Progress';
+          }
+          // if (
+          //   item.command === 'LIVE_VERSION' ||
+          //   item.command === 'BLOCK_LOAD' ||
+          //   item.command === 'DAILY_LOAD' ||
+          //   item.command === 'EVENTS'
+          // ) {
+          //   const randomIndex1 = Math.floor(
+          //     Math.random() * diffTimeSec.length
+          //   );
+          //   const randomIndex2 = Math.floor(
+          //     Math.random() * diffTimeSec.length
+          //   );
 
-            //   if (
-            //     !item.execution_start_time &&
-            //     item.execution_status === 'Success'
-            //   ) {
-            //     item.execution_start_time = moment(item.start_time)
-            //       .add(1, 'second')
-            //       .format('YYYY-MM-DD HH:mm:ss');
-            //     item.update_time = moment(item.execution_start_time)
-            //       .add(diffTimeSec[randomIndex2], 'second')
-            //       .format('YYYY-MM-DD HH:mm:ss');
-            //   } else if (
-            //     item.execution_start_time === item.start_time &&
-            //     item.start_time === item.update_time &&
-            //     item.execution_status === 'Success'
-            //   ) {
-            //     item.execution_start_time = moment(item.start_time)
-            //       .add(1, 'second')
-            //       .format('YYYY-MM-DD HH:mm:ss');
-            //     item.update_time = moment(item.execution_start_time)
-            //       .add(diffTimeSec[randomIndex2], 'second')
-            //       .format('YYYY-MM-DD HH:mm:ss');
-            //   }
-            // }
-            // console.log(item.execution_start_time, item.start_time, item.update_time)
-            return item;
-          });
-          setResponse(dlmsCommandHistoryResponse.data.result.results);
-          setTotalCount(dlmsCommandHistoryResponse.data.result.count);
-        } catch (error) {
-          setErrorMessage('Something went wrong, please retry');
-        }
+          //   if (
+          //     !item.execution_start_time &&
+          //     item.execution_status === 'Success'
+          //   ) {
+          //     item.execution_start_time = moment(item.start_time)
+          //       .add(1, 'second')
+          //       .format('YYYY-MM-DD HH:mm:ss');
+          //     item.update_time = moment(item.execution_start_time)
+          //       .add(diffTimeSec[randomIndex2], 'second')
+          //       .format('YYYY-MM-DD HH:mm:ss');
+          //   } else if (
+          //     item.execution_start_time === item.start_time &&
+          //     item.start_time === item.update_time &&
+          //     item.execution_status === 'Success'
+          //   ) {
+          //     item.execution_start_time = moment(item.start_time)
+          //       .add(1, 'second')
+          //       .format('YYYY-MM-DD HH:mm:ss');
+          //     item.update_time = moment(item.execution_start_time)
+          //       .add(diffTimeSec[randomIndex2], 'second')
+          //       .format('YYYY-MM-DD HH:mm:ss');
+          //   }
+          // }
+          // console.log(item.execution_start_time, item.start_time, item.update_time)
+          return newItem;
+        });
+        setResponse(dlmsCommandHistoryResponse.data.result.results);
+        setTotalCount(dlmsCommandHistoryResponse.data.result.count);
       } else {
         setErrorMessage('Network Error, please retry');
       }
     }
   }, [dlmsCommandHistoryResponse]);
+
+  console.log(response, 'command history response');
 
   // useEffect(() => {
   //   if (tapCommandHistoryResponse) {

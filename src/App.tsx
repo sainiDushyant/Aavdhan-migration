@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { HashRouter, Routes, Route } from 'react-router-dom';
 import Login from './pages/login';
 import ForgotPassword from './pages/forgotPassword';
 import HesUtility from './pages/utility/module/hes';
@@ -7,17 +7,21 @@ import LayoutWrapper from './components/layout/LayoutWrapper';
 
 const App = () => {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <Routes>
         <Route path="/" element={<Login />} />
         <Route
           path="utility/lpdd/hes"
           element={<LayoutWrapper children={<HesUtility />} />}
         />
+         <Route
+          path="utility/sbpdcl/hes"
+          element={<LayoutWrapper children={<HesUtility />} />}
+        />
 
         <Route path="forgot-password" element={<ForgotPassword />} />
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
   );
 };
 

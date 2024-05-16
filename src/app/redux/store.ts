@@ -3,6 +3,7 @@ import { loginApi } from '../../api/loginSlice';
 import { forgotPasswordApi } from '../../api/forgot-passwordSlice';
 import { commandHistoryApi } from '../../api/command-historySlice';
 import { dropdownsApi } from '../../api/drop-downSlice';
+import { pushDataApi } from '../../api/push-dataSlice';
 import {utilityMDASAssetListReducer,utilityMDASDlmsCommandReducer} from './commandExecutionSlice'
 
 
@@ -11,12 +12,13 @@ export const store = configureStore({
     [loginApi.reducerPath]:loginApi.reducer,
     [forgotPasswordApi.reducerPath]:forgotPasswordApi.reducer,
     [commandHistoryApi.reducerPath]:commandHistoryApi.reducer,
+    [pushDataApi.reducerPath]:pushDataApi.reducer,
     [dropdownsApi.reducerPath]:dropdownsApi.reducer,
     utilityMDASAssetList: utilityMDASAssetListReducer,
     utilityMDASDlmsCommand:utilityMDASDlmsCommandReducer
   },
   middleware: (getDefaultMiddleware :any) =>
-    getDefaultMiddleware().concat(loginApi.middleware).concat(forgotPasswordApi.middleware).concat(commandHistoryApi.middleware).concat(dropdownsApi.middleware),
+    getDefaultMiddleware().concat(loginApi.middleware).concat(forgotPasswordApi.middleware).concat(commandHistoryApi.middleware).concat(dropdownsApi.middleware).concat(pushDataApi.middleware),
     
 
 });

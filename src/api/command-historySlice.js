@@ -16,6 +16,7 @@ export const commandHistoryApi = createApi({
       headers.set('Unique_id', '1O7HZ4E3');
     },
   }),
+  keepUnusedDataFor: 300,
   endpoints: (builder) => ({
     getMdasDlmsCommandHistory: builder.query({
       query: (params) => ({
@@ -70,8 +71,6 @@ export const commandHistoryApi = createApi({
       }),
       invalidatesTags: ['DLMSDataDownloadRequestHistory'],
     }),
-
-    keepUnusedDataFor: 300000,
   }),
 });
 

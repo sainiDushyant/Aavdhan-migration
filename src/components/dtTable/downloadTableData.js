@@ -73,19 +73,6 @@ export function DownloadCSV(
     return true;
   }
 
-  //   for (let i = 0; i < data.length; i++) {
-  //     for (const key in data[i]) {
-  //       if (
-  //         data[i][key] === '' ||
-  //         data[i][key] === null ||
-  //         data[i][key] === undefined ||
-  //         data[i][key] === 'NaT' ||
-  //         data[i][key] === 'nan'
-  //       ) {
-  //         data[i][key] = '--';
-  //       }
-  //     }
-  //   }
   const filtererdData = data.map((e) => {
     const newObj = { ...e };
     for (const key in newObj) {
@@ -101,9 +88,6 @@ export function DownloadCSV(
     }
     return newObj;
   });
-
-  // console.log('Updated Data for csv download ....')
-  // console.log(data)
 
   try {
     let indx_to_remove;

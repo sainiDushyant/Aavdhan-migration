@@ -1,4 +1,4 @@
-import DataTableV1 from '../../../../../../../components/datatable/DataTableV1';
+import DataTableV1 from '../../../../../../../components/dtTable/DataTableV1';
 import {
   Col,
   Row,
