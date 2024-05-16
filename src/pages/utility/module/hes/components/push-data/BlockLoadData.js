@@ -3,8 +3,7 @@ import React, { useState, useEffect } from 'react';
 
 import { useLocation } from 'react-router-dom';
 
-// import { useLocation } from 'react-router-dom'
-// import CommonMeterDropdown from './commonMeterDropdown';
+import CommonMeterDropdown from './commonMeterDropdown';
 
 import DataTableV1 from '../../../../../../components/dtTable/DataTableV1';
 
@@ -21,7 +20,6 @@ import { useGetBlockLoadDataQuery } from '../../../../../../api/push-dataSlice';
 
 const BlockLoadData = (props) => {
   // Logout User
-  const [logout, setLogout] = useState(false);
   // useEffect(() => {
   //   if (logout) {
   //     authLogout(history, dispatch);
@@ -121,7 +119,7 @@ const BlockLoadData = (props) => {
       setResponse(blockLoadResponse);
       setTotalCount(data?.data.result.count);
     } else if (statusCode === 401 || statusCode === 403) {
-      setLogout(true);
+      // setLogout(true);
     } else {
       setErrorMessage('Network Error, please retry');
     }
@@ -230,18 +228,17 @@ const BlockLoadData = (props) => {
   };
 
   const onSubmitButtonClicked = (filterParams) => {
-    // console.log('Value passed from child to parent ....')
-    // console.log(dummy)
-
-    // console.log('Filter Parameters .....')
-    // console.log(filterParams)
-
     setFilterParams(filterParams);
     setCurrentPage(1);
   };
 
   const handleReportDownloadModal = () => {
     setShowReportDownloadModal(!showReportDownloadModal);
+  };
+
+  const reFresh = () => {
+    setFilterParams({});
+    setCurrentPage(1);
   };
 
   // custom Close Button for Report Download Modal
@@ -256,13 +253,13 @@ const BlockLoadData = (props) => {
   return (
     <>
       <Card>
-        {/* <CardBody> */}
-        {/* <CommonMeterDropdown
+        <CardBody>
+          <CommonMeterDropdown
             tab="block_load"
             set_resp={setResponse}
             onSubmitButtonClicked={onSubmitButtonClicked}
-          /> */}
-        {/* </CardBody> */}
+          />
+        </CardBody>
         {isFetching ? (
           <Loader hight="min-height-330" />
         ) : isError ? (
@@ -276,28 +273,6 @@ const BlockLoadData = (props) => {
         ) : (
           !isFetching && (
             <div className="table-wrapper">
-              {/* <SimpleDataTableMDAS
-                columns={tblColumn()}
-                tblData={response}
-                rowCount={10}
-                tableName={'Block Load Table'}
-                refresh={reloadData}
-                currentPage={currentPage}
-                totalCount={totalCount}
-                onNextPageClicked={onNextPageClicked}
-                showRequestDownloadModal={true}
-                isDownloadModal={'yes'}
-                extraTextToShow={
-                  <h5
-                    className={`${
-                      totalCount ? 'text-success' : 'text-danger'
-                    } m-0`}
-                  >
-                    Total Block Load Count: {totalCount}
-                  </h5>
-                }
-                // handleReportDownloadModal={handleReportDownloadModal}
-              /> */}
               <DataTableV1
                 columns={createColumns()}
                 data={response}
@@ -305,13 +280,12 @@ const BlockLoadData = (props) => {
                 tableName={'Block Load Table'}
                 showDownloadButton={true}
                 showRefreshButton={true}
-                refreshFn={refetch}
+                refreshFn={reFresh}
                 showAddButton={false}
                 currentPage={currentPage}
                 totalRowsCount={totalCount}
                 onPageChange={onNextPageClicked}
                 isLoading={isFetching}
-                //setShowForm={setShowForm}
                 pointerOnHover={true}
                 extraTextToShow={
                   <div
@@ -339,7 +313,7 @@ const BlockLoadData = (props) => {
         contentClassName="pt-0"
       >
         <ModalHeader
-          className="mb-3"
+          className="d-flex justify-content-between"
           toggle={handleReportDownloadModal}
           close={CloseBtnForReportDownload}
           tag="div"

@@ -1,8 +1,8 @@
 import { CardBody, Card, Badge, UncontrolledTooltip } from 'reactstrap';
 import { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useFetcher, useLocation } from 'react-router-dom';
 
-// import CommonMeterDropdown from '../commonMeterDropdown'
+import CommonMeterDropdown from './commonMeterDropdown';
 
 import DataTableV1 from '../../../../../../components/dtTable/DataTableV1';
 
@@ -15,7 +15,10 @@ import { caseInsensitiveSort } from '../../../../../../utils';
 import { Download } from 'react-feather';
 
 import { toast } from 'react-toastify';
-import { useDownloadPushDataQuery } from '../../../../../../api/push-dataSlice';
+import {
+  useDownloadPushDataQuery,
+  useDownloadFilteredPushDataQuery,
+} from '../../../../../../api/push-dataSlice';
 
 // import PushDataFilterWrapper from './pushDataFilterWrapper';
 // import CommonMeterDropdown from '../commonMeterDropdown';
@@ -46,56 +49,10 @@ const PushDataDownloadWrapper = (props) => {
   const [errorMessage, setErrorMessage] = useState('');
   const [hasError, setError] = useState(false);
   const [response, setResponse] = useState([]);
+  const [skip, setSkip] = useState(true);
 
   // const requestReport = async (params) => {
-  //   if (params.report_name === 'block_load') {
-  //     return await useJwt
-  //       .postPushDataDLMSDownloadRequestBlockLoadPush(params)
-  //       .then((res) => {
-  //         const status = res.status;
 
-  //         return [status, res];
-  //       })
-  //       .catch((err) => {
-  //         if (err.response) {
-  //           const status = err.response.status;
-  //           return [status, err];
-  //         } else {
-  //           return [0, err];
-  //         }
-  //       });
-  //   } else if (params.report_name === 'periodic_push') {
-  //     return await useJwt
-  //       .postPushDataDLMSDownloadRequestPeriodicPush(params)
-  //       .then((res) => {
-  //         const status = res.status;
-
-  //         return [status, res];
-  //       })
-  //       .catch((err) => {
-  //         if (err.response) {
-  //           const status = err.response.status;
-  //           return [status, err];
-  //         } else {
-  //           return [0, err];
-  //         }
-  //       });
-  //   } else if (params.report_name === 'event_push') {
-  //     return await useJwt
-  //       .postPushDataDLMSDownloadRequestEventPush(params)
-  //       .then((res) => {
-  //         const status = res.status;
-
-  //         return [status, res];
-  //       })
-  //       .catch((err) => {
-  //         if (err.response) {
-  //           const status = err.response.status;
-  //           return [status, err];
-  //         } else {
-  //           return [0, err];
-  //         }
-  //       });
   //   } else if (params.report_name === 'billing_data') {
   //     return await useJwt
   //       .postBillingDataDLMSDownloadRequest(params)
@@ -123,6 +80,9 @@ const PushDataDownloadWrapper = (props) => {
 
   const { data, isFetching, isError, refetch } =
     useDownloadPushDataQuery(params);
+
+  const { data: downloadFilteredPushDataResponse, isSuccess } =
+    useDownloadFilteredPushDataQuery(params, { skip });
 
   useEffect(() => {
     let statusCode = data?.responseCode;
@@ -287,102 +247,97 @@ const PushDataDownloadWrapper = (props) => {
 
   const onNextPageClicked = (number) => {
     setCurrentPage(number + 1);
-    setFetchingData(true);
   };
   const reloadData = () => {
     setCurrentPage(1);
-    setFetchingData(true);
   };
 
-  // const onSubmitButtonClicked = async (filterParams) => {
-  //   // console.log('Filter Params .....')
-  //   // console.log(filterParams)
-  //   // console.log(props.report_name)
+  const onSubmitButtonClicked = (filterParams) => {
+    // console.log('Filter Params .....')
+    // console.log(filterParams)
+    // console.log(props.report_name)
 
-  //   const params = {};
-  //   params['project'] = project;
-  //   params['report_name'] = props.report_name;
+    const params = {};
+    params['project'] = project;
+    params['report_name'] = props.report_name;
 
-  //   if (
-  //     filterParams.hasOwnProperty('site') &&
-  //     filterParams['site'] &&
-  //     filterParams['site'] !== ''
-  //   ) {
-  //     params['site'] = filterParams['site'];
-  //   } else {
-  //     params['site'] = '';
-  //   }
+    if (
+      filterParams.hasOwnProperty('site') &&
+      filterParams['site'] &&
+      filterParams['site'] !== ''
+    ) {
+      params['site'] = filterParams['site'];
+    } else {
+      params['site'] = '';
+    }
 
-  //   if (
-  //     filterParams.hasOwnProperty('meter') &&
-  //     filterParams['meter'] &&
-  //     filterParams['meter'] !== ''
-  //   ) {
-  //     params['meter'] = filterParams['meter'];
-  //   } else {
-  //     params['meter'] = '';
-  //   }
+    if (
+      filterParams.hasOwnProperty('meter') &&
+      filterParams['meter'] &&
+      filterParams['meter'] !== ''
+    ) {
+      params['meter'] = filterParams['meter'];
+    } else {
+      params['meter'] = '';
+    }
 
-  //   if (
-  //     filterParams.hasOwnProperty('start_date') &&
-  //     filterParams['start_date'] &&
-  //     filterParams['start_date'] !== ''
-  //   ) {
-  //     params['start_date'] = filterParams['start_date'];
-  //   } else {
-  //     params['start_date'] = '';
-  //   }
+    if (
+      filterParams.hasOwnProperty('start_date') &&
+      filterParams['start_date'] &&
+      filterParams['start_date'] !== ''
+    ) {
+      params['start_date'] = filterParams['start_date'];
+    } else {
+      params['start_date'] = '';
+    }
 
-  //   if (
-  //     filterParams.hasOwnProperty('end_date') &&
-  //     filterParams['end_date'] &&
-  //     filterParams['end_date'] !== ''
-  //   ) {
-  //     params['end_date'] = filterParams['end_date'];
-  //   } else {
-  //     params['end_date'] = '';
-  //   }
+    if (
+      filterParams.hasOwnProperty('end_date') &&
+      filterParams['end_date'] &&
+      filterParams['end_date'] !== ''
+    ) {
+      params['end_date'] = filterParams['end_date'];
+    } else {
+      params['end_date'] = '';
+    }
+    setSkip(!skip);
+  };
 
-  //   const [statusCode, response] = await requestReport(params);
-
-  //   if (statusCode === 200) {
-  //     toast.success(
-  //       <Toast msg={'Request submitted successfully ....'} type="success" />,
-  //       {
-  //         hideProgressBar: true,
-  //       }
-  //     );
-  //     reloadData();
-  //   } else if (statusCode === 401 || statusCode === 403) {
-  //     setLogout(true);
-  //   } else {
-  //     toast.warning(
-  //       <Toast
-  //         msg={'Something went wrong please retry .....'}
-  //         type="warning"
-  //       />,
-  //       {
-  //         hideProgressBar: true,
-  //       }
-  //     );
-  //   }
-  // };
+  useEffect(() => {
+    if (isSuccess) {
+      const statusCode = downloadFilteredPushDataResponse?.responseCode;
+      if (statusCode === 200) {
+        toast('Request submitted successfully ....', {
+          hideProgressBar: true,
+          type: 'success',
+        });
+        refetch();
+        setSkip(!skip);
+      } else if (statusCode === 401 || statusCode === 403) {
+        setLogout(true);
+      } else {
+        toast('Something went wrong please retry .....', {
+          hideProgressBar: true,
+          type: 'warning',
+        });
+      }
+    }
+  }, [downloadFilteredPushDataResponse]);
 
   const retryAgain = () => {
-    setError(false);
-    setRetry(true);
+    refetch();
   };
 
   return (
     <>
       <Card>
-        {/* <CardBody>
+        <CardBody>
           <CommonMeterDropdown
             tab="block_load"
             set_resp={setResponse}
             onSubmitButtonClicked={onSubmitButtonClicked}
           />
-        </CardBody> */}
+        </CardBody>
 
         {isFetching ? (
           <Loader hight="min-height-330" />
@@ -396,16 +351,6 @@ const PushDataDownloadWrapper = (props) => {
           />
         ) : (
           !isFetching && (
-            // <SimpleDataTablePaginated
-            //   columns={tblColumn()}
-            //   tblData={response}
-            //   rowCount={pageSize}
-            //   tableName={props.table_name}
-            //   refresh={reloadData}
-            //   currentPage={currentPage}
-            //   totalCount={totalCount}
-            //   onNextPageClicked={onNextPageClicked}
-            // />
             <DataTableV1
               columns={tblColumn()}
               data={response}

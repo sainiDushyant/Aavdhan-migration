@@ -1,29 +1,45 @@
 import React from 'react';
 import { Sidebar, Menu, MenuItem, SubMenu } from 'react-pro-sidebar';
 import { ChevronLeft, ChevronRight } from 'react-feather';
+import { useLocation } from 'react-router-dom';
 import { Award } from 'react-feather';
 import '../../../styles/layout.scss';
+import { Link } from 'react-router-dom';
 function SideBar({ collapsed, setCollapsed }) {
+  const location = useLocation();
   return (
     <div className="pt-1">
       <Sidebar collapsed={collapsed}>
-        <Menu>
-          <SubMenu icon={<Award size={18} />} label="Charts">
-            <MenuItem icon={<Award size={18} />}>one</MenuItem>
-            <MenuItem icon={<Award size={18} />}>two</MenuItem>
+        <Menu
+          menuItemStyles={{
+            button: ({ level, active }) => {
+              // only apply styles on first level elements of the tree
+              if (level === 1)
+                return {
+                  color: active ? 'white' : undefined,
+                  backgroundColor: active ? '#7367f0' : undefined,
+                };
+            },
+          }}
+        >
+          <SubMenu icon={<Award size={18} />} label="LPDD">
+            <MenuItem
+              icon={<Award size={18} />}
+              component={<Link to={'/utility/lpdd/hes'} />}
+              active={location.pathname === '/utility/lpdd/hes'}
+            >
+              HES
+            </MenuItem>
           </SubMenu>
-          <MenuItem>
-            <Award size={18} /> &nbsp; Documentation
-          </MenuItem>
-          <MenuItem>
-            <Award size={18} /> &nbsp; Calendar
-          </MenuItem>
-          <MenuItem>
-            <Award size={18} /> &nbsp; E-commerce
-          </MenuItem>
-          <MenuItem>
-            <Award size={18} /> &nbsp; Examples
-          </MenuItem>
+          <SubMenu icon={<Award size={18} />} label="SBPDCL">
+            <MenuItem
+              icon={<Award size={18} />}
+              component={<Link to={'/utility/sbpdcl/hes'} />}
+              active={location.pathname === '/utility/sbpdcl/hes'}
+            >
+              HES
+            </MenuItem>
+          </SubMenu>
         </Menu>
       </Sidebar>
       {collapsed ? (

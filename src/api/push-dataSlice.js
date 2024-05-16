@@ -34,11 +34,22 @@ export const pushDataApi = createApi({
         params,
       }),
     }),
+    downloadFilteredPushData: builder.query({
+      query: (params) => ({
+        url: `${MDASUrl}/api/hes/dlms/${
+          params.report_name === 'block_load' ? 'blockload-push' : 'event-push'
+        }-report-download/`,
+        params: params,
+      }),
+    }),
   }),
 });
 
-export const { useGetBlockLoadDataQuery, useDownloadPushDataQuery } =
-  pushDataApi;
+export const {
+  useGetBlockLoadDataQuery,
+  useDownloadPushDataQuery,
+  useDownloadFilteredPushDataQuery,
+} = pushDataApi;
 
 // blockLoadpush:/api/hes/dlms/blockload-push-report-history/
 // eventPush:/api/hes/dlms/event-push-report-history/

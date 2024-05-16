@@ -31,10 +31,19 @@ export const dropdownsApi = createApi({
         params: params,
       }),
     }),
+    GISMetersList: builder.query({
+      query: (params) => ({
+        url: `${MDMSUrl}/api/v1/get/gis/meters/list`,
+        params: params,
+      }),
+    }),
   }),
 });
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
-export const { useCommandInfoDLMSQuery, useCommandInfoAssetsQuery } =
-  dropdownsApi;
+export const {
+  useCommandInfoDLMSQuery,
+  useCommandInfoAssetsQuery,
+  useLazyGISMetersListQuery,
+} = dropdownsApi;
