@@ -132,7 +132,7 @@ const CommandHistoryDataDownloadWrapper = () => {
 
   function createColumns() {
     const columns = [];
-    const ignoreColumns = ['id', 'sc_no', 'parameter'];
+    const ignoreColumns = ['id', 'sc_no', 'parameter', 'project', 'csv_url'];
     const disableSortings = [
       'site id',
       'Parameter',
@@ -194,6 +194,37 @@ const CommandHistoryDataDownloadWrapper = () => {
         }
       }
       columns.push({
+        name: 'Status',
+        width: '120px',
+        cell: (row) => {
+          if (row.execution_status === 'Success') {
+            return (
+              <>
+                <Badge pill color="success">
+                  {row.execution_status}
+                </Badge>
+              </>
+            );
+          } else if (row.execution_status === 'In_Progress') {
+            return (
+              <>
+                <Badge pill color="warning">
+                  {row.execution_status}
+                </Badge>
+              </>
+            );
+          } else if (row.execution_status === 'Failed') {
+            return (
+              <>
+                <Badge pill color="danger">
+                  {row.execution_status}
+                </Badge>
+              </>
+            );
+          }
+        },
+      });
+      columns.push({
         name: 'Download ',
         width: '120px',
         cell: (row) => {
@@ -209,9 +240,12 @@ const CommandHistoryDataDownloadWrapper = () => {
                 <UncontrolledTooltip
                   placement="top"
                   target="success"
-                  modifiers={{
-                    preventOverflow: { boundariesElement: 'window' },
-                  }}
+                  // modifiers={{
+                  //   preventOverflow: {
+                  //     enabled: true,
+                  //     boundariesElement: 'window',
+                  //   },
+                  // }}
                   autohide={false}
                   delay={{ show: 200, hide: 5 }}
                 >
@@ -230,9 +264,12 @@ const CommandHistoryDataDownloadWrapper = () => {
                 <UncontrolledTooltip
                   placement="top"
                   target="processing"
-                  modifiers={{
-                    preventOverflow: { boundariesElement: 'window' },
-                  }}
+                  // modifiers={{
+                  //   preventOverflow: {
+                  //     enabled: true,
+                  //     boundariesElement: 'window',
+                  //   },
+                  // }}
                   autohide={false}
                   delay={{ show: 200, hide: 5 }}
                 >
@@ -251,9 +288,12 @@ const CommandHistoryDataDownloadWrapper = () => {
                 <UncontrolledTooltip
                   placement="top"
                   target="failed"
-                  modifiers={{
-                    preventOverflow: { boundariesElement: 'window' },
-                  }}
+                  // modifiers={{
+                  //   preventOverflow: {
+                  //     enabled: true,
+                  //     boundariesElement: 'window',
+                  //   },
+                  // }}
                   autohide={false}
                   delay={{ show: 200, hide: 5 }}
                 >
@@ -272,17 +312,6 @@ const CommandHistoryDataDownloadWrapper = () => {
         return 1;
       }
       return 0;
-    });
-    sortedColumns.unshift({
-      name: 'Sr No',
-      width: '70px',
-      cell: (row, i) => {
-        return (
-          <div className="d-flex w-100 justify-content-center">
-            {i + 1 + 10 * (currentPage - 1)}
-          </div>
-        );
-      },
     });
     return sortedColumns;
   }

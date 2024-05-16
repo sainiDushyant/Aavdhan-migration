@@ -7,9 +7,23 @@ import {
   RefreshCw,
   PlusCircle,
   Filter,
+  File,
+  FileText,
 } from 'react-feather';
-import { Card, Row, Col, Input, Tooltip, Label, FormGroup } from 'reactstrap';
-import { DownloadCSV } from '../dtTable/downloadTableData';
+import {
+  Card,
+  Row,
+  Col,
+  Input,
+  Tooltip,
+  Label,
+  FormGroup,
+  UncontrolledButtonDropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
+} from 'reactstrap';
+import { DownloadCSV, DownloadPDF } from '../dtTable/downloadTableData';
 import CardInfo from '../../components/ui-elements/cards/NoDataCardInfo';
 
 const DataTableV1 = (props) => {
@@ -147,6 +161,79 @@ const DataTableV1 = (props) => {
                     </Tooltip>
                   </Fragment>
                 )}
+                {props.isDownloadModal === 'yes' ? (
+                  <>
+                    <Download
+                      onClick={() => props.handleReportDownloadModal()}
+                      id="_download"
+                      size={18}
+                      className=""
+                      style={{ minWidth: 18 }}
+                    />
+                  </>
+                ) : props.isDownloadModal === 'no' ? (
+                  ''
+                ) : (
+                  props.showDownloadButton && (
+                    <>
+                      <UncontrolledButtonDropdown>
+                        <DropdownToggle color="flat ">
+                          <Download
+                            id="Download"
+                            // onClick={() => {
+                            //   if (props?.onDownload) {
+                            //     props.onDownload();
+                            //   } else {
+                            //     DownloadCSV(
+                            //       data,
+                            //       props.downloadFileName || props.tableName
+                            //     );
+                            //   }
+                            // }}
+                            size={18}
+                            style={{ minWidth: 18 }}
+                          />
+                        </DropdownToggle>
+
+                        <DropdownMenu>
+                          <DropdownItem
+                            className="w-100"
+                            onClick={() => {
+                              if (props?.onDownload) {
+                                props.onDownload();
+                              } else {
+                                DownloadCSV(
+                                  data,
+                                  props.downloadFileName || props.tableName
+                                );
+                              }
+                            }}
+                          >
+                            <FileText size={15} className="ml_20 mx_6" />
+                            <span> CSV</span>
+                          </DropdownItem>
+                          <DropdownItem
+                            className="w-100"
+                            onClick={() =>
+                              DownloadPDF(props.tableName, props.columns, data)
+                            }
+                          >
+                            <File size={15} className="ml_20 mx_6" />
+                            <span>PDF</span>
+                          </DropdownItem>
+                        </DropdownMenu>
+                      </UncontrolledButtonDropdown>
+                      <Tooltip
+                        placement="top"
+                        isOpen={downloadTooltip}
+                        target="Download"
+                        toggle={() => setDownloadTooltip(!downloadTooltip)}
+                      >
+                        Download Data
+                      </Tooltip>
+                    </>
+                  )
+                )}
                 {props.showRefreshButton && (
                   <RefreshCw
                     id="refresh_table"
@@ -179,9 +266,9 @@ const DataTableV1 = (props) => {
                     style={{ minWidth: 18 }}
                   />
                 )}
-
+                {props.extraTextToShow}
                 {props.protocol && (
-                  <span className="">
+                  <span>
                     <FormGroup check inline>
                       <Label check onClick={() => onProtocolSelection('dlms')}>
                         <Input
@@ -195,49 +282,6 @@ const DataTableV1 = (props) => {
                       </Label>
                     </FormGroup>
                   </span>
-                )}
-                {props.extraTextToShow}
-                {props.isDownloadModal === 'yes' ? (
-                  <>
-                    <Download
-                      onClick={() => props.handleReportDownloadModal()}
-                      id="_download"
-                      size={18}
-                      className=""
-                      style={{ minWidth: 18 }}
-                    />
-                  </>
-                ) : props.isDownloadModal === 'no' ? (
-                  ''
-                ) : (
-                  props.showDownloadButton && (
-                    <>
-                      <Download
-                        id="Download"
-                        onClick={() => {
-                          if (props?.onDownload) {
-                            props.onDownload();
-                          } else {
-                            DownloadCSV(
-                              data,
-                              props.downloadFileName || props.tableName
-                            );
-                          }
-                        }}
-                        size={18}
-                        className=""
-                        style={{ minWidth: 18 }}
-                      />
-                      <Tooltip
-                        placement="top"
-                        isOpen={downloadTooltip}
-                        target="Download"
-                        toggle={() => setDownloadTooltip(!downloadTooltip)}
-                      >
-                        Download Data
-                      </Tooltip>
-                    </>
-                  )
                 )}
               </div>
             </Col>

@@ -619,7 +619,6 @@ body::-webkit-scrollbar-thumb:hover {
 // }
 
 @media only screen and (max-width: 600px) {
-
   .table-wrapper {
     width: 100%;
   }
@@ -677,7 +676,6 @@ body::-webkit-scrollbar-thumb:hover {
 }
 // Extra Small devices (landscape phones, 300px and up)
 @media (min-width: 300px) {
- 
   .forground {
     top: 65px;
     left: 0;
@@ -695,7 +693,6 @@ body::-webkit-scrollbar-thumb:hover {
 
 // Small devices (landscape phones, 576px and up)
 @media (min-width: 576px) {
-   
   .forground {
     top: 65px;
     left: 0;
@@ -713,7 +710,6 @@ body::-webkit-scrollbar-thumb:hover {
 
 // Medium devices (tablets, 768px and up)
 @media (min-width: 768px) {
-
   .forground {
     top: 100px;
     left: 250px;
@@ -748,7 +744,6 @@ body::-webkit-scrollbar-thumb:hover {
 
 // Medium large devices (large desktops, 1200px and up)
 @media (min-width: 1200px) {
-  
   .forground {
     top: 100px;
     left: 500px;
@@ -808,4 +803,10 @@ body::-webkit-scrollbar-thumb:hover {
   to {
     transform: rotate(360deg);
   }
+}
+.icon-fixed-size {
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+  min-height: 18px;
 }

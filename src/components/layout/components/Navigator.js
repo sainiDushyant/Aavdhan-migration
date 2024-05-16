@@ -2,6 +2,7 @@ import React from 'react';
 import { Sidebar, Menu, MenuItem, SubMenu } from 'react-pro-sidebar';
 import { ChevronLeft, ChevronRight } from 'react-feather';
 import { Award } from 'react-feather';
+import '../../../styles/layout.scss';
 function SideBar({ collapsed, setCollapsed }) {
   return (
     <div className="pt-1">
@@ -28,20 +29,14 @@ function SideBar({ collapsed, setCollapsed }) {
       {collapsed ? (
         <ChevronRight
           onClick={() => setCollapsed(false)}
-          className="mb-0 d-flex justify-content-end"
-          style={{
-            position: 'absolute',
-            bottom: '0px',
-          }}
+          className="cursor-pointer chevron-icon chevron-right sb-button"
+          size={30}
         />
       ) : (
         <ChevronLeft
           onClick={() => setCollapsed(true)}
-          className="mb-0 d-flex justify-content-end"
-          style={{
-            position: 'absolute',
-            bottom: '0px',
-          }}
+          className="cursor-pointer chevron-icon chevron-left sb-button"
+          size={30}
         />
       )}
     </div>

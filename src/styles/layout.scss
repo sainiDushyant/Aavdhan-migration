@@ -31,7 +31,23 @@ main {
   .aside {
     display: none;
   }
-  .meter_command_floating{
+  .meter_command_floating {
     width: 100%;
   }
+}
+.chevron-icon {
+  position: absolute;
+  bottom: 0;
+  border: 1px solid black;
+  border-radius: 20%;
+  box-shadow: 0 5px 5px -5px #ccc;
+  transition: all 0.5s ease;
+}
+
+.chevron-right {
+  left: 50px;
+}
+
+.chevron-left {
+  left: 220px;
 }

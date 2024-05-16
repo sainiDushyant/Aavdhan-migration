@@ -28,7 +28,7 @@ import {
   useLazyGetMdasDlmsHistoryDataQuery,
 } from '../../../../../../api/command-historySlice';
 import FilterForm from './filterForm';
-
+import '../../../../../../assets/css/util.scss';
 const CommandHistory = (props) => {
   // const [getTapCommandHistory, tapCommandHistoryResponse] =
   //   useLazyGetMdasTapCommandHistoryQuery();
@@ -782,7 +782,7 @@ const CommandHistory = (props) => {
     return (
       <Fragment>
         <Layers
-          className="ml-1 float-right"
+          className="ml-1 float-right icon-fixed-size"
           id="cmdRetries"
           size="18"
           onClick={() => setCommandRetryConfigModal(true)}
@@ -920,7 +920,8 @@ const CommandHistory = (props) => {
         contentClassName="pt-0"
       >
         <ModalHeader
-          className="d-flex gap-100 mb-3"
+          style={{ display: 'flex', justifyContent: 'space-between' }}
+          className="d-flex mb-3"
           toggle={handleFilter}
           close={CloseBtn}
           tag="div"
@@ -949,6 +950,7 @@ const CommandHistory = (props) => {
       >
         <ModalHeader
           className="mb-3"
+          style={{ display: 'flex', justifyContent: 'space-between' }}
           toggle={handleReportDownloadModal}
           close={CloseBtnForReportDownload}
           tag="div"
