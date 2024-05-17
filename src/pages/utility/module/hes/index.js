@@ -69,7 +69,6 @@ const HesUtility = (props) => {
           {active === '1' && (
             <React.Fragment>
               <MeterAndCommandDropDown
-                collapsed={props.collapsed}
                 refreshCommandHistory={refreshCommandHistory}
                 protocolSelectedForCommandExecution={
                   protocolSelectedForCommandExecution

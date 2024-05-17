@@ -1,18 +1,17 @@
 // import './App.css';
-import { useState } from 'react';
 import Drawer from './components/Drawer';
 import Navbar from './components/Navbar';
 import SideBar from './components/Navigator';
 import '../../styles/layout.scss';
 import Footer from '../../@core/layouts/components/footer';
 
-function LayoutWrapper({ children, collapsed, setCollapsed }) {
+function LayoutWrapper({ children }) {
   return (
     <div className="App">
       <Drawer SideBar={SideBar} />
       <div className="layout">
         <div className="aside border">
-          <SideBar collapsed={collapsed} setCollapsed={setCollapsed} />
+          <SideBar />
         </div>
         <Navbar />
         <main>

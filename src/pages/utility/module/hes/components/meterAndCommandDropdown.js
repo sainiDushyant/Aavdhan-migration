@@ -64,6 +64,7 @@ const MeterAndCommandDropDown = (props) => {
   const [errorMessage, setErrorMessage] = useState('');
   const [retry, setRetry] = useState(false);
   const [selected_project, set_selected_project] = useState(undefined);
+  const collapsed = useSelector((state) => state.layout.collapsed);
 
   // useEffect(() => {
   let statusCodeDLMS = commandInfoDLMSData?.responseCode;
@@ -368,9 +369,7 @@ const MeterAndCommandDropDown = (props) => {
   return (
     <Col
       className={`p-0 ${
-        props.collapsed === true
-          ? 'sidebar-collapsed'
-          : 'meter_command_floating'
+        collapsed === true ? 'sidebar-collapsed' : 'meter_command_floating'
       }`}
       style={{ transform: dropDownStyle }}
     >

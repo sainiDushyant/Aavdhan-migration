@@ -1,9 +1,18 @@
 import React from 'react';
-
+import { useDispatch, useSelector } from 'react-redux';
+import { setIsMobileSidebarOpen } from '../../../api/layoutSlice';
 function Drawer({ SideBar }) {
+  const dispatch = useDispatch();
+  const isMobileSidebarOpen = useSelector(
+    (state) => state.layout.isMobileSidebarOpen
+  );
+
+  const handleIsMobileSidebarOpen = () => {
+    dispatch(setIsMobileSidebarOpen(false));
+  };
   return (
     <div
-      class="offcanvas offcanvas-start"
+      className={`offcanvas offcanvas-start`}
       tabindex="-1"
       id="drawer"
       aria-labelledby="drawerLabel"
@@ -21,7 +30,7 @@ function Drawer({ SideBar }) {
           style={{ flexWrap: 'nowrap' }}
         >
           <img
-            src={`${process.env.PUBLIC_URL}/logo.ico`}
+            src={`${process.env.PUBLIC_URL}/polaris-logo.svg`}
             alt="Avdhaan Logo"
             style={{
               width: '30px',
@@ -36,7 +45,7 @@ function Drawer({ SideBar }) {
               fontFamily: 'sans-serif',
             }}
           >
-            AVDHAAN
+            Avdhaan
           </h3>
         </div>
         <button
@@ -44,9 +53,10 @@ function Drawer({ SideBar }) {
           class="btn-close"
           data-bs-dismiss="offcanvas"
           aria-label="Close"
+          onClick={handleIsMobileSidebarOpen}
         ></button>
       </div>
-      <div class="offcanvas-body p-0">
+      <div className="offcanvas-body p-0">
         <SideBar />
       </div>
     </div>

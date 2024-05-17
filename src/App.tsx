@@ -6,26 +6,17 @@ import HesUtility from './pages/utility/module/hes';
 import LayoutWrapper from './components/layout/LayoutWrapper';
 
 const App = () => {
-  const [collapsed, setCollapsed] = useState();
   return (
     <HashRouter>
       <Routes>
         <Route path="/" element={<Login />} />
         <Route
           path="utility/lpdd/hes"
-          element={
-            <LayoutWrapper collapsed={collapsed} setCollapsed={setCollapsed}>
-              <HesUtility collapsed={collapsed} />{' '}
-            </LayoutWrapper>
-          }
+          element={<LayoutWrapper children={<HesUtility />} />}
         />
         <Route
           path="utility/sbpdcl/hes"
-          element={
-            <LayoutWrapper collapsed={collapsed} setCollapsed={setCollapsed}>
-              <HesUtility collapsed={collapsed} />{' '}
-            </LayoutWrapper>
-          }
+          element={<LayoutWrapper children={<HesUtility />} />}
         />
 
         <Route path="forgot-password" element={<ForgotPassword />} />

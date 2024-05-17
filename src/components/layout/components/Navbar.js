@@ -1,6 +1,23 @@
-import React from 'react';
-
+import React, { useEffect, useState } from 'react';
+import { setIsMobileSidebarOpen } from '../../../api/layoutSlice';
+import { useDispatch } from 'react-redux';
+import { useRef } from 'react';
 function Navbar() {
+  const dispatch = useDispatch();
+  const handleIsMobileSidebarOpen = () => {
+    dispatch(setIsMobileSidebarOpen(true));
+  };
+
+  const handleResize = (event) => {
+    if (event.target.innerWidth > 991) {
+      dispatch(setIsMobileSidebarOpen(false));
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener('resize', handleResize);
+  }, []);
+
   return (
     <nav class="navbar border">
       <div class="container-fluid">
@@ -9,9 +26,11 @@ function Navbar() {
             class="btn d-block d-lg-none"
             id="menu-btn"
             type="button"
+            //  ref={ref}
             data-bs-toggle="offcanvas"
             data-bs-target="#drawer"
             aria-controls="drawer"
+            onClick={handleIsMobileSidebarOpen}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -33,11 +52,11 @@ function Navbar() {
           {/* <h3 className="d-none d-sm-block">Avdhaan</h3> */}
           <div className="d-none d-lg-flex align-items-center gap-1">
             <img
-              src={`${process.env.PUBLIC_URL}/logo.ico`}
+              src={`${process.env.PUBLIC_URL}/polaris-logo.svg`}
               alt="Avdhaan Logo"
               style={{
-                width: '40px',
-                height: '40px',
+                width: '30px',
+                height: '30px',
               }}
             />
             <h1
@@ -48,7 +67,7 @@ function Navbar() {
                 fontFamily: 'sans-serif',
               }}
             >
-              AVDHAAN
+              Avdhaan
             </h1>
           </div>
         </div>

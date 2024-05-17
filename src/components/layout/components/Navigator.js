@@ -1,12 +1,25 @@
 import React from 'react';
 import { Sidebar, Menu, MenuItem, SubMenu } from 'react-pro-sidebar';
 import { ChevronLeft, ChevronRight } from 'react-feather';
-import { useLocation } from 'react-router-dom';
-import { Award } from 'react-feather';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { Award, Circle } from 'react-feather';
+import { useSelector, useDispatch } from 'react-redux';
+import { setCollapsed } from '../../../api/layoutSlice';
 import '../../../styles/layout.scss';
 import { Link } from 'react-router-dom';
-function SideBar({ collapsed, setCollapsed }) {
+import { setIsMobileSidebarOpen } from '../../../api/layoutSlice';
+function SideBar() {
+  const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useDispatch();
+  const collapsed = useSelector((state) => state.layout.collapsed);
+  const toggleCollapsed = () => {
+    dispatch(setCollapsed(!collapsed));
+  };
+  const isMobileSidebarOpen = useSelector(
+    (state) => state.layout.isMobileSidebarOpen
+  );
+
   return (
     <div className="pt-1">
       <Sidebar collapsed={collapsed}>
@@ -18,41 +31,47 @@ function SideBar({ collapsed, setCollapsed }) {
                 return {
                   color: active ? 'white' : undefined,
                   backgroundColor: active ? '#7367f0' : undefined,
+                  '&:hover': {
+                    backgroundColor: '#7367f0',
+                    color: 'white',
+                  },
                 };
             },
           }}
         >
           <SubMenu icon={<Award size={18} />} label="LPDD">
             <MenuItem
-              icon={<Award size={18} />}
-              component={<Link to={'/utility/lpdd/hes'} />}
+              icon={<Circle size={12} />}
+              // component={<Link to={'/utility/lpdd/hes'} />}
+              onClick={() => navigate('/utility/lpdd/hes')}
               active={location.pathname === '/utility/lpdd/hes'}
+              data-bs-dismiss={isMobileSidebarOpen ? 'offcanvas' : ''}
             >
               HES
             </MenuItem>
           </SubMenu>
           <SubMenu icon={<Award size={18} />} label="SBPDCL">
             <MenuItem
-              icon={<Award size={18} />}
-              component={<Link to={'/utility/sbpdcl/hes'} />}
+              icon={<Circle size={12} />}
+              // component={<Link to={'/utility/sbpdcl/hes'} />}
+              onClick={() => navigate('/utility/sbpdcl/hes')}
               active={location.pathname === '/utility/sbpdcl/hes'}
+              data-bs-dismiss={isMobileSidebarOpen ? 'offcanvas' : ''}
             >
               HES
             </MenuItem>
           </SubMenu>
         </Menu>
       </Sidebar>
-      <div className="d-none d-sm-flex">
-        {collapsed ? (
+      <div className="d-none d-sm-flex" onClick={toggleCollapsed}>
+        {collapsed === true ? (
           <ChevronRight
-            onClick={() => setCollapsed(false)}
-            className="cursor-pointer chevron-icon chevron-right sb-button"
+            className="cursor-pointer chevron-icon chevron-right"
             size={30}
           />
         ) : (
           <ChevronLeft
-            onClick={() => setCollapsed(true)}
-            className="cursor-pointer chevron-icon chevron-left sb-button"
+            className="cursor-pointer chevron-icon chevron-left "
             size={30}
           />
         )}
