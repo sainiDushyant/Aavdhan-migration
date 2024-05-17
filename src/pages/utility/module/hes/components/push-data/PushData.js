@@ -37,7 +37,7 @@ const PushData = () => {
           </NavItem>
           <NavItem>
             <NavLink
-              active={active === '4'}
+              active={active === '3'}
               onClick={() => {
                 toggle('3');
               }}
@@ -51,7 +51,7 @@ const PushData = () => {
             {active === '1' && <Blockloaddata setActive={setActive} />}
           </TabPane>
           <TabPane tabId="2">{active === '2' && <PushEventData />}</TabPane>
-          <TabPane tabId="4">{active === '3' && <BillingData />}</TabPane>
+          <TabPane tabId="3">{active === '3' && <BillingData />}</TabPane>
         </TabContent>
       </Card>
     </React.Fragment>

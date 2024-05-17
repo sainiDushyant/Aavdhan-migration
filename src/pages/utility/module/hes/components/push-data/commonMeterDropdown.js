@@ -32,7 +32,10 @@ const CommonMeterDropdown = (props) => {
   // }, [logout]);
 
   // const responseData = useSelector(state => state.UtilityMdmsFlowReducer)
-  const { data: commandInfoAssetsResponse } = useCommandInfoAssetsQuery({
+  const {
+    data: commandInfoAssetsResponse,
+    isFetching: commandInfoAssetsLoading,
+  } = useCommandInfoAssetsQuery({
     project: projectName,
     vertical: verticalName,
   });
@@ -48,7 +51,6 @@ const CommonMeterDropdown = (props) => {
   const [selectedDTR, setSelectedDTR] = useState();
 
   const [inputType, setInputType] = useState();
-  const [dtrCount, setDTRCount] = useState(undefined);
 
   // Set default Start date to the current date and time
   const defaultBillingStartDate = moment()
@@ -177,9 +179,6 @@ const CommonMeterDropdown = (props) => {
       }
     }
   }, [data]);
-
-  // UseEffect to fetch Meter List for Selected DTR from Dropdown
-  // useEffect(async () => {
 
   const onDtrSelected = (selectedOption) => {
     if (selectedOption) {
@@ -316,7 +315,9 @@ const CommonMeterDropdown = (props) => {
               isDisabled={disableDTRDropdown}
               className="react-select rounded zindex_1003"
               classNamePrefix="select"
-              placeholder="Select site ..."
+              placeholder={
+                commandInfoAssetsLoading ? 'Loading...' : 'Select site ...'
+              }
             />
           </Col>
         )}
@@ -333,7 +334,7 @@ const CommonMeterDropdown = (props) => {
               isSearchable
               className="react-select zindex_1002"
               classNamePrefix="select"
-              placeholder="Select meter ..."
+              placeholder={data.isFetching ? 'Loading...' : 'Select meter ...'}
             />
           </Col>
         )}

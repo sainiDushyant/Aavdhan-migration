@@ -17,7 +17,7 @@ import { Download } from 'react-feather';
 import { toast } from 'react-toastify';
 import {
   useDownloadPushDataQuery,
-  useDownloadFilteredPushDataQuery,
+  useLazyDownloadFilteredPushDataQuery,
 } from '../../../../../../api/push-dataSlice';
 
 // import PushDataFilterWrapper from './pushDataFilterWrapper';
@@ -40,16 +40,11 @@ const PushDataDownloadWrapper = (props) => {
     project = location.pathname.split('/')[2];
   }
 
-  const [loader, setLoader] = useState(false);
-  const [fetchingData, setFetchingData] = useState(true);
-  const [retry, setRetry] = useState(false);
   const [pageSize, setPageSize] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(120);
   const [errorMessage, setErrorMessage] = useState('');
-  const [hasError, setError] = useState(false);
   const [response, setResponse] = useState([]);
-  const [skip, setSkip] = useState(true);
 
   // const requestReport = async (params) => {
 
@@ -81,8 +76,8 @@ const PushDataDownloadWrapper = (props) => {
   const { data, isFetching, isError, refetch } =
     useDownloadPushDataQuery(params);
 
-  const { data: downloadFilteredPushDataResponse, isSuccess } =
-    useDownloadFilteredPushDataQuery(params, { skip });
+  const [fetchFilteredPushData, downloadFilteredPushDataResponse] =
+    useLazyDownloadFilteredPushDataQuery();
 
   useEffect(() => {
     let statusCode = data?.responseCode;
@@ -253,10 +248,6 @@ const PushDataDownloadWrapper = (props) => {
   };
 
   const onSubmitButtonClicked = (filterParams) => {
-    // console.log('Filter Params .....')
-    // console.log(filterParams)
-    // console.log(props.report_name)
-
     const params = {};
     params['project'] = project;
     params['report_name'] = props.report_name;
@@ -300,22 +291,26 @@ const PushDataDownloadWrapper = (props) => {
     } else {
       params['end_date'] = '';
     }
-    setSkip(!skip);
+    fetchFilteredPushData(params);
   };
 
   useEffect(() => {
-    if (isSuccess) {
-      const statusCode = downloadFilteredPushDataResponse?.responseCode;
+    if (downloadFilteredPushDataResponse.status === 'fulfilled') {
+      console.log(
+        downloadFilteredPushDataResponse,
+        'filtered download data response'
+      );
+      const statusCode =
+        downloadFilteredPushDataResponse?.currentData?.responseCode;
       if (statusCode === 200) {
         toast('Request submitted successfully ....', {
           hideProgressBar: true,
           type: 'success',
         });
         refetch();
-        setSkip(!skip);
       } else if (statusCode === 401 || statusCode === 403) {
         setLogout(true);
-      } else {
+      } else if (downloadFilteredPushDataResponse.isError) {
         toast('Something went wrong please retry .....', {
           hideProgressBar: true,
           type: 'warning',
@@ -355,7 +350,7 @@ const PushDataDownloadWrapper = (props) => {
               columns={tblColumn()}
               data={response}
               rowCount={10}
-              tableName={'Block Load Table'}
+              tableName={props.table_name || 'Data Table'}
               showDownloadButton={true}
               showRefreshButton={true}
               refreshFn={refetch}

@@ -26,19 +26,39 @@ export const pushDataApi = createApi({
         params: params,
       }),
     }),
+    getPushBasedEvent: builder.query({
+      query: (params) => ({
+        url: `${MDASUrl}/api/hes/mdm/event-push/`,
+        params: params,
+      }),
+    }),
+    getBillingData: builder.query({
+      query: (params) => ({
+        url: `${MDASUrl}/api/hes/mdm/get-billing-data/`,
+        params: params,
+      }),
+    }),
     downloadPushData: builder.query({
       query: (params) => ({
         url: `${MDASUrl}/api/hes/dlms/${
-          params.report_name === 'block_load' ? 'blockload-push' : 'event-push'
-        }-report-history/`,
+          params.report_name === 'block_load'
+            ? 'blockload-push-report-history'
+            : params.report_name === 'billing_data'
+            ? 'billing-data-request_report-download'
+            : 'event-push-report-history'
+        }/`,
         params,
       }),
     }),
     downloadFilteredPushData: builder.query({
       query: (params) => ({
         url: `${MDASUrl}/api/hes/dlms/${
-          params.report_name === 'block_load' ? 'blockload-push' : 'event-push'
-        }-report-download/`,
+          params.report_name === 'block_load'
+            ? 'blockload-push-report-download'
+            : params.report_name === 'billing_data'
+            ? 'billing-data-report'
+            : 'event-push-report-download'
+        }/`,
         params: params,
       }),
     }),
@@ -48,9 +68,7 @@ export const pushDataApi = createApi({
 export const {
   useGetBlockLoadDataQuery,
   useDownloadPushDataQuery,
-  useDownloadFilteredPushDataQuery,
+  useLazyDownloadFilteredPushDataQuery,
+  useGetPushBasedEventQuery,
+  useGetBillingDataQuery,
 } = pushDataApi;
-
-// blockLoadpush:/api/hes/dlms/blockload-push-report-history/
-// eventPush:/api/hes/dlms/event-push-report-history/
-// periodicPush:/api/hes/dlms/periodic-push-report-history/
