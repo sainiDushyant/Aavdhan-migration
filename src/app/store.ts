@@ -3,26 +3,33 @@ import { loginApi } from '../api/loginSlice';
 import { forgotPasswordApi } from '../api/forgot-passwordSlice';
 import { commandHistoryApi } from '../api/command-historySlice';
 import { dropdownsApi } from '../api/drop-downSlice';
-import {utilityMDASAssetListReducer,utilityMDASDlmsCommandReducer} from '../app/redux/commandExecutionSlice'; // Import your reducer here
+import {
+  utilityMDASAssetListReducer,
+  utilityMDASDlmsCommandReducer,
+} from '../app/redux/commandExecutionSlice'; // Import your reducer here
 import { pushDataApi } from '../api/push-dataSlice';
-
+import { meterConfigurationApi } from '../api/meter-configurationSlice';
 
 export const store = configureStore({
   reducer: {
-    [loginApi.reducerPath]:loginApi.reducer,
-    [forgotPasswordApi.reducerPath]:forgotPasswordApi.reducer,
-    [commandHistoryApi.reducerPath]:commandHistoryApi.reducer,
-    [pushDataApi.reducerPath]:pushDataApi.reducer,
-    [dropdownsApi.reducerPath]:dropdownsApi.reducer,
-    utilityMDASAssetList:utilityMDASAssetListReducer,
-    utilityMDASDlmsCommand:utilityMDASDlmsCommandReducer
+    [loginApi.reducerPath]: loginApi.reducer,
+    [forgotPasswordApi.reducerPath]: forgotPasswordApi.reducer,
+    [commandHistoryApi.reducerPath]: commandHistoryApi.reducer,
+    [pushDataApi.reducerPath]: pushDataApi.reducer,
+    [dropdownsApi.reducerPath]: dropdownsApi.reducer,
+    [meterConfigurationApi.reducerPath]: meterConfigurationApi.reducer,
+    utilityMDASAssetList: utilityMDASAssetListReducer,
+    utilityMDASDlmsCommand: utilityMDASDlmsCommandReducer,
   },
-  middleware: (getDefaultMiddleware:any) =>
-    getDefaultMiddleware().concat(loginApi.middleware).concat(forgotPasswordApi.middleware).concat(commandHistoryApi.middleware).concat(dropdownsApi.middleware).concat(pushDataApi.middleware),
-    
-
+  middleware: (getDefaultMiddleware: any) =>
+    getDefaultMiddleware()
+      .concat(loginApi.middleware)
+      .concat(forgotPasswordApi.middleware)
+      .concat(commandHistoryApi.middleware)
+      .concat(dropdownsApi.middleware)
+      .concat(pushDataApi.middleware)
+      .concat(meterConfigurationApi.middleware),
 });
-
 
 export type AppDispatch = typeof store.dispatch;
 export type RootState = ReturnType<typeof store.getState>;

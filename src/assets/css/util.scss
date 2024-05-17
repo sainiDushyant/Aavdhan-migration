@@ -395,8 +395,18 @@ body::-webkit-scrollbar-thumb:hover {
   right: 0;
   z-index: 100;
   box-shadow: 0 5px 5px -5px #ccc;
-  transition: 0.5s;
+  transition: 0.3s;
 }
+.sidebar-collapsed {
+  position: absolute;
+  width: calc(100% - 85px);
+  top: 80px;
+  right: 0;
+  z-index: 100;
+  box-shadow: 0 5px 5px -5px #ccc;
+  transition: 0.3s;
+}
+.sidebar-collapsed .notch,
 .meter_command_floating .notch {
   position: absolute;
   bottom: -25px;
@@ -411,6 +421,7 @@ body::-webkit-scrollbar-thumb:hover {
   z-index: 0;
   box-shadow: 0 5px 5px #ccc;
 }
+.sidebar-collapsed .notch .ChevronDown_ico,
 .meter_command_floating .notch .ChevronDown_ico {
   position: relative;
   animation-name: down_slide;

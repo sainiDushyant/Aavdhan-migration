@@ -183,7 +183,7 @@ const CommandHistory = (props) => {
 
   useEffect(() => {
     if (dlmsCommandHistoryResponse) {
-      console.log(dlmsCommandHistoryResponse, 'hello');
+      //   console.log(dlmsCommandHistoryResponse, 'hello');
       let statusCode = dlmsCommandHistoryResponse?.responseCode;
       if (statusCode === 401 || statusCode === 403) {
         setLogout(true);
@@ -250,7 +250,7 @@ const CommandHistory = (props) => {
     }
   }, [dlmsCommandHistoryResponse]);
 
-  console.log(response, 'command history response');
+  //console.log(response, 'command history response');
 
   // useEffect(() => {
   //   if (tapCommandHistoryResponse) {

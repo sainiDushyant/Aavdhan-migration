@@ -42,19 +42,21 @@ function SideBar({ collapsed, setCollapsed }) {
           </SubMenu>
         </Menu>
       </Sidebar>
-      {collapsed ? (
-        <ChevronRight
-          onClick={() => setCollapsed(false)}
-          className="cursor-pointer chevron-icon chevron-right sb-button"
-          size={30}
-        />
-      ) : (
-        <ChevronLeft
-          onClick={() => setCollapsed(true)}
-          className="cursor-pointer chevron-icon chevron-left sb-button"
-          size={30}
-        />
-      )}
+      <div className="d-none d-sm-flex">
+        {collapsed ? (
+          <ChevronRight
+            onClick={() => setCollapsed(false)}
+            className="cursor-pointer chevron-icon chevron-right sb-button"
+            size={30}
+          />
+        ) : (
+          <ChevronLeft
+            onClick={() => setCollapsed(true)}
+            className="cursor-pointer chevron-icon chevron-left sb-button"
+            size={30}
+          />
+        )}
+      </div>
     </div>
   );
 }

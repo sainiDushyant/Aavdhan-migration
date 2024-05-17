@@ -3,8 +3,9 @@ import { TabContent, TabPane, Nav, NavItem, NavLink } from 'reactstrap';
 // import MeterAndCommandDropDown from './wrappers/meterAndCommandDropdown';
 import CommandHistory from './components/command-history/CommandHistory';
 import PushData from './components/push-data/PushData.js';
-import MeterProfile from './components/MeterProfile.js';
+//import MeterProfile from './components/MeterProfile.js';
 import MeterAndCommandDropDown from './components/meterAndCommandDropdown';
+import MeterConfigData from './components/meter-configuration/meterConfigData';
 
 const HesUtility = (props) => {
   const [reloadCommandHistory, setReloadCommandHistory] = useState(false);
@@ -68,6 +69,7 @@ const HesUtility = (props) => {
           {active === '1' && (
             <React.Fragment>
               <MeterAndCommandDropDown
+                collapsed={props.collapsed}
                 refreshCommandHistory={refreshCommandHistory}
                 protocolSelectedForCommandExecution={
                   protocolSelectedForCommandExecution
@@ -90,7 +92,7 @@ const HesUtility = (props) => {
           )}
         </TabPane>
         <TabPane tabId="2">{active === '2' && <PushData />}</TabPane>
-        <TabPane tabId="3">{active === '3' && <MeterProfile />}</TabPane>
+        <TabPane tabId="3">{active === '3' && <MeterConfigData />}</TabPane>
       </TabContent>
     </div>
   );

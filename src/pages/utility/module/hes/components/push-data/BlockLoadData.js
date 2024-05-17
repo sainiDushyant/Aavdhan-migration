@@ -116,6 +116,7 @@ const BlockLoadData = (props) => {
         }
         return temp_blockload;
       });
+      console.log(blockLoadResponse, 'blockLoadResponse');
       setResponse(blockLoadResponse);
       setTotalCount(data?.data.result.count);
     } else if (statusCode === 401 || statusCode === 403) {

@@ -240,12 +240,6 @@ const CommandHistoryDataDownloadWrapper = () => {
                 <UncontrolledTooltip
                   placement="top"
                   target="success"
-                  // modifiers={{
-                  //   preventOverflow: {
-                  //     enabled: true,
-                  //     boundariesElement: 'window',
-                  //   },
-                  // }}
                   autohide={false}
                   delay={{ show: 200, hide: 5 }}
                 >
@@ -264,12 +258,6 @@ const CommandHistoryDataDownloadWrapper = () => {
                 <UncontrolledTooltip
                   placement="top"
                   target="processing"
-                  // modifiers={{
-                  //   preventOverflow: {
-                  //     enabled: true,
-                  //     boundariesElement: 'window',
-                  //   },
-                  // }}
                   autohide={false}
                   delay={{ show: 200, hide: 5 }}
                 >
@@ -288,12 +276,6 @@ const CommandHistoryDataDownloadWrapper = () => {
                 <UncontrolledTooltip
                   placement="top"
                   target="failed"
-                  // modifiers={{
-                  //   preventOverflow: {
-                  //     enabled: true,
-                  //     boundariesElement: 'window',
-                  //   },
-                  // }}
                   autohide={false}
                   delay={{ show: 200, hide: 5 }}
                 >

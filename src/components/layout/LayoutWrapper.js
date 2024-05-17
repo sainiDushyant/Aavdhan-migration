@@ -6,8 +6,7 @@ import SideBar from './components/Navigator';
 import '../../styles/layout.scss';
 import Footer from '../../@core/layouts/components/footer';
 
-function LayoutWrapper({ children }) {
-  const [collapsed, setCollapsed] = useState();
+function LayoutWrapper({ children, collapsed, setCollapsed }) {
   return (
     <div className="App">
       <Drawer SideBar={SideBar} />

@@ -367,7 +367,11 @@ const MeterAndCommandDropDown = (props) => {
 
   return (
     <Col
-      className="meter_command_floating p-0"
+      className={`p-0 ${
+        props.collapsed === true
+          ? 'sidebar-collapsed'
+          : 'meter_command_floating'
+      }`}
       style={{ transform: dropDownStyle }}
     >
       <Card className="mb-0">
