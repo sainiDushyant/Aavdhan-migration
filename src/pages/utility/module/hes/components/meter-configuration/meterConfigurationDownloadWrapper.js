@@ -1,10 +1,9 @@
 import { CardBody, Card, Badge, UncontrolledTooltip } from 'reactstrap';
 import { useState, useEffect } from 'react';
-import { useFetcher, useLocation } from 'react-router-dom';
+
+import { useLocation } from 'react-router-dom';
 
 import CommonMeterDropdown from '../commonMeterDropdown';
-
-import DataTableV1 from '../../../../../../components/dtTable/DataTableV1';
 
 import CardInfo from '../../../../../../components/ui-elements/cards/cardInfo';
 
@@ -13,24 +12,22 @@ import Loader from '../../../../../../components/loader/loader';
 import { caseInsensitiveSort } from '../../../../../../utils';
 
 import { Download } from 'react-feather';
+import DataTableV1 from '../../../../../../components/dtTable/DataTableV1';
 
 import { toast } from 'react-toastify';
 import {
-  useDownloadPushDataQuery,
-  useLazyDownloadFilteredPushDataQuery,
-} from '../../../../../../api/push-dataSlice';
+  useDownloadMeterConfigurationRequestReportQuery,
+  useLazyDownloadMeterConfigurationReportQuery,
+} from '../../../../../../api/meter-configurationSlice';
 
-// import PushDataFilterWrapper from './pushDataFilterWrapper';
-// import CommonMeterDropdown from '../commonMeterDropdown';
-
-const PushDataDownloadWrapper = (props) => {
+const MeterConfigurationDownloadWrapper = (props) => {
   // Logout User
-  const [logout, setLogout] = useState(false);
+  // const [logout, setLogout] = useState(false)
   // useEffect(() => {
   //   if (logout) {
-  //     authLogout(history, dispatch);
+  //     authLogout(history, dispatch)
   //   }
-  // }, [logout]);
+  // }, [logout])
 
   const location = useLocation();
   let project = '';
@@ -45,51 +42,70 @@ const PushDataDownloadWrapper = (props) => {
   const [totalCount, setTotalCount] = useState(120);
   const [errorMessage, setErrorMessage] = useState('');
   const [response, setResponse] = useState([]);
+  const [requestReport, reportData] =
+    useLazyDownloadMeterConfigurationReportQuery();
 
-  // const requestReport = async (params) => {
+  // const fetchData = async params => {
+  //   return await useJwt
+  //     .getMeterConfigurationDLMSDownloadRequestHistory(params)
+  //     .then(res => {
+  //       const status = res.status
 
-  //   } else if (params.report_name === 'billing_data') {
-  //     return await useJwt
-  //       .postBillingDataDLMSDownloadRequest(params)
-  //       .then((res) => {
-  //         const status = res.status;
+  //       return [status, res]
+  //     })
+  //     .catch(err => {
+  //       if (err.response) {
+  //         const status = err.response.status
+  //         return [status, err]
+  //       } else {
+  //         return [0, err]
+  //       }
+  //     })
+  // }
 
-  //         return [status, res];
-  //       })
-  //       .catch((err) => {
-  //         if (err.response) {
-  //           const status = err.response.status;
-  //           return [status, err];
-  //         } else {
-  //           return [0, err];
-  //         }
-  //       });
-  //   }
-  // };
+  // const requestReport = async params => {
+  //   return await useJwt
+  //     .postMeterConfigurationDLMSDownloadRequest(params)
+  //     .then(res => {
+  //       const status = res.status
+
+  //       return [status, res]
+  //     })
+  //     .catch(err => {
+  //       if (err.response) {
+  //         const status = err.response.status
+  //         return [status, err]
+  //       } else {
+  //         return [0, err]
+  //       }
+  //     })
+  // }
 
   const params = {};
   params['page'] = currentPage;
   params['page_size'] = pageSize;
   params['project'] = project;
-  params['report_name'] = props.report_name;
+  // params['report_name'] = props.report_name
 
-  const { data, isFetching, isError, refetch } =
-    useDownloadPushDataQuery(params);
-
-  const [fetchFilteredPushData, downloadFilteredPushDataResponse] =
-    useLazyDownloadFilteredPushDataQuery();
+  const {
+    data: requestReportResponse,
+    isFetching,
+    isError,
+    refetch,
+  } = useDownloadMeterConfigurationRequestReportQuery(params);
 
   useEffect(() => {
-    let statusCode = data?.responseCode;
+    let statusCode = requestReportResponse?.responseCode;
+
     if (statusCode === 200) {
-      setTotalCount(data?.data.result.count);
-      setResponse(data?.data.result.results);
+      setTotalCount(requestReportResponse?.data.result.count);
+      setResponse(requestReportResponse?.data.result.results);
     } else if (statusCode === 401 || statusCode === 403) {
-      setLogout(true);
+      // setLogout(true);
     } else {
       setErrorMessage('Network Error, please retry');
     }
-  }, [data]);
+  }, [requestReportResponse]);
 
   const tblColumn = () => {
     const column = [];
@@ -113,23 +129,24 @@ const PushDataDownloadWrapper = (props) => {
           col_config.width = '200px';
 
           col_config.cell = (row) => {
-            let cellValue = row[i] || '--'; // Get the cell value or an empty string
-            if (i === 'execution_status' && cellValue === 'No Data') {
-              // If the column is "execution_status" and the value is "No Data", replace with "--"
-              cellValue = '--';
-            }
             return (
               <div className="d-flex">
                 <span
-                  className="d-block font-weight-bold cursor-pointer"
-                  title={cellValue}
+                  className="d-block font-weight-bold  cursor-pointer"
+                  title={row[i]}
                   onClick={() => {
                     // setData(row)
                     // setCenteredModal(true)
                   }}
                 >
-                  {cellValue.toString().substring(0, 25)}
-                  {cellValue.toString().length > 25 ? '...' : ''}
+                  {row[i] && row[i] !== ''
+                    ? row[i].toString().substring(0, 25)
+                    : '-'}
+                  {row[i] && row[i] !== ''
+                    ? row[i].toString().length > 25
+                      ? '...'
+                      : ''
+                    : '-'}
                 </span>
               </div>
             );
@@ -145,7 +162,7 @@ const PushDataDownloadWrapper = (props) => {
           if (row.execution_status === 'Success') {
             return (
               <>
-                <Badge pill color="success">
+                <Badge pill color="light-success" className="">
                   {row.execution_status}
                 </Badge>
               </>
@@ -153,7 +170,7 @@ const PushDataDownloadWrapper = (props) => {
           } else if (row.execution_status === 'In_Progress') {
             return (
               <>
-                <Badge pill color="warning">
+                <Badge pill color="light-warning" className="">
                   {row.execution_status}
                 </Badge>
               </>
@@ -161,13 +178,11 @@ const PushDataDownloadWrapper = (props) => {
           } else if (row.execution_status === 'Failed') {
             return (
               <>
-                <Badge pill color="danger">
+                <Badge pill color="light-danger" className="">
                   {row.execution_status}
                 </Badge>
               </>
             );
-          } else {
-            return <div style={{ width: '45px', textAlign: 'center' }}>--</div>;
           }
         },
       });
@@ -187,6 +202,9 @@ const PushDataDownloadWrapper = (props) => {
                 <UncontrolledTooltip
                   placement="top"
                   target="success"
+                  modifiers={{
+                    preventOverflow: { boundariesElement: 'window' },
+                  }}
                   autohide={false}
                   delay={{ show: 200, hide: 5 }}
                 >
@@ -205,6 +223,9 @@ const PushDataDownloadWrapper = (props) => {
                 <UncontrolledTooltip
                   placement="top"
                   target="processing"
+                  modifiers={{
+                    preventOverflow: { boundariesElement: 'window' },
+                  }}
                   autohide={false}
                   delay={{ show: 200, hide: 5 }}
                 >
@@ -223,6 +244,9 @@ const PushDataDownloadWrapper = (props) => {
                 <UncontrolledTooltip
                   placement="top"
                   target="failed"
+                  modifiers={{
+                    preventOverflow: { boundariesElement: 'window' },
+                  }}
                   autohide={false}
                   delay={{ show: 200, hide: 5 }}
                 >
@@ -230,8 +254,6 @@ const PushDataDownloadWrapper = (props) => {
                 </UncontrolledTooltip>
               </>
             );
-          } else {
-            return <div style={{ width: '65px', textAlign: 'center' }}>--</div>;
           }
         },
       });
@@ -245,12 +267,13 @@ const PushDataDownloadWrapper = (props) => {
   };
   const reloadData = () => {
     setCurrentPage(1);
+    refetch();
   };
 
-  const onSubmitButtonClicked = (filterParams) => {
+  const onSubmitButtonClicked = async (filterParams) => {
     const params = {};
     params['project'] = project;
-    params['report_name'] = props.report_name;
+    // params['report_name'] = props.report_name
 
     if (
       filterParams.hasOwnProperty('site') &&
@@ -291,33 +314,29 @@ const PushDataDownloadWrapper = (props) => {
     } else {
       params['end_date'] = '';
     }
-    fetchFilteredPushData(params);
+
+    requestReport(params);
   };
 
   useEffect(() => {
-    if (downloadFilteredPushDataResponse.status === 'fulfilled') {
-      console.log(
-        downloadFilteredPushDataResponse,
-        'filtered download data response'
-      );
-      const statusCode =
-        downloadFilteredPushDataResponse?.currentData?.responseCode;
+    if (reportData.status === 'fulfilled') {
+      let statusCode = reportData?.currentData?.responseCode;
       if (statusCode === 200) {
         toast('Request submitted successfully ....', {
           hideProgressBar: true,
           type: 'success',
         });
-        refetch();
+        reloadData();
       } else if (statusCode === 401 || statusCode === 403) {
-        setLogout(true);
-      } else if (downloadFilteredPushDataResponse.isError) {
+        // setLogout(true);
+      } else {
         toast('Something went wrong please retry .....', {
           hideProgressBar: true,
           type: 'warning',
         });
       }
     }
-  }, [downloadFilteredPushDataResponse]);
+  }, [reportData]);
 
   const retryAgain = () => {
     refetch();
@@ -331,6 +350,9 @@ const PushDataDownloadWrapper = (props) => {
             tab="block_load"
             set_resp={setResponse}
             onSubmitButtonClicked={onSubmitButtonClicked}
+            hideDateRangeSelector={true}
+            hideMeterSelector={false}
+            hideMeterSearch={false}
           />
         </CardBody>
 
@@ -350,7 +372,7 @@ const PushDataDownloadWrapper = (props) => {
               columns={tblColumn()}
               data={response}
               rowCount={10}
-              tableName={props.table_name || 'Data Table'}
+              tableName={'Meter Configuration Data Download Request'}
               showDownloadButton={true}
               showRefreshButton={true}
               refreshFn={refetch}
@@ -368,4 +390,4 @@ const PushDataDownloadWrapper = (props) => {
   );
 };
 
-export default PushDataDownloadWrapper;
+export default MeterConfigurationDownloadWrapper;

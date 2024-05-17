@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { setIsMobileSidebarOpen } from '../../../api/layoutSlice';
 import { useDispatch } from 'react-redux';
-import { useRef } from 'react';
 function Navbar() {
   const dispatch = useDispatch();
   const handleIsMobileSidebarOpen = () => {
@@ -26,7 +25,6 @@ function Navbar() {
             class="btn d-block d-lg-none"
             id="menu-btn"
             type="button"
-            //  ref={ref}
             data-bs-toggle="offcanvas"
             data-bs-target="#drawer"
             aria-controls="drawer"

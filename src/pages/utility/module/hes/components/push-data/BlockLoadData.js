@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 
 import { useLocation } from 'react-router-dom';
 
-import CommonMeterDropdown from './commonMeterDropdown';
+import CommonMeterDropdown from '../commonMeterDropdown';
 
 import DataTableV1 from '../../../../../../components/dtTable/DataTableV1';
 

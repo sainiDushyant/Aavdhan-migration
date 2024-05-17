@@ -14,36 +14,21 @@ import {
   Label,
   Input,
 } from 'reactstrap';
-import { useContext, useState, useEffect } from 'react';
-//import useJwt from '@src/auth/jwt/useJwt';
-// import { useSelector } from 'react-redux'
+import { useState, useEffect } from 'react';
 
-import { useHistory, useLocation } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-//import authLogout from '../../../../../../auth/jwt/logoutlogic';
-//import SimpleDataTableMDAS from '../../../../../../components/dtTable/simpleTableMDASUpdated';
+import { useLocation } from 'react-router-dom';
+
 import CardInfo from '../../../../../../components/ui-elements/cards/cardInfo';
 import Loader from '../../../../../../components/loader/loader';
 import { useGetMeterConfigurationListQuery } from '../../../../../../api/meter-configurationSlice';
 import { Edit, X } from 'react-feather';
 import DataTableV1 from '../../../../../../components/dtTable/DataTableV1';
-// import { useLocation } from 'react-router-dom'
-
-//import SimpleDataTablePaginated from '@src/views/ui-elements/dtTable/simpleTablePaginated';
-
-//import CardInfo from '@src/views/ui-elements/cards/actions/cardInfo';
-
-//import Loader from '@src/views/project/misc/loader';
-import { caseInsensitiveSort } from '../../../../../../utils.js';
-
-//import { handleCurrentSelectedModuleStatus } from '@store/actions/Misc/currentSelectedModuleStatus';
-//import CommonMeterDropdown from './commonMeterDropdown';
-//import MeterConfigDataModal from './meterConfigDataModal';
-//import MeterConfigurationDownloadWrapper from './meterConfigurationDownloadWrapper.js';
+import CommonMeterDropdown from '../commonMeterDropdown';
+import MeterConfigurationDownloadWrapper from './meterConfigurationDownloadWrapper';
+import MeterConfigDataModal from './meterConfigDataModal';
 
 const MeterConfigData = () => {
-  //const dispatch = useDispatch()
-  //const history = useHistory()
+  const location = useLocation();
 
   // Logout User
   const [logout, setLogout] = useState(false);
@@ -54,27 +39,13 @@ const MeterConfigData = () => {
   //   }
   // }, [logout])
 
-  // const responseData = useSelector(state => state.UtilityMdmsFlowReducer)
-  // const responseData = useSelector(
-  //   (state) => state.UtilityMDASAssetListReducer
-  // );
-  // const currentSelectedModuleStatus = useSelector(
-  //   (state) => state.CurrentSelectedModuleStatusReducer.responseData
-  // );
-
-  // const [fetchingData, setFetchingData] = useState(true)
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(120);
-  //const [startDateTime, setStartDateTime] = useState(undefined)
-  // const [endDateTime, setEndDateTime] = useState(undefined)
+
   const [response, setResponse] = useState([]);
   const [filterParams, setFilterParams] = useState({});
-  // const [hasError, setError] = useState(false)
-  const [errorMessage, setErrorMessage] = useState('');
-  // const [retry, setRetry] = useState(false)
 
-  const [loader, setLoader] = useState(false);
-  const [selected_project, set_selected_project] = useState(undefined);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const [editCommunicationProtocolModal, setEditCommunicationProtocolModal] =
     useState(false);
@@ -82,12 +53,6 @@ const MeterConfigData = () => {
   const [showReportDownloadModal, setShowReportDownloadModal] = useState(false);
 
   const [rowData, setRowdata] = useState();
-  // const HierarchyProgress = useSelector(state => state.UtilityMDMSHierarchyProgressReducer.responseData)
-
-  // let user_name = ''
-  // if (HierarchyProgress && HierarchyProgress.user_name) {
-  //   user_name = HierarchyProgress.user_name
-  // }
 
   const communicationProtocol = [
     { value: 'MQTT', label: 'MQTT' },
@@ -113,8 +78,6 @@ const MeterConfigData = () => {
   //     })
   // }
 
-  const location = useLocation();
-
   let project = '';
   if (location.pathname.split('/')[2] === 'sbpdcl') {
     project = 'ipcl';
@@ -125,7 +88,7 @@ const MeterConfigData = () => {
   // useEffect(async () => {
   // if (fetchingData || retry) {
   //   setLoader(true)
-  let params = undefined;
+  let params = {};
 
   //   // console.log('Filter Params ....')
   //   // console.log(filterParams)
@@ -170,138 +133,57 @@ const MeterConfigData = () => {
   useEffect(() => {
     let statusCode = data?.responseCode;
     if (statusCode === 200) {
-      // try {
-      const meterConfigurationResponse = data?.data?.result.results.map((e) => {
-        const temp_meterConfig = { ...e };
-        const other_config = { ...temp_meterConfig.other_config };
-        // delete temp_meterConfig.other_config;
+      const meterConfigurationResponse = [];
+      for (let i = 0; i < data?.data.result.results.length; i++) {
+        const temp = { ...data?.data.result.results[i] };
+
+        const other_config_temp = temp.other_config;
+        delete temp.other_config;
 
         // Inserting new column Blockload Interval Min
-        if (other_config.hasOwnProperty('blockload_interval_min')) {
-          other_config['Blockload Interval'] =
-            other_config.blockload_interval_min;
+        if (other_config_temp.hasOwnProperty('blockload_interval_min')) {
+          temp['Blockload Interval'] = other_config_temp.blockload_interval_min;
         } else {
-          other_config['Blockload Interval'] = '-';
+          temp['Blockload Interval'] = '-';
         }
 
         // Inserting new column Blockload Interval Min
-        if (other_config.hasOwnProperty('event_push_ipv6')) {
-          other_config['Push Event IPV6'] = other_config.event_push_ipv6;
+        if (other_config_temp.hasOwnProperty('event_push_ipv6')) {
+          temp['Push Event IPV6'] = other_config_temp.event_push_ipv6;
         } else {
-          other_config['Push Event IPV6'] = '-';
+          temp['Push Event IPV6'] = '-';
         }
 
         // Inserting new column Blockload Interval Min
-        if (other_config.hasOwnProperty('periodic_push_ipv6')) {
-          other_config['Periodic Push IPV6'] = other_config.periodic_push_ipv6;
+        if (other_config_temp.hasOwnProperty('periodic_push_ipv6')) {
+          temp['Periodic Push IPV6'] = other_config_temp.periodic_push_ipv6;
         } else {
-          other_config['Periodic Push IPV6'] = '-';
+          temp['Periodic Push IPV6'] = '-';
         }
 
         // Inserting new column Blockload Interval Min
-        if (other_config.hasOwnProperty('periodic_push_time')) {
-          other_config['Periodic Push Time'] = other_config.periodic_push_time;
+        if (other_config_temp.hasOwnProperty('periodic_push_time')) {
+          temp['Periodic Push Time'] = other_config_temp.periodic_push_time;
         } else {
-          other_config['Periodic Push Time'] = '-';
+          temp['Periodic Push Time'] = '-';
         }
 
-        // other_config['is_enabled'] = other_config.is_enabled
-        //   .toString()
-        //   .toUpperCase();
-        return other_config;
-      });
-      console.log('meterConfigurationResponse', meterConfigurationResponse);
-      // for (let i = 0; i < data.data.result.results.length; i++) {
-      //   const temp = data.data.result.results[i];
-
-      //   const other_config_temp = temp.other_config;
-      //   delete temp.other_config;
+        temp['is_enabled'] = temp.is_enabled.toString().toUpperCase();
+        meterConfigurationResponse.push(temp);
+      }
 
       setResponse(meterConfigurationResponse);
-      setTotalCount(data?.data?.result?.count);
-      //setFetchingData(false)
-      // setRetry(false)
-      // } catch (error) {
-      //   // console.log('Error .....')
-      //   // console.log(error)
+      setTotalCount(data?.data.result.count);
 
-      //   // setRetry(false)
-      //   // setError(true)
-      //   setErrorMessage('Something went wrong, please retry');
-      // }
+      // console.log('Error .....')
+      // console.log(error)
+      setErrorMessage('Something went wrong, please retry');
     } else if (statusCode === 401 || statusCode === 403) {
       setLogout(true);
     } else {
-      // setRetry(false)
-      // setError(true)
       setErrorMessage('Network Error, please retry');
     }
   }, [data]);
-
-  console.log(response, 'this is response');
-  // if (statusCode === 200) {
-  //   try {
-  //     const meterConfigurationResponse = []
-  //     for (let i = 0; i < data.data.data.result.results.length; i++) {
-  //       const temp = data.data.data.result.results[i]
-
-  //       const other_config_temp = temp.other_config
-  //       delete temp.other_config
-
-  //       // Inserting new column Blockload Interval Min
-  //       if (other_config_temp.hasOwnProperty('blockload_interval_min')) {
-  //         temp['Blockload Interval'] = other_config_temp.blockload_interval_min
-  //       } else {
-  //         temp['Blockload Interval'] = '-'
-  //       }
-
-  //       // Inserting new column Blockload Interval Min
-  //       if (other_config_temp.hasOwnProperty('event_push_ipv6')) {
-  //         temp['Push Event IPV6'] = other_config_temp.event_push_ipv6
-  //       } else {
-  //         temp['Push Event IPV6'] = '-'
-  //       }
-
-  //       // Inserting new column Blockload Interval Min
-  //       if (other_config_temp.hasOwnProperty('periodic_push_ipv6')) {
-  //         temp['Periodic Push IPV6'] = other_config_temp.periodic_push_ipv6
-  //       } else {
-  //         temp['Periodic Push IPV6'] = '-'
-  //       }
-
-  //       // Inserting new column Blockload Interval Min
-  //       if (other_config_temp.hasOwnProperty('periodic_push_time')) {
-  //         temp['Periodic Push Time'] = other_config_temp.periodic_push_time
-  //       } else {
-  //         temp['Periodic Push Time'] = '-'
-  //       }
-
-  //       temp['is_enabled'] = temp.is_enabled.toString().toUpperCase()
-  //       meterConfigurationResponse.push(temp)
-  //     }
-
-  //     setResponse(meterConfigurationResponse)
-  //     setTotalCount(data.data.data.result.count)
-  //     setFetchingData(false)
-  //     setRetry(false)
-  //   } catch (error) {
-  //     // console.log('Error .....')
-  //     // console.log(error)
-
-  //     setRetry(false)
-  //     setError(true)
-  //     setErrorMessage('Something went wrong, please retry')
-  //   }
-  // } else if (statusCode === 401 || statusCode === 403) {
-  //   setLogout(true)
-  // } else {
-  //   setRetry(false)
-  //   setError(true)
-  //   setErrorMessage('Network Error, please retry')
-  // }
-  //     setLoader(false)
-  //   }
-  // }, [fetchingData, retry])
 
   const onEditModal = () => {
     setEditCommunicationProtocolModal(!editCommunicationProtocolModal);
@@ -570,14 +452,14 @@ const MeterConfigData = () => {
     <>
       <Card>
         <CardBody>
-          {/* <CommonMeterDropdown
+          <CommonMeterDropdown
             tab="block_load"
             set_resp={setResponse}
             onSubmitButtonClicked={onSubmitButtonClicked}
             hideDateRangeSelector={true}
             hideMeterSelector={false}
             hideMeterSearch={false}
-          /> */}
+          />
         </CardBody>
         {isFetching ? (
           <Loader hight="min-height-330" />
@@ -658,12 +540,12 @@ const MeterConfigData = () => {
         </ModalHeader>
 
         <ModalBody>
-          {/* <MeterConfigDataModal
+          <MeterConfigDataModal
             onEditModal={onEditModal}
             row={rowData}
             // setFetchingData={setFetchingData}
-            IsFetching={IsFetching}
-          /> */}
+            IsFetching={isFetching}
+          />
         </ModalBody>
       </Modal>
 
@@ -676,7 +558,7 @@ const MeterConfigData = () => {
         contentClassName="pt-0"
       >
         <ModalHeader
-          className="mb-3"
+          className="d-flex justify-content-between"
           toggle={handleReportDownloadModal}
           close={CloseBtnForReportDownload}
           tag="div"
@@ -684,7 +566,7 @@ const MeterConfigData = () => {
           <h4 className="modal-title">Download (Meter Configuration Data)</h4>
         </ModalHeader>
         <ModalBody className="flex-grow-1">
-          {/* <MeterConfigurationDownloadWrapper /> */}
+          <MeterConfigurationDownloadWrapper />
         </ModalBody>
       </Modal>
     </>

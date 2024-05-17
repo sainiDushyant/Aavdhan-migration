@@ -4,7 +4,7 @@ import { useFetcher, useLocation } from 'react-router-dom';
 import moment from 'moment-timezone';
 import { CardBody, Card, Modal, ModalHeader, ModalBody } from 'reactstrap';
 
-import CommonMeterDropdown from './commonMeterDropdown';
+import CommonMeterDropdown from '../commonMeterDropdown';
 
 import Loader from '../../../../../../components/loader/loader';
 

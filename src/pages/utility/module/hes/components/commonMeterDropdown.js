@@ -13,7 +13,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
   useCommandInfoAssetsQuery,
   useLazyGISMetersListQuery,
-} from '../../../../../../api/drop-downSlice';
+} from '../../../../../api/drop-downSlice';
 
 const CommonMeterDropdown = (props) => {
   const location = useLocation();

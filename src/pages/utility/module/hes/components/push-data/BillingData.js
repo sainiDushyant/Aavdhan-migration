@@ -2,7 +2,7 @@ import { CardBody, Card, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { useState, useEffect } from 'react';
 
 import { useLocation } from 'react-router-dom';
-import CommonMeterDropdown from './commonMeterDropdown';
+import CommonMeterDropdown from '../commonMeterDropdown';
 
 import CardInfo from '../../../../../../components/ui-elements/cards/cardInfo';
 
