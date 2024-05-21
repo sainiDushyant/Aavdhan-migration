@@ -41,7 +41,7 @@ const DataTableV1 = (props) => {
       nextLabel=""
       forcePage={props.currentPage - 1}
       onPageChange={(page) => props.onPageChange(page.selected)}
-      pageCount={totalRowsCount / props.rowCount || 1}
+      pageCount={Math.ceil(totalRowsCount / props.rowCount || 1)}
       breakLabel="..."
       pageRangeDisplayed={2}
       marginPagesDisplayed={2}

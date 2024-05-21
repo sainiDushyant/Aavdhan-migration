@@ -24,7 +24,7 @@ import { ChevronDown, Command, X } from 'react-feather';
 
 // import '@styles/react/libs/noui-slider/noui-slider.scss';
 
-import { useLocation, useHistory } from 'react-router-dom';
+import { useLocation, useHistory, useFetcher } from 'react-router-dom';
 import { useSelector, useDispatch, batch } from 'react-redux';
 import CommandTab from './index';
 
@@ -76,75 +76,79 @@ const MeterAndCommandDropDown = (props) => {
   const [retry, setRetry] = useState(false);
   const collapsed = useSelector((state) => state.layout.collapsed);
 
-  let statusCodeDLMS = commandInfoDLMSData?.responseCode;
-  if (statusCodeDLMS) {
-    if (statusCodeDLMS === 200) {
-      let dlmsCommandList;
-      dlmsCommandList = commandInfoDLMSData?.data?.result;
-      dispatch(setMDASDlmsCommandList(dlmsCommandList));
-    } else if (statusCodeDLMS === 401 || statusCodeDLMS === 403) {
-      setLogout(true);
-    } else {
-    }
-  }
-
-  const statusCode = commandInfoAssetsResponse?.responseCode;
-  const pss_list = [];
-  const feeder_list = [];
-  const dtr_list = [];
-  if (statusCode) {
-    if (statusCode === 200) {
-      const data = commandInfoAssetsResponse?.data?.result?.stat;
-      for (const pss of data['pss_list']) {
-        const temp = {};
-        temp['pss_name'] = pss['pss_name'];
-        temp['pss_id'] = pss['pss_id'];
-
-        pss_list.push(temp);
+  useEffect(() => {
+    let statusCodeDLMS = commandInfoDLMSData?.responseCode;
+    if (statusCodeDLMS) {
+      if (statusCodeDLMS === 200) {
+        let dlmsCommandList;
+        dlmsCommandList = commandInfoDLMSData?.data?.result;
+        dispatch(setMDASDlmsCommandList(dlmsCommandList));
+      } else if (statusCodeDLMS === 401 || statusCodeDLMS === 403) {
+        setLogout(true);
+      } else {
       }
+    }
+  }, [commandInfoDLMSData]);
 
-      // Create Feeder list
-      for (const feeder of data['feeder_list']) {
-        const temp = {};
-        const parent_pss = feeder['pss_id'];
-        for (const pss of pss_list) {
-          if (pss['pss_id'] === parent_pss) {
-            temp['feeder_name'] = feeder['feeder_name'];
-            temp['feeder_id'] = feeder['feeder_id'];
-            temp['pss_name'] = pss['pss_name'];
-            temp['pss_id'] = pss['pss_id'];
-            feeder_list.push(temp);
+  useEffect(() => {
+    const statusCode = commandInfoAssetsResponse?.responseCode;
+    const pss_list = [];
+    const feeder_list = [];
+    const dtr_list = [];
+    if (statusCode) {
+      if (statusCode === 200) {
+        const data = commandInfoAssetsResponse?.data?.result?.stat;
+        for (const pss of data['pss_list']) {
+          const temp = {};
+          temp['pss_name'] = pss['pss_name'];
+          temp['pss_id'] = pss['pss_id'];
+
+          pss_list.push(temp);
+        }
+
+        // Create Feeder list
+        for (const feeder of data['feeder_list']) {
+          const temp = {};
+          const parent_pss = feeder['pss_id'];
+          for (const pss of pss_list) {
+            if (pss['pss_id'] === parent_pss) {
+              temp['feeder_name'] = feeder['feeder_name'];
+              temp['feeder_id'] = feeder['feeder_id'];
+              temp['pss_name'] = pss['pss_name'];
+              temp['pss_id'] = pss['pss_id'];
+              feeder_list.push(temp);
+            }
           }
         }
-      }
 
-      // Create DTR List
-      for (const dtr of data['live_dt_list']) {
-        const temp = {};
-        const parent_feeder = dtr['feeder_id'];
-        for (const feeder of feeder_list) {
-          if (feeder['feeder_id'] === parent_feeder) {
-            temp['feeder_name'] = feeder['feeder_name'];
-            temp['feeder_id'] = feeder['feeder_id'];
-            temp['pss_name'] = feeder['pss_name'];
-            temp['pss_id'] = feeder['pss_id'];
-            temp['dtr_name'] = dtr['site_name'];
-            temp['dtr_id'] = dtr['site_id'];
-            dtr_list.push(temp);
+        // Create DTR List
+        for (const dtr of data['live_dt_list']) {
+          const temp = {};
+          const parent_feeder = dtr['feeder_id'];
+          for (const feeder of feeder_list) {
+            if (feeder['feeder_id'] === parent_feeder) {
+              temp['feeder_name'] = feeder['feeder_name'];
+              temp['feeder_id'] = feeder['feeder_id'];
+              temp['pss_name'] = feeder['pss_name'];
+              temp['pss_id'] = feeder['pss_id'];
+              temp['dtr_name'] = dtr['site_name'];
+              temp['dtr_id'] = dtr['site_id'];
+              dtr_list.push(temp);
+            }
           }
         }
-      }
 
-      const assets = {
-        pss_list,
-        feeder_list,
-        dtr_list,
-      };
-      dispatch(setMDASAssetList(assets));
-    } else if (statusCode === 401 || statusCode === 403) {
-      setLogout(true);
+        const assets = {
+          pss_list,
+          feeder_list,
+          dtr_list,
+        };
+        dispatch(setMDASAssetList(assets));
+      } else if (statusCode === 401 || statusCode === 403) {
+        setLogout(true);
+      }
     }
-  }
+  }, [commandInfoAssetsResponse]);
 
   // useEffect(() => {
   //   if (logout) {

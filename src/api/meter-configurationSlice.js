@@ -51,13 +51,6 @@ export const meterConfigurationApi = createApi({
         },
       }),
     }),
-    executeDlmsCommand: builder.mutation({
-      query: (params) => ({
-        url: `${MDASUrl}/api/hes/dlms/execute-command/`,
-        method: 'POST',
-        body: params,
-      }),
-    }),
   }),
 });
 export const {
@@ -66,5 +59,4 @@ export const {
   useLazyDownloadMeterConfigurationReportQuery,
   useGetMeterMetaDataQuery,
   useLazyEditCommunicationProtocolQuery,
-  useExecuteDlmsCommandMutation,
 } = meterConfigurationApi;

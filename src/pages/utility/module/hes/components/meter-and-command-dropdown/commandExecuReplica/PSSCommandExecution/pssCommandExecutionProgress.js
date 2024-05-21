@@ -6,7 +6,7 @@ import { FileText, User, MapPin, Link } from 'react-feather';
 // import DtrCommand from './dtrCommand'
 // import { Card } from 'reactstrap'
 import PssAsset from './pssAsset';
-// import PssCommand from './pssCommand'
+import PssCommand from './pssCommand';
 
 const PssCommandExecutionProgress = (props) => {
   const [stepper, setStepper] = useState(null);
@@ -28,24 +28,25 @@ const PssCommandExecutionProgress = (props) => {
         />
       ),
     },
-    // {
-    //   id: 'personal-info',
-    //   title: 'Execute Command',
-    //   subtitle: 'Add Protocol and Command',
-    //   icon: <User size={18} />,
-    //   content: (
-    //     <PssCommand
-    //       stepper={stepper}
-    //       type='wizard-modern'
-    //       tableData={tableData}
-    //       setTableData={setTableData}
-    //       refreshCommandHistory={props.refreshCommandHistory}
-    //       projectName={props.projectName}
-    //       toggleCommandExecutionModal={props.toggleCommandExecutionModal}
-    //       protocolSelectedForCommandExecution={props.protocolSelectedForCommandExecution}
-    //     />
-    //   )
-    // }
+    {
+      id: 'personal-info',
+      title: 'Execute Command',
+      subtitle: 'Add Protocol and Command',
+      icon: <User size={18} />,
+      content: (
+        <PssCommand
+          stepper={stepper}
+          type="wizard-modern"
+          tableData={tableData}
+          setTableData={setTableData}
+          projectName={props.projectName}
+          toggleCommandExecutionModal={props.toggleCommandExecutionModal}
+          protocolSelectedForCommandExecution={
+            props.protocolSelectedForCommandExecution
+          }
+        />
+      ),
+    },
   ];
 
   return (

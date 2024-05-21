@@ -16,9 +16,9 @@ import { useState, useEffect, forwardRef } from 'react';
 
 import { useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import DataTableV1 from '../../../../../../../../components/dtTable/DataTableV1';
+import SimpleDataTable from '../../../../../../../../components/dtTable/simpleTable';
 import { ArrowLeft, ArrowRight, Eye, Trash2 } from 'react-feather';
-// import MeterDetailsModal from '../selectedMeterDetailsModal';
+import MeterDetailsModal from '../selectedMeterDetailsModal';
 import { caseInsensitiveSort } from '../../../../../../../../utils';
 import { useLazyGISMetersListQuery } from '../../../../../../../../api/drop-downSlice';
 
@@ -98,17 +98,13 @@ const PssAsset = (props) => {
           GISMetersListResponse?.currentData?.data.result.stat.meters;
 
         const meterList = temp_meter_list.map((e) => {
-          console.log('now mapping');
           let objCopy = { ...e };
           objCopy.value = objCopy.meter_number;
           objCopy.label = objCopy.meter_number;
           objCopy.isFixed = 'true';
           return objCopy;
         });
-        console.log(meterList, 'metere list');
         setMeterList(meterList);
-      } else {
-        setLoader(false);
       }
     }
   }, [GISMetersListResponse]);
@@ -391,7 +387,7 @@ const PssAsset = (props) => {
       width: '120px',
       cell: (row, index) => {
         return (
-          <>
+          <div className="d-flex gap-1">
             <Eye
               size="15"
               className=" cursor-pointer"
@@ -404,9 +400,9 @@ const PssAsset = (props) => {
             <Trash2
               size="15"
               className=" ml-1 cursor-pointer"
-              onClick={(i) => onDelete(row)}
+              onClick={() => onDelete(row)}
             />
-          </>
+          </div>
         );
       },
     });
@@ -425,6 +421,7 @@ const PssAsset = (props) => {
               value={selectedPss}
               isSearchable
               options={pss}
+              loadingMessage={'Loading...'}
               className="react-select rounded zindex_1003"
               classNamePrefix="select"
               placeholder="Select Pss ..."
@@ -433,7 +430,7 @@ const PssAsset = (props) => {
         )}
 
         {/* Meter DropDown */}
-        {!loader ? (
+        {!GISMetersListResponse.isFetching ? (
           <>
             <Col lg="4" sm="6" className="mb-1">
               <Select
@@ -445,6 +442,7 @@ const PssAsset = (props) => {
                 options={meterList}
                 isSearchable
                 isMulti={true}
+                loadingMessage={'Loading...'}
                 components={{ Input: NumberInput }} // Use the custom input component
                 className="react-select border-secondary rounded"
                 classNamePrefix="select"
@@ -474,22 +472,12 @@ const PssAsset = (props) => {
           </>
         )}
       </Row>
-      {/* <DataTable
-        height={true}
+
+      <SimpleDataTable
         columns={tblColumn()}
-        tblData={tableData}
-        tableName={'Added pss and Meter '}
-        donotShowDownload={true}
-        rowCount={5}
-      /> */}
-      <DataTableV1
-        columns={tblColumn()}
-        data={tableData}
-        rowCount={10}
-        showRefreshButton={false}
         tableName={'Added Pss and Meter'}
-        totalRowsCount={'5'}
-        pointerOnHover={true}
+        tblData={tableData}
+        donotShowDownload={true}
       />
 
       {/* Next Button */}
@@ -534,13 +522,13 @@ const PssAsset = (props) => {
       >
         <ModalHeader toggle={MeterDataModal}>Meter Details</ModalHeader>
         <ModalBody>
-          {/* <MeterDetailsModal
+          <MeterDetailsModal
             MeterTblData={tableData}
             rowIndex={meterRowId}
             updateMeterList={updateMeterList}
             selectedPssRow={selectedPssRow}
             assetType={'pss'}
-          /> */}
+          />
         </ModalBody>
       </Modal>
     </>

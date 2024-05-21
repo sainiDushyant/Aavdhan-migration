@@ -16,8 +16,10 @@ import Flatpickr from 'react-flatpickr';
 import {
   useGetMeterMetaDataQuery,
   useLazyEditCommunicationProtocolQuery,
-  useExecuteDlmsCommandMutation,
 } from '../../../../../../api/meter-configurationSlice';
+
+import { useExecuteDlmsCommandMutation } from '../../../../../../api/command-historySlice';
+
 import { selectThemeColors } from '../../../../../../utils';
 
 // Initialize Communication Protocol Already selected in usestate

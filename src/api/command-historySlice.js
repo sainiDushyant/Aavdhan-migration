@@ -17,6 +17,7 @@ export const commandHistoryApi = createApi({
         url: `${MDASUrl}/api/hes/dlms/command-history/`,
         params: params,
       }),
+      providesTags: ['DlmsCommandHistory'],
     }),
     getMdasTapCommandHistory: builder.query({
       query: (params) => ({
@@ -65,6 +66,14 @@ export const commandHistoryApi = createApi({
       }),
       invalidatesTags: ['DLMSDataDownloadRequestHistory'],
     }),
+    executeDlmsCommand: builder.mutation({
+      query: (params) => ({
+        url: `${MDASUrl}/api/hes/dlms/execute-command/`,
+        method: 'POST',
+        body: params,
+      }),
+      invalidatesTags: ['DlmsCommandHistory'],
+    }),
   }),
 });
 
@@ -79,4 +88,5 @@ export const {
   useUpdateDLMSCommandRetryCommandMutation,
   useGetDLMSDataDownloadRequestHistoryQuery,
   useLazyDLMSDataDownloadRequestQuery,
+  useExecuteDlmsCommandMutation,
 } = commandHistoryApi;

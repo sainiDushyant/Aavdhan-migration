@@ -8,7 +8,8 @@ import './index.css';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'; // Don't forget to import the CSS
 import 'bootstrap/dist/css/bootstrap.min.css';
-import "flatpickr/dist/themes/material_blue.css";
+import "./@core/scss/react/libs/flatpickr/flatpickr.scss"
+import "./@core/scss/react/libs/react-select/_react-select.scss"
 
 
 // ** React Toastify
