@@ -4,10 +4,10 @@ import { ChevronLeft, ChevronRight } from 'react-feather';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Award, Circle } from 'react-feather';
 import { useSelector, useDispatch } from 'react-redux';
-import { setCollapsed } from '../../../api/layoutSlice';
+import { setCollapsed } from '../../../app/redux/layoutSlice';
 import '../../../styles/layout.scss';
 import { Link } from 'react-router-dom';
-import { setIsMobileSidebarOpen } from '../../../api/layoutSlice';
+import { setIsMobileSidebarOpen } from '../../../app/redux/layoutSlice';
 function SideBar() {
   const navigate = useNavigate();
   const location = useLocation();

@@ -1,22 +1,14 @@
 // /api/hes/mdm/blockload/
-
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { prepareHeaders } from '../hooks/Headers';
 const baseUrl = process.env.REACT_APP_BASE_URL;
-const token = localStorage.getItem('token');
 const MDASUrl = process.env.REACT_APP_MDAS_URL;
 // Define a service using a base URL and expected endpoints
 export const pushDataApi = createApi({
   reducerPath: 'pushDataApi',
   baseQuery: fetchBaseQuery({
     baseUrl: baseUrl,
-    prepareHeaders: (headers) => {
-      headers.set('module', 'hes');
-      headers.set('vertical', 'utility');
-      headers.set('project', 'lpdd');
-      headers.set('username', 'abhishekaglave@grampower.com');
-      headers.set('authorization', `Bearer ${token}`);
-      headers.set('Unique_id', '1O7HZ4E3');
-    },
+    prepareHeaders: prepareHeaders,
   }),
   keepUnusedDataFor: 300,
   endpoints: (builder) => ({

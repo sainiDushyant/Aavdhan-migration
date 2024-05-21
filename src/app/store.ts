@@ -9,7 +9,7 @@ import {
 } from '../app/redux/commandExecutionSlice'; // Import your reducer here
 import { pushDataApi } from '../api/push-dataSlice';
 import { meterConfigurationApi } from '../api/meter-configurationSlice';
-import layoutReducer from '../api/layoutSlice';
+import layoutReducer from './redux/layoutSlice';
 
 export const store = configureStore({
   reducer: {

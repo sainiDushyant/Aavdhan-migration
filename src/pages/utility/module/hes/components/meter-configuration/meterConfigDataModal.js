@@ -13,7 +13,11 @@ import Select from 'react-select';
 import { useFetcher, useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import Flatpickr from 'react-flatpickr';
-import { useGetMeterMetaDataQuery } from '../../../../../../api/meter-configurationSlice';
+import {
+  useGetMeterMetaDataQuery,
+  useLazyEditCommunicationProtocolQuery,
+  useExecuteDlmsCommandMutation,
+} from '../../../../../../api/meter-configurationSlice';
 import { selectThemeColors } from '../../../../../../utils';
 
 // Initialize Communication Protocol Already selected in usestate
@@ -125,6 +129,10 @@ const MeterConfigDataModal = (props) => {
   const [executingPeriodicPushTime, setExecutingPeriodicPushTime] =
     useState(false);
 
+  const [editCommunicationProtocol, editCommunicationProtocolResponse] =
+    useLazyEditCommunicationProtocolQuery();
+  const [executeDLMSCommand, executeDLMSCommandResponse] =
+    useExecuteDlmsCommandMutation();
   // console.log('Meter Meta Information ......')
   // console.log(meterMetaInformation)
 
@@ -135,60 +143,6 @@ const MeterConfigDataModal = (props) => {
   //     authLogout(history, dispatch)
   //   }
   // }, [logout])
-
-  // const updateCommunicationProtocol = async (params) => {
-  //   return await useJwt
-  //     .editCommunicationProtocol(params)
-  //     .then((res) => {
-  //       // console.log('Response ....')
-  //       // console.log(res)
-  //       const status = res.status;
-  //       return [status, res];
-  //     })
-  //     .catch((err) => {
-  //       if (err.response) {
-  //         const status = err.response.status;
-  //         return [status, err];
-  //       } else {
-  //         return [0, err];
-  //       }
-  //     });
-  // };
-
-  // const executeDLMSCommand = async (params) => {
-  //   return await useJwt
-  //     .postMdasDlmsCommandExecution(params)
-  //     .then((res) => {
-  //       const status = res.status;
-  //       return [status, res];
-  //     })
-  //     .catch((err) => {
-  //       if (err.response) {
-  //         const status = err.response.status;
-  //         return [status, err];
-  //       } else {
-  //         return [0, err];
-  //       }
-  //     });
-  // };
-
-  // const fetchMeterMetaData = async params => {
-  //   return await useJwt
-  //     .getProjectAsset(params)
-  //     .then(res => {
-  //       const status = res.status
-
-  //       return [status, res]
-  //     })
-  //     .catch(err => {
-  //       if (err.response) {
-  //         const status = err.response.status
-  //         return [status, err]
-  //       } else {
-  //         return [0, err]
-  //       }
-  //     })
-  // }
 
   const params = {
     project: uri[2] === 'sbpdcl' ? 'ipcl' : uri[2],
@@ -252,7 +206,7 @@ const MeterConfigDataModal = (props) => {
     }
   };
 
-  const onUpdateCommunicationProtocolClicked = async (
+  const onUpdateCommunicationProtocolClicked = (
     selected_communication_protocol
   ) => {
     // event.preventDefault()
@@ -268,8 +222,9 @@ const MeterConfigDataModal = (props) => {
         meter: row.meter_number,
         communication_protocol: selected_communication_protocol,
       };
-      // const [status, response] = await updateCommunicationProtocol(params)
-      let status;
+
+      editCommunicationProtocol(params);
+      let status = editCommunicationProtocolResponse?.currentData?.responseCode;
 
       setExecutingCommunicationProtocol(false);
 
@@ -291,14 +246,12 @@ const MeterConfigDataModal = (props) => {
     }
   };
 
-  const onUpdateMeterConfigurationButtonClicked = async (
-    params,
-    command_id
-  ) => {
+  const onUpdateMeterConfigurationButtonClicked = (params, command_id) => {
     // console.log('api to be called ...')
-    let [statusCode, response] = [undefined, undefined];
-    // ;[statusCode, response] = await executeDLMSCommand({ data: params })
+    executeDLMSCommand(params);
 
+    let statusCode = executeDLMSCommandResponse?.data.responseCode;
+    let response = executeDLMSCommandResponse?.data;
     if (command_id === 2) {
       setExecutingBlockLoadInterval(false);
     } else if (command_id === 3) {
@@ -400,7 +353,10 @@ const MeterConfigDataModal = (props) => {
           onUpdateCommunicationProtocolClicked(communication_protocol.value);
         }
       } else {
-        // toast.warning(<Toast msg={'select Communication Protocol.'} type='warning' />, { hideProgressBar: true })
+        toast('select Communication Protocol.', {
+          hideProgressBar: true,
+          type: 'warning',
+        });
       }
     } else if (id === 2) {
       if (blockload_interval) {
@@ -428,7 +384,10 @@ const MeterConfigDataModal = (props) => {
           );
         }
       } else {
-        // toast.warning(<Toast msg={'select Blockload Interval.'} type='warning' />, { hideProgressBar: true })
+        toast('select Blockload Interval.', {
+          hideProgressBar: true,
+          type: 'warning',
+        });
       }
     } else if (id === 3) {
       if (eventPushIPv6) {
@@ -450,10 +409,16 @@ const MeterConfigDataModal = (props) => {
             );
           }
         } else {
-          // toast.warning(<Toast msg={'Enter valid event push ipv6'} type='warning' />, { hideProgressBar: true })
+          toast('Enter valid event push ipv6', {
+            hideProgressBar: true,
+            type: 'warning',
+          });
         }
       } else {
-        // toast.warning(<Toast msg={'Enter event push ipv6'} type='warning' />, { hideProgressBar: true })
+        toast('Enter event push ipv6', {
+          hideProgressBar: true,
+          type: 'warning',
+        });
       }
     } else if (id === 4) {
       if (periodicPushIpv6) {
@@ -475,10 +440,16 @@ const MeterConfigDataModal = (props) => {
             );
           }
         } else {
-          // toast.warning(<Toast msg={'Enter valid periodic push ipv6'} type='warning' />, { hideProgressBar: true })
+          toast('Enter valid periodic push ipv6', {
+            hideProgressBar: true,
+            type: 'warning',
+          });
         }
       } else {
-        // toast.warning(<Toast msg={'Enter periodic push ipv6'} type='warning' />, { hideProgressBar: true })
+        toast('Enter periodic push ipv6', {
+          hideProgressBar: true,
+          type: 'warning',
+        });
       }
     } else if (id === 5) {
       if (periodicPushTime) {
@@ -500,10 +471,16 @@ const MeterConfigDataModal = (props) => {
             );
           }
         } else {
-          // toast.warning(<Toast msg={'select valid Periodic Push Time.'} type='warning' />, { hideProgressBar: true })
+          toast('select valid Periodic Push Time.', {
+            hideProgressBar: true,
+            type: 'warning',
+          });
         }
       } else {
-        // toast.warning(<Toast msg={'select Periodic Push Time.'} type='warning' />, { hideProgressBar: true })
+        toast('select Periodic Push Time.', {
+          hideProgressBar: true,
+          type: 'warning',
+        });
       }
     }
   };

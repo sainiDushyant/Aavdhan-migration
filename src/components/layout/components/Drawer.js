@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setIsMobileSidebarOpen } from '../../../api/layoutSlice';
+import { setIsMobileSidebarOpen } from '../../../app/redux/layoutSlice';
 function Drawer({ SideBar }) {
   const dispatch = useDispatch();
   const isMobileSidebarOpen = useSelector(

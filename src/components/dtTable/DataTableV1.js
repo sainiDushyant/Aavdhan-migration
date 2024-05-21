@@ -235,28 +235,31 @@ const DataTableV1 = (props) => {
                   )
                 )}
                 {props.showRefreshButton && (
-                  <RefreshCw
-                    id="refresh_table"
-                    onClick={(event) => {
-                      event.target.classList.add('spin-360');
-                      props.refreshFn();
-                      setTimeout(() => {
-                        event.target.classList.remove('spin-360');
-                      }, 500);
-                    }}
-                    size={18}
-                    className=""
-                    style={{ minWidth: 18 }}
-                  />
+                  <>
+                    <RefreshCw
+                      id="refresh_table"
+                      onClick={(event) => {
+                        event.target.classList.add('spin-360');
+                        props.refreshFn();
+                        setTimeout(() => {
+                          event.target.classList.remove('spin-360');
+                        }, 500);
+                      }}
+                      size={18}
+                      className=""
+                      style={{ minWidth: 18 }}
+                    />
+                    <Tooltip
+                      placement="top"
+                      isOpen={refreshTooltip}
+                      target="refresh_table"
+                      toggle={() => setRefreshTooltip(!refreshTooltip)}
+                    >
+                      Refresh Table
+                    </Tooltip>
+                  </>
                 )}
-                <Tooltip
-                  placement="top"
-                  isOpen={refreshTooltip}
-                  target="refresh_table"
-                  toggle={() => setRefreshTooltip(!refreshTooltip)}
-                >
-                  Refresh Table
-                </Tooltip>
+
                 {props.showAddButton && (
                   <PlusCircle
                     onClick={() =>

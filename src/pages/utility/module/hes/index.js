@@ -4,7 +4,7 @@ import { TabContent, TabPane, Nav, NavItem, NavLink } from 'reactstrap';
 import CommandHistory from './components/command-history/CommandHistory';
 import PushData from './components/push-data/PushData.js';
 //import MeterProfile from './components/MeterProfile.js';
-import MeterAndCommandDropDown from './components/meterAndCommandDropdown';
+import MeterAndCommandDropDown from './components/meter-and-command-dropdown/commandExecuReplica/meterAndCommandDropdown';
 import MeterConfigData from './components/meter-configuration/meterConfigData';
 
 const HesUtility = (props) => {

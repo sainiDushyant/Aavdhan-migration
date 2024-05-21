@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { setIsMobileSidebarOpen } from '../../../api/layoutSlice';
+import { setIsMobileSidebarOpen } from '../../../app/redux/layoutSlice';
 import { useDispatch } from 'react-redux';
 function Navbar() {
   const dispatch = useDispatch();

@@ -1,7 +1,7 @@
 // /api/hes/dlms/command-info/
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { prepareHeaders } from '../hooks/Headers';
 const baseUrl = process.env.REACT_APP_BASE_URL;
-const token = localStorage.getItem('token');
 const MDASUrl = process.env.REACT_APP_MDAS_URL;
 const MDMSUrl = process.env.REACT_APP_OTHER_MODULES_URL;
 
@@ -10,14 +10,7 @@ export const dropdownsApi = createApi({
   reducerPath: 'dropdownsApi',
   baseQuery: fetchBaseQuery({
     baseUrl: baseUrl,
-    prepareHeaders: (headers) => {
-      headers.set('module', 'hes');
-      headers.set('vertical', 'utility');
-      headers.set('project', 'lpdd');
-      headers.set('username', 'abhishekaglave@grampower.com');
-      headers.set('authorization', `Bearer ${token}`);
-      headers.set('Unique_id', '1WK33A7M');
-    },
+    prepareHeaders: prepareHeaders,
   }),
   endpoints: (builder) => ({
     commandInfoDLMS: builder.query({
