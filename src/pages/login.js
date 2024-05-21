@@ -60,13 +60,17 @@ const Login = () => {
             to="/"
             onClick={(e) => e.preventDefault()}
           >
-            <img src={'logo.ico'} alt="Avdhaan" />
-            <h2
+            <img
+              src={`polaris-logo.svg`}
+              alt="Avdhaan"
+              style={{ height: '40px', width: '40px' }}
+            />
+            <h1
               className="brand-text ml-1 pt-1"
               style={{ color: 'rgb(115, 103, 240)' }}
             >
-              AVDHAAN
-            </h2>
+              Avdhaan
+            </h1>
           </Link>
         </Col>
         <Col className="d-none d-lg-flex align-items-center p-5" lg="8" sm="12">

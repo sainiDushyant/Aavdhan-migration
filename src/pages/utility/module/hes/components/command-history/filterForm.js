@@ -495,24 +495,32 @@ const FilterForm = (props) => {
               <Input type='radio' name='asset_type' /> <span style={{ fontSize: '15px' }}>Feeder</span>
             </Label>
           </FormGroup> */}
-          <FormGroup inline className="mt-0 ml-2">
-            <Label onClick={() => assetTypeSelected(false, 'dtr')}>
+          <FormGroup className="mt-0 ml-2">
+            <Label
+              onClick={() => assetTypeSelected(false, 'dtr')}
+              className="d-flex align-items-center"
+            >
               <Input
                 type="radio"
                 name="asset_type"
                 checked={props.selectedAssetType === 'dtr'}
+                className="mt-0"
               />{' '}
-              <span style={{ fontSize: '15px' }}>DTR</span>
+              <span style={{ fontSize: '15px', marginLeft: '5px' }}>DTR</span>
             </Label>
           </FormGroup>
-          <FormGroup inline className="mt-0 ml-1">
-            <Label onClick={() => assetTypeSelected(true, 'meter')}>
+          <FormGroup className="mt-0 ml-1">
+            <Label
+              onClick={() => assetTypeSelected(true, 'meter')}
+              className="d-flex align-items-center"
+            >
               <Input
                 type="radio"
                 name="asset_type"
                 checked={props.selectedAssetType === 'meter'}
+                className="mt-0"
               />{' '}
-              <span style={{ fontSize: '15px' }}>Meter</span>
+              <span style={{ fontSize: '15px', marginLeft: '5px' }}>Meter</span>
             </Label>
           </FormGroup>
         </div>
@@ -607,7 +615,7 @@ const FilterForm = (props) => {
       {/* Apply Button */}
       <Col sm="6" className="mb-2">
         <Button
-          className="btn-block"
+          className="btn w-100"
           color="primary"
           onClick={onApplyButtonClicked}
         >
@@ -618,7 +626,7 @@ const FilterForm = (props) => {
       {/* Reset Button */}
       <Col sm="6" className="mb-2">
         <Button
-          className="btn-block"
+          className="btn w-100"
           color="primary"
           onClick={onResetButtonClicked}
         >

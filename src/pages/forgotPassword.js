@@ -201,8 +201,12 @@ const ForgotPassword = () => {
             className="brand-logo text-decoration-none l-0 d-flex align-items-center gap-2"
             to="/"
           >
-            <img src={'logo.ico'} alt="Avdhaan" />
-            <h4 className="brand-text text-primary ml-1 pt-1">AVDHAAN</h4>
+            <img
+              src={'polaris-logo.svg'}
+              alt="Avdhaan"
+              style={{ height: '40px', width: '40px' }}
+            />
+            <h1 className="brand-text text-primary ml-1 pt-1">Avdhaan</h1>
           </Link>
         </Col>
         <Col className="d-none d-lg-flex align-items-center p-5" lg="8" sm="12">

@@ -16,7 +16,7 @@ function LayoutWrapper({ children }) {
         <Navbar />
         <main>
           <div className="m-2">
-            {children}
+            <div> {children}</div>
             <Footer />
           </div>
         </main>

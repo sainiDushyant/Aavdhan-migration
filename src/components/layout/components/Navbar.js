@@ -1,10 +1,35 @@
 import React, { useEffect } from 'react';
 import { setIsMobileSidebarOpen } from '../../../app/redux/layoutSlice';
 import { useDispatch } from 'react-redux';
+import { setCollapsed } from '../../../app/redux/layoutSlice';
+import { jwtDecode } from 'jwt-decode';
+import { toast } from 'react-toastify';
 function Navbar() {
+  const token = localStorage.getItem('token') || '';
+  let name = '';
+  let role = '';
+
+  try {
+    if (token) {
+      const userDetails = jwtDecode(token);
+      name = userDetails?.userData?.name;
+      role = userDetails?.userData?.role;
+      console.log(userDetails, 'userdetails');
+    }
+  } catch (error) {
+    toast('Failed to decode token or retrieve user details:', {
+      hideProgressBar: true,
+      type: error,
+    });
+  }
+
   const dispatch = useDispatch();
+  const toggleCollapse = () => {
+    dispatch(setCollapsed(false));
+  };
   const handleIsMobileSidebarOpen = () => {
     dispatch(setIsMobileSidebarOpen(true));
+    toggleCollapse();
   };
 
   const handleResize = (event) => {
@@ -60,7 +85,7 @@ function Navbar() {
             <h1
               style={{
                 fontWeight: 'bold',
-                color: '#61568F',
+                color: '#0A3690',
                 margin: '0px',
                 fontFamily: 'sans-serif',
               }}
@@ -70,21 +95,30 @@ function Navbar() {
           </div>
         </div>
         <ul class="navbar-nav d-flex flex-row align-items-center gap-1">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            class="ficon"
-          >
-            <circle cx="12" cy="12" r="3"></circle>
-            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-          </svg>
+          {role === 'superadmin' ? (
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="ficon"
+            >
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+          ) : (
+            ''
+          )}
+          <li className="text-end">
+            <b>{name}</b> <br />
+            <small className="d-block">{role}</small>
+          </li>
+
           <li class="dropdown-user nav-item dropdown">
             <a
               href="/"
