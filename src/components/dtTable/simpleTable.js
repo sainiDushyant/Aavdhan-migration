@@ -262,11 +262,12 @@ const SimpleDataTable = (props) => {
     return (
       <Fragment>
         <Card
-          className={
-            props.height
-              ? 'max-height-600 px-1 webi_scroller'
-              : 'min-height-475 px-1 webi_scroller'
-          }
+          // className={
+          //   props.height
+          //     ? 'max-height-600 px-1 webi_scroller'
+          //     : 'min-height-475 px-1 webi_scroller'
+          // }
+          style={{ backgroundColor: 'white' }}
         >
           <Row className="p-1 border-bottom">
             {props.flatPicker ? (

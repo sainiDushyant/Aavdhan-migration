@@ -432,7 +432,7 @@ const PssAsset = (props) => {
         {/* Meter DropDown */}
         {!GISMetersListResponse.isFetching ? (
           <>
-            <Col lg="4" sm="6" className="mb-1">
+            <Col lg="4" sm="6" className="mb-1 ">
               <Select
                 isClearable={true}
                 closeMenuOnSelect={false}
@@ -444,7 +444,7 @@ const PssAsset = (props) => {
                 isMulti={true}
                 loadingMessage={'Loading...'}
                 components={{ Input: NumberInput }} // Use the custom input component
-                className="react-select border-secondary rounded"
+                className="react-select border-secondary rounded "
                 classNamePrefix="select"
                 placeholder=""
               />
@@ -454,7 +454,7 @@ const PssAsset = (props) => {
             <Col lg="2" sm="5">
               <Button
                 color="primary"
-                className="btn-block "
+                className="d-grid col-12 "
                 onClick={Submitresponse}
               >
                 Add
@@ -485,7 +485,7 @@ const PssAsset = (props) => {
         <Button
           color="primary"
           outline
-          className="mr-2"
+          className="me-2"
           onClick={() => {
             setTableData([]);
           }}

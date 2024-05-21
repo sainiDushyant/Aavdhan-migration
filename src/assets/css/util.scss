@@ -685,6 +685,17 @@ body::-webkit-scrollbar-thumb:hover {
     padding-left: 0;
   }
 }
+// command retry config icon size
+.icon-fixed-size {
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+  min-height: 18px;
+}
+// meter and command dropdown
+.bs-stepper .step-trigger {
+  background-color: transparent !important;
+}
 // Extra Small devices (landscape phones, 300px and up)
 @media (min-width: 300px) {
   .forground {
@@ -814,10 +825,4 @@ body::-webkit-scrollbar-thumb:hover {
   to {
     transform: rotate(360deg);
   }
-}
-.icon-fixed-size {
-  width: 18px;
-  height: 18px;
-  min-width: 18px;
-  min-height: 18px;
 }
