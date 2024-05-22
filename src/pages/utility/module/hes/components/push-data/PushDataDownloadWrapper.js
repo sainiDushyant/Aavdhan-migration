@@ -25,12 +25,6 @@ import {
 
 const PushDataDownloadWrapper = (props) => {
   // Logout User
-  const [logout, setLogout] = useState(false);
-  // useEffect(() => {
-  //   if (logout) {
-  //     authLogout(history, dispatch);
-  //   }
-  // }, [logout]);
 
   const location = useLocation();
   let project = '';
@@ -84,8 +78,6 @@ const PushDataDownloadWrapper = (props) => {
     if (statusCode === 200) {
       setTotalCount(data?.data.result.count);
       setResponse(data?.data.result.results);
-    } else if (statusCode === 401 || statusCode === 403) {
-      setLogout(true);
     } else {
       setErrorMessage('Network Error, please retry');
     }
@@ -243,9 +235,6 @@ const PushDataDownloadWrapper = (props) => {
   const onNextPageClicked = (number) => {
     setCurrentPage(number + 1);
   };
-  const reloadData = () => {
-    setCurrentPage(1);
-  };
 
   const onSubmitButtonClicked = (filterParams) => {
     const params = {};
@@ -308,8 +297,6 @@ const PushDataDownloadWrapper = (props) => {
           type: 'success',
         });
         refetch();
-      } else if (statusCode === 401 || statusCode === 403) {
-        setLogout(true);
       } else if (downloadFilteredPushDataResponse.isError) {
         toast('Something went wrong please retry .....', {
           hideProgressBar: true,

@@ -138,14 +138,6 @@ const MeterConfigDataModal = (props) => {
   // console.log('Meter Meta Information ......')
   // console.log(meterMetaInformation)
 
-  // Logout User
-  const [logout, setLogout] = useState(false);
-  // useEffect(() => {
-  //   if (logout) {
-  //     authLogout(history, dispatch)
-  //   }
-  // }, [logout])
-
   const params = {
     project: uri[2] === 'sbpdcl' ? 'ipcl' : uri[2],
     unique_id: row.meter_number,
@@ -158,8 +150,6 @@ const MeterConfigDataModal = (props) => {
     let statusCode = data?.responseCode;
     if (statusCode === 200) {
       setMeterMetaInformation(data?.data.result.stat.asset[0]);
-    } else if (statusCode === 401 || statusCode === 403) {
-      setLogout(true);
     }
   }, [data]);
 
@@ -250,8 +240,6 @@ const MeterConfigDataModal = (props) => {
           }
         );
         // setFetchingData(true)
-      } else if (status === 401 || status === 403) {
-        setLogout(true);
       }
     }
   }, [editCommunicationProtocolResponse]);
@@ -280,8 +268,6 @@ const MeterConfigDataModal = (props) => {
           hideProgressBar: true,
           type: 'success',
         });
-      } else if (statusCode === 401 || statusCode === 403) {
-        setLogout(true);
       } else {
         if (typeof response === 'string') {
           toast({ response }, { hideProgressBar: true, type: 'error' });

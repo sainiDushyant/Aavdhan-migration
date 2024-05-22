@@ -23,14 +23,6 @@ const BillingData = () => {
 
   const defaultDateTime = getDefaultDateTimeRange();
 
-  // Logout User
-  // const [logout, setLogout] = useState(false);
-  // useEffect(() => {
-  //   if (logout) {
-  //     authLogout(history, dispatch);
-  //   }
-  // }, [logout]);
-
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(120);
 
@@ -50,7 +42,6 @@ const BillingData = () => {
     project = location.pathname.split('/')[2];
   }
 
-  // useEffect(async () => {
   let params = {};
 
   if (!filterParams.hasOwnProperty('site')) {
@@ -170,8 +161,6 @@ const BillingData = () => {
 
       setResponse(billingDataResponse);
       setTotalCount(data?.data.result.count);
-    } else if (statusCode === 401 || statusCode === 403) {
-      // setLogout(true);
     } else {
       setErrorMessage('Network Error, please retry');
     }

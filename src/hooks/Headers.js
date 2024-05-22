@@ -16,6 +16,7 @@ export const getPreparedHeaders = () => {
   try {
     if (token) {
       const userDetails = jwtDecode(token);
+      console.log(userDetails, 'detials');
       username = userDetails?.username;
     }
     uniqueId = localStorage?.getItem('uniqueId') || '';

@@ -30,7 +30,6 @@ const ForgotPassword = () => {
   const [enterOtp, setEnterOtp] = useState(false);
   const [enterPasscode, setEnterPasscode] = useState(false);
   const [reOtp, setReOtp] = useState(2);
-  const [logout, setLogout] = useState(false);
   const [seconds, setSeconds] = useState(60);
   const [timerCompleted, setTimerCompleted] = useState(false);
   const [resendAttempts, setResendAttempts] = useState(0);
@@ -128,8 +127,6 @@ const ForgotPassword = () => {
       setEnterPasscode(false);
       setParams({});
       navigate('/', { replace: true });
-    } else if (statusCode === 401 || statusCode === 403) {
-      setLogout(true);
     } else if (response.isError) {
       toast('Something went wrong.', {
         hideProgressBar: true,
@@ -143,8 +140,6 @@ const ForgotPassword = () => {
     if (statusCode === 200) {
       setEnterOtp(false);
       setEnterPasscode(true);
-    } else if (statusCode === 401 || statusCode === 403) {
-      setLogout(true);
     } else {
       toast(verifyOTPResponse?.error?.data?.data?.error?.detail, {
         hideProgressBar: true,
@@ -165,8 +160,6 @@ const ForgotPassword = () => {
         });
         setTimerCompleted(false); // Reset timer completion state
         setSeconds(60); // Reset timer
-      } else if (statusCode === 401 || statusCode === 403) {
-        setLogout(true);
       } else {
         toast(response?.error?.data?.data?.error?.detail, {
           hideProgressBar: true,

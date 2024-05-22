@@ -26,14 +26,6 @@ import {
 } from '../../../../../../api/command-historySlice';
 
 const CommandHistoryDataDownloadWrapper = () => {
-  // Logout User
-  const [logout, setLogout] = useState(false);
-  // useEffect(() => {
-  //   if (logout) {
-  //     authLogout(history, dispatch)
-  //   }
-  // }, [logout])
-
   const location = useLocation();
   const projectName =
     location.pathname.split('/')[2] === 'sbpdcl'
@@ -100,8 +92,6 @@ const CommandHistoryDataDownloadWrapper = () => {
     if (statusCode === 200) {
       setTotalCount(dlmsDownloadRequestHistoryResponse?.data?.result?.count);
       setResponse(dlmsDownloadRequestHistoryResponse?.data?.result?.results);
-    } else if (statusCode === 401 || statusCode === 403) {
-      setLogout(true);
     } else {
       setErrorMessage('Network Error, please retry');
     }
@@ -386,8 +376,6 @@ const CommandHistoryDataDownloadWrapper = () => {
           hideProgressBar: true,
           type: 'success',
         });
-      } else if (statusCode === 401 || statusCode === 403) {
-        setLogout(true);
       } else {
         toast(
           'Something went wrong please retry .....',

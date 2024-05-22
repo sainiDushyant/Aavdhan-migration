@@ -35,9 +35,6 @@ const CommandHistory = (props) => {
 
   const [getDlmsHistoryData, dlmsHistoryDataResponse] =
     useLazyGetMdasDlmsHistoryDataQuery();
-
-  const [logout, setLogout] = useState(false);
-
   const location = useLocation();
   const projectName =
     location.pathname.split('/')[2] === 'sbpdcl'
@@ -75,12 +72,6 @@ const CommandHistory = (props) => {
   const [commandName, setCommandName] = useState('');
 
   const currentTime = moment().tz('Asia/Kolkata');
-
-  useEffect(() => {
-    if (logout) {
-      console.log('perform logout logic');
-    }
-  }, [logout]);
 
   const getParams = () => {
     let params = {};
@@ -185,9 +176,7 @@ const CommandHistory = (props) => {
     if (dlmsCommandHistoryResponse) {
       //   console.log(dlmsCommandHistoryResponse, 'hello');
       let statusCode = dlmsCommandHistoryResponse?.responseCode;
-      if (statusCode === 401 || statusCode === 403) {
-        setLogout(true);
-      } else if (statusCode === 200 || statusCode === 204) {
+      if (statusCode === 200 || statusCode === 204) {
         dlmsCommandHistoryResponse?.data?.result?.results?.map((item) => {
           let newItem = { ...item };
           // Convert update_time string to a moment object
@@ -424,8 +413,6 @@ const CommandHistory = (props) => {
           setRowExecutionStatus(row);
           setCommandSelectedToViewResponse(row.command);
           setHistyData(newData);
-        } else if (statusCode === 401 || statusCode === 403) {
-          setLogout(true);
         }
       };
       if (props.protocol === 'dlms') {

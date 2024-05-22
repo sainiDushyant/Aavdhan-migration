@@ -7,8 +7,7 @@ import PushData from './components/push-data/PushData.js';
 import MeterAndCommandDropDown from './components/meter-and-command-dropdown/commandExecuReplica/meterAndCommandDropdown';
 import MeterConfigData from './components/meter-configuration/meterConfigData';
 
-const HesUtility = (props) => {
-  const [reloadCommandHistory, setReloadCommandHistory] = useState(false);
+const HesUtility = () => {
   const [protocol, setProtocol] = useState('dlms');
   const [active, setActive] = useState('1');
 
@@ -16,15 +15,6 @@ const HesUtility = (props) => {
     if (active !== tab) {
       setActive(tab);
     }
-  };
-
-  // need to remove these functions once the development has been completed
-  const refreshCommandHistory = () => {
-    setReloadCommandHistory(!reloadCommandHistory);
-  };
-
-  const doNotRefreshCommandHistory = () => {
-    setReloadCommandHistory(!reloadCommandHistory);
   };
 
   const protocolSelectedForCommandExecution = (val) => {
@@ -69,7 +59,6 @@ const HesUtility = (props) => {
           {active === '1' && (
             <React.Fragment>
               <MeterAndCommandDropDown
-                refreshCommandHistory={refreshCommandHistory}
                 protocolSelectedForCommandExecution={
                   protocolSelectedForCommandExecution
                 }
@@ -77,13 +66,10 @@ const HesUtility = (props) => {
               <CommandHistory
                 protocol={protocol}
                 protocolSelectionOption={true}
-                reloadCommandHistory={reloadCommandHistory}
                 protocolSelectedForCommandExecution={
                   protocolSelectedForCommandExecution
                 }
                 txtLen={12}
-                doNotRefreshCommandHistory={doNotRefreshCommandHistory}
-                refreshCommandHistory={refreshCommandHistory}
                 setActive={setActive}
                 activeTab={active}
               />

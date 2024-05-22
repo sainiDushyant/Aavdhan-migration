@@ -9,13 +9,10 @@ import {
   CustomInput,
 } from 'reactstrap';
 import Select from 'react-select';
-import { useSelector, useDispatch, batch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import '../../../../../../assets/css/util.scss';
 const FilterForm = (props) => {
-  // console.log('Filter Applied')
-  // console.log(props.filterAppliedParams)
-
   const [assetUnSelectedOnPurpose, setAssetUnSelectedOnPurpose] =
     useState(false);
   const [commandNameUnSelectedOnPurpose, setCommandNameUnSelectedOnPurpose] =

@@ -33,9 +33,6 @@ import { useExecuteDlmsCommandMutation } from '../../../../../../../../api/comma
 const DtrCommand = (props) => {
   const { tableData, setTableData, projectName } = props;
 
-  // Logout User
-  const [logout, setLogout] = useState(false);
-
   const dlmsCommandList = useSelector((state) => state.utilityMDASDlmsCommand);
   // const tapCommandList = useSelector((state) => state.UtilityMDASTapCommandReducer)
 
