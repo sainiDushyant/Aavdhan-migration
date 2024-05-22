@@ -24,7 +24,7 @@ const CommonMeterDropdown = (props) => {
       : location.pathname.split('/')[2];
   const verticalName = location.pathname.split('/')[1];
   // Logout User
-  const [logout, setLogout] = useState(false);
+
   // useEffect(() => {
   //   if (logout) {
   //     authLogout(history, dispatch);
@@ -133,8 +133,6 @@ const CommonMeterDropdown = (props) => {
           }
           setDtr(temp_dtr);
         }
-      } else if (statusCode === 401 || statusCode === 403) {
-        setLogout(true);
       }
     }
   }, [commandInfoAssetsResponse]);
@@ -160,23 +158,19 @@ const CommonMeterDropdown = (props) => {
     const statusCode = data?.currentData?.responseCode;
 
     if (statusCode) {
-      if (statusCode === 401 || statusCode === 403) {
-        setLogout(true);
-      } else {
-        // Construct Meter List for DropDown
-        const temp_meter_list = data?.currentData?.data.result.stat.meters;
+      // Construct Meter List for DropDown
+      const temp_meter_list = data?.currentData?.data.result.stat.meters;
 
-        const meter_list = [];
-        for (let i = 0; i < temp_meter_list.length; i++) {
-          const temp_meter = {};
-          temp_meter['value'] = temp_meter_list[i]['meter_number'];
-          temp_meter['label'] = temp_meter_list[i]['meter_number'];
-          temp_meter['isFixed'] = 'true';
-          meter_list.push(temp_meter);
-        }
-
-        setMeterList(meter_list);
+      const meter_list = [];
+      for (let i = 0; i < temp_meter_list.length; i++) {
+        const temp_meter = {};
+        temp_meter['value'] = temp_meter_list[i]['meter_number'];
+        temp_meter['label'] = temp_meter_list[i]['meter_number'];
+        temp_meter['isFixed'] = 'true';
+        meter_list.push(temp_meter);
       }
+
+      setMeterList(meter_list);
     }
   }, [data]);
 

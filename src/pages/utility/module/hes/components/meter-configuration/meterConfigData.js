@@ -30,15 +30,6 @@ import MeterConfigDataModal from './meterConfigDataModal';
 const MeterConfigData = () => {
   const location = useLocation();
 
-  // Logout User
-  const [logout, setLogout] = useState(false);
-  // const [logout, setLogout] = useState(false)
-  // useEffect(() => {
-  //   if (logout) {
-  //     authLogout(history, dispatch)
-  //   }
-  // }, [logout])
-
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(120);
 
@@ -178,8 +169,6 @@ const MeterConfigData = () => {
       // console.log('Error .....')
       // console.log(error)
       setErrorMessage('Something went wrong, please retry');
-    } else if (statusCode === 401 || statusCode === 403) {
-      setLogout(true);
     } else {
       setErrorMessage('Network Error, please retry');
     }

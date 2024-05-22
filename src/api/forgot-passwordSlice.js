@@ -18,7 +18,7 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
 
   if (result.error) {
     const status = result.error.originalStatus;
-    if (status === 400) {
+    if (status === 401 || status === 403) {
       api.dispatch(logoutApi.endpoints.logout.initiate());
       localStorage.clear();
       window.location.href = '/';

@@ -23,8 +23,8 @@ const PushEventData = () => {
     .subtract(1, 'days')
     .startOf('day')
     .format('YYYY-MM-DD 00:00:00'); // Yesterday, start of day
-  // const defaultEndDate = moment().format('YYYY-MM-DD HH:mm:ss');
-  const defaultEndDate = '2024-05-17 00:00:00';
+  const defaultEndDate = moment().format('YYYY-MM-DD HH:00:00');
+  // const defaultEndDate = '2024-05-17 00:00:00';
 
   // Logout User
   // const [logout, setLogout] = useState(false);

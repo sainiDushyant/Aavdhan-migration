@@ -21,14 +21,6 @@ import {
 } from '../../../../../../api/meter-configurationSlice';
 
 const MeterConfigurationDownloadWrapper = (props) => {
-  // Logout User
-  // const [logout, setLogout] = useState(false)
-  // useEffect(() => {
-  //   if (logout) {
-  //     authLogout(history, dispatch)
-  //   }
-  // }, [logout])
-
   const location = useLocation();
   let project = '';
   if (location.pathname.split('/')[2] === 'sbpdcl') {
@@ -100,8 +92,6 @@ const MeterConfigurationDownloadWrapper = (props) => {
     if (statusCode === 200) {
       setTotalCount(requestReportResponse?.data.result.count);
       setResponse(requestReportResponse?.data.result.results);
-    } else if (statusCode === 401 || statusCode === 403) {
-      // setLogout(true);
     } else {
       setErrorMessage('Network Error, please retry');
     }
@@ -327,8 +317,6 @@ const MeterConfigurationDownloadWrapper = (props) => {
           type: 'success',
         });
         reloadData();
-      } else if (statusCode === 401 || statusCode === 403) {
-        // setLogout(true);
       } else {
         toast('Something went wrong please retry .....', {
           hideProgressBar: true,

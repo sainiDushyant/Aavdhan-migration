@@ -42,7 +42,10 @@ const Login = () => {
   };
   useEffect(() => {
     if (response?.data?.responseCode === 200) {
-      toast('Login Successfull', { hideProgressBar: true, type: 'success' });
+      toast('You are successfully logged in.', {
+        hideProgressBar: true,
+        type: 'success',
+      });
       localStorage.setItem('token', response?.data?.data?.result?.access);
       localStorage.setItem(
         'refreshToken',

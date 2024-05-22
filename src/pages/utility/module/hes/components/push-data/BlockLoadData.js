@@ -19,32 +19,18 @@ import moment from 'moment';
 import { useGetBlockLoadDataQuery } from '../../../../../../api/push-dataSlice';
 
 const BlockLoadData = (props) => {
-  // Logout User
-  // useEffect(() => {
-  //   if (logout) {
-  //     authLogout(history, dispatch);
-  //   }
-  // }, [logout]);
-
-  // const responseData = useSelector(state => state.UtilityMdmsFlowReducer)
-  // const responseData = useSelector(
-  //   (state) => state.utilityMDASAssetList.responseData
-  // );
-
   const defaultStartDate = moment()
     .subtract(1, 'days')
     .startOf('day')
     .format('YYYY-MM-DD 00:00:00'); // Yesterday, start of day
-  // const defaultEndDate = moment().format('YYYY-MM-DD HH:mm:ss') '2024-05-16 00:00:00';
+  const defaultEndDate = moment().format('YYYY-MM-DD HH:00:00');
 
-  const defaultEndDate = '2024-05-16 00:00:00';
+  // const defaultEndDate = '2024-05-16 00:00:00';
 
   const location = useLocation();
 
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(120);
-  const [startDateTime, setStartDateTime] = useState(undefined);
-  const [endDateTime, setEndDateTime] = useState(undefined);
   const [response, setResponse] = useState([]);
   const [filterParams, setFilterParams] = useState({
     start_date: defaultStartDate,
@@ -119,8 +105,6 @@ const BlockLoadData = (props) => {
       console.log(blockLoadResponse, 'blockLoadResponse');
       setResponse(blockLoadResponse);
       setTotalCount(data?.data.result.count);
-    } else if (statusCode === 401 || statusCode === 403) {
-      // setLogout(true);
     } else {
       setErrorMessage('Network Error, please retry');
     }
