@@ -313,11 +313,10 @@ const CommonMeterDropdown = (props) => {
               options={dtr}
               value={selectedDTR}
               isDisabled={disableDTRDropdown}
+              isLoading={commandInfoAssetsLoading}
               className="react-select rounded zindex_1003"
               classNamePrefix="select"
-              placeholder={
-                commandInfoAssetsLoading ? 'Loading...' : 'Select site ...'
-              }
+              placeholder={'Select site ...'}
             />
           </Col>
         )}
@@ -331,10 +330,11 @@ const CommonMeterDropdown = (props) => {
               maxMenuHeight={200}
               value={selectedMeter}
               isDisabled={disableMeterDropDown}
+              isLoading={data.isFetching}
               isSearchable
               className="react-select zindex_1002"
               classNamePrefix="select"
-              placeholder={data.isFetching ? 'Loading...' : 'Select meter ...'}
+              placeholder={'Select meter ...'}
             />
           </Col>
         )}

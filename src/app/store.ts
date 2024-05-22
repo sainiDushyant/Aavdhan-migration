@@ -3,6 +3,7 @@ import { loginApi } from '../api/loginSlice';
 import { forgotPasswordApi } from '../api/forgot-passwordSlice';
 import { commandHistoryApi } from '../api/command-historySlice';
 import { dropdownsApi } from '../api/drop-downSlice';
+import logoutApi from '../api/logoutSlice';
 import {
   utilityMDASAssetListReducer,
   utilityMDASDlmsCommandReducer,
@@ -11,12 +12,14 @@ import { pushDataApi } from '../api/push-dataSlice';
 import { meterConfigurationApi } from '../api/meter-configurationSlice';
 import layoutReducer from './redux/layoutSlice';
 
+
 export const store = configureStore({
   reducer: {
     [loginApi.reducerPath]: loginApi.reducer,
     [forgotPasswordApi.reducerPath]: forgotPasswordApi.reducer,
     [commandHistoryApi.reducerPath]: commandHistoryApi.reducer,
     [pushDataApi.reducerPath]: pushDataApi.reducer,
+    [logoutApi.reducerPath]:logoutApi.reducer,
     [meterConfigurationApi.reducerPath]: meterConfigurationApi.reducer,
     layout: layoutReducer,
     [dropdownsApi.reducerPath]: dropdownsApi.reducer,
@@ -30,7 +33,8 @@ export const store = configureStore({
       .concat(commandHistoryApi.middleware)
       .concat(dropdownsApi.middleware)
       .concat(pushDataApi.middleware)
-      .concat(meterConfigurationApi.middleware),
+      .concat(meterConfigurationApi.middleware)
+      .concat(logoutApi.middleware),
 });
 
 export type AppDispatch = typeof store.dispatch;

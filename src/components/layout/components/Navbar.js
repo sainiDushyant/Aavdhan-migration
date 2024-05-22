@@ -14,7 +14,6 @@ function Navbar() {
       const userDetails = jwtDecode(token);
       name = userDetails?.userData?.name;
       role = userDetails?.userData?.role;
-      console.log(userDetails, 'userdetails');
     }
   } catch (error) {
     toast('Failed to decode token or retrieve user details:', {

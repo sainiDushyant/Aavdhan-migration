@@ -44,6 +44,10 @@ const Login = () => {
     if (response?.data?.responseCode === 200) {
       toast('Login Successfull', { hideProgressBar: true, type: 'success' });
       localStorage.setItem('token', response?.data?.data?.result?.access);
+      localStorage.setItem(
+        'refreshToken',
+        response?.data?.data?.result?.refresh
+      );
       localStorage.setItem('uniqueId', response?.data?.data?.result?.unique_id);
       navigate('utility/lpdd/hes');
     } else if (response.isError) {

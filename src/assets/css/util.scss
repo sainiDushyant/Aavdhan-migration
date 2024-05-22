@@ -696,6 +696,10 @@ body::-webkit-scrollbar-thumb:hover {
 .bs-stepper .step-trigger {
   background-color: transparent !important;
 }
+
+.spinner-border-sm spinner-border text-primary{
+  margin-right: 10px;
+}
 // Extra Small devices (landscape phones, 300px and up)
 @media (min-width: 300px) {
   .forground {

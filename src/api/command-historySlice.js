@@ -1,15 +1,36 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { prepareHeaders } from '../hooks/Headers';
+import logoutApi from './logoutSlice';
+
 const baseUrl = process.env.REACT_APP_BASE_URL;
 const MDASUrl = process.env.REACT_APP_MDAS_URL;
 
-// Define a service using a base URL and expected endpoints
-export const commandHistoryApi = createApi({
-  reducerPath: 'commandHistory',
-  baseQuery: fetchBaseQuery({
+// Custom fetchBaseQuery with error handling
+const baseQueryWithReauth = async (args, api, extraOptions) => {
+  const baseQuery = fetchBaseQuery({
     baseUrl: baseUrl,
     prepareHeaders: prepareHeaders,
-  }),
+  });
+
+  const result = await baseQuery(args, api, extraOptions);
+
+  if (result.error) {
+    const status = result.error.originalStatus;
+
+    if (status === 401) {
+      api.dispatch(logoutApi.endpoints.logout.initiate());
+      localStorage.clear();
+      window.location.href = '/';
+    }
+  }
+
+  return result;
+};
+
+// Define a service using the customized baseQuery and expected endpoints
+export const commandHistoryApi = createApi({
+  reducerPath: 'commandHistory',
+  baseQuery: baseQueryWithReauth,
   keepUnusedDataFor: 300,
   endpoints: (builder) => ({
     getMdasDlmsCommandHistory: builder.query({
@@ -70,7 +91,7 @@ export const commandHistoryApi = createApi({
       query: (params) => ({
         url: `${MDASUrl}/api/hes/dlms/execute-command/`,
         method: 'POST',
-        body: params,
+        body: { data: params },
       }),
       invalidatesTags: ['DlmsCommandHistory'],
     }),

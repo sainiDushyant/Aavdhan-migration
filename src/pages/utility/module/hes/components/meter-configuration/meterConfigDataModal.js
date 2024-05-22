@@ -10,7 +10,7 @@ import {
 } from 'reactstrap';
 import { useState, useEffect } from 'react';
 import Select from 'react-select';
-import { useFetcher, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import Flatpickr from 'react-flatpickr';
 import {
@@ -224,8 +224,13 @@ const MeterConfigDataModal = (props) => {
         meter: row.meter_number,
         communication_protocol: selected_communication_protocol,
       };
-
+      setExecutingCommunicationProtocol(true);
       editCommunicationProtocol(params);
+    }
+  };
+
+  useEffect(() => {
+    if (editCommunicationProtocolResponse.status === 'fulfilled') {
       let status = editCommunicationProtocolResponse?.currentData?.responseCode;
 
       setExecutingCommunicationProtocol(false);
@@ -239,21 +244,21 @@ const MeterConfigDataModal = (props) => {
         // console.log('Protocol Updated ....')
         toast(
           'command to update communication protocol sent successfully ...',
-          { hideProgressBar: true, type: 'success' }
+          {
+            hideProgressBar: true,
+            type: 'success',
+          }
         );
         // setFetchingData(true)
       } else if (status === 401 || status === 403) {
         setLogout(true);
       }
     }
-  };
+  }, [editCommunicationProtocolResponse]);
 
   const onUpdateMeterConfigurationButtonClicked = (params, command_id) => {
     // console.log('api to be called ...')
     executeDLMSCommand(params);
-
-    let statusCode = executeDLMSCommandResponse?.data.responseCode;
-    let response = executeDLMSCommandResponse?.data;
     if (command_id === 2) {
       setExecutingBlockLoadInterval(false);
     } else if (command_id === 3) {
@@ -263,25 +268,32 @@ const MeterConfigDataModal = (props) => {
     } else if (command_id === 5) {
       setExecutingPeriodicPushTime(false);
     }
+  };
 
-    if (statusCode && statusCode === 201) {
-      toast('Command to update meter confiugration sent successfully.', {
-        hideProgressBar: true,
-        type: 'success',
-      });
-    } else if (statusCode === 401 || statusCode === 403) {
-      setLogout(true);
-    } else {
-      if (typeof response === 'string') {
-        toast({ response }, { hideProgressBar: true, type: 'error' });
-      } else {
-        toast('Command sent to meter failed.', {
+  useEffect(() => {
+    if (executeDLMSCommandResponse.status === 'fulfilled') {
+      let statusCode = executeDLMSCommandResponse?.data?.responseCode;
+      let response = executeDLMSCommandResponse?.data;
+
+      if (statusCode && statusCode === 201) {
+        toast('Command to update meter confiugration sent successfully.', {
           hideProgressBar: true,
-          type: 'error',
+          type: 'success',
         });
+      } else if (statusCode === 401 || statusCode === 403) {
+        setLogout(true);
+      } else {
+        if (typeof response === 'string') {
+          toast({ response }, { hideProgressBar: true, type: 'error' });
+        } else {
+          toast('Command sent to meter failed.', {
+            hideProgressBar: true,
+            type: 'error',
+          });
+        }
       }
     }
-  };
+  }, [executeDLMSCommandResponse]);
 
   const onEditButtonClicked = (id) => {
     // id = 1 (Communication Protocol)
@@ -573,7 +585,7 @@ const MeterConfigDataModal = (props) => {
               isDisabled={disableBlockLoadInterval}
             />
           </Col>
-          {!executingBlockLoadInterval && (
+          {!executeDLMSCommandResponse.isLoading && (
             <Col lg="6" className="mt-2">
               <Button
                 color="primary"
@@ -596,7 +608,7 @@ const MeterConfigDataModal = (props) => {
             </Col>
           )}
 
-          {executingBlockLoadInterval && (
+          {executeDLMSCommandResponse.isLoading && (
             <Col lg="6" className="mt-2">
               <Button color="primary" className=" mb-0 " outline disabled>
                 <Spinner color="primary" size="sm" />
