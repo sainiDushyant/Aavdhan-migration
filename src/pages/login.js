@@ -60,18 +60,18 @@ const Login = () => {
       <Row className="auth-inner m-0">
         <Col className="position-absolute">
           <Link
-            className="brand-logo text-decoration-none l-0 d-flex align-items-center gap-2"
+            className="brand-logo text-decoration-none l-0 d-flex align-items-center justify-content-center gap-2"
             to="/"
             onClick={(e) => e.preventDefault()}
           >
             <img
               src={`polaris-logo.svg`}
               alt="Avdhaan"
-              style={{ height: '40px', width: '40px' }}
+              style={{ height: '30px', width: '30px' }}
             />
             <h1
               className="brand-text ml-1 pt-1"
-              style={{ color: 'rgb(115, 103, 240)' }}
+              style={{ color: 'rgb(10,54,144)', fontFamily: 'sans-serif' }}
             >
               Avdhaan
             </h1>

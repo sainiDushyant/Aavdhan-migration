@@ -459,7 +459,7 @@ const FeederAsset = (props) => {
           <Col lg="2" sm="5">
             <Button
               color="primary"
-              className="btn-block "
+              className="d-grid col-12 "
               onClick={Submitresponse}
             >
               Add
@@ -476,12 +476,12 @@ const FeederAsset = (props) => {
         rowCount={5}
       />
 
-      <div className="d-flex gap-1 float-end">
+      <div className="d-flex justify-content-end">
         {/* Reset Button */}
         <Button
           color="primary"
           outline
-          className="mr-2"
+          className="me-2"
           onClick={() => setTableData([])}
         >
           Reset

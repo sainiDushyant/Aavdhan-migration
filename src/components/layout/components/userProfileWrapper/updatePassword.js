@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import {
   Card,
   CardHeader,
@@ -11,154 +11,111 @@ import {
   Label,
   InputGroup,
 } from 'reactstrap';
-//import { jwtDecode } from 'jwt-decode';
 import InputPasswordToggle from '../../../../@core/components/input-password-toggle';
-import { useChangePasswordMutation } from '../../../../api/forgot-passwordSlice';
-//import useJwt from '@src/auth/jwt/useJwt';
-//import authLogout from '../../../../../auth/jwt/logoutlogic';
-//import { toast } from 'react-toastify';
-// import Toast from '@src/views/ui-elements/cards/actions/createToast';
-//import Swal from 'sweetalert2';
-//import withReactContent from 'sweetalert2-react-content';
-// import { useHistory } from 'react-router-dom';
-// import { useDispatch } from 'react-redux';
+import { useUpdatePasswordMutation } from '../../../../api/forgot-passwordSlice';
+import { toast } from 'react-toastify';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
 
-//const MySwal = withReactContent(Swal);
+const MySwal = withReactContent(Swal);
 
 const UpdatePassword = () => {
-  // const dispatch = useDispatch();
-  // const history = useHistory();
-  const [changePassword, changePasswordResponse] = useChangePasswordMutation();
-  //  password state
+  const [updatePassword] = useUpdatePasswordMutation();
+
   const [formValues, setFormValues] = useState({
     old_pass: '',
     password: '',
     password2: '',
   });
 
-  // Logout User
-  //const [logout, setLogout] = useState(false);
-  // useEffect(() => {
-  //   if (logout) {
-  //     authLogout(history, dispatch);
-  //   }
-  // }, [logout]);
+  const handleConfirmText = async () => {
+    const result = await MySwal.fire({
+      text: 'Are you sure you want to update it?',
+      title: 'Are you sure!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, update it!',
+      customClass: {
+        confirmButton: 'btn btn-primary me-1',
+        cancelButton: 'btn btn-outline-danger ',
+      },
+      buttonsStyling: false,
+    });
 
-  // Api to Post to update user password
+    if (result.isConfirmed) {
+      postUpdatePassword();
+    }
+  };
 
-  // const fetchPostData = async (params) => {
-  //   return await useJwt
-  //     .postUpdatePassword(params)
-  //     .then((res) => {
-  //       const status = res.status;
-  //       return [status, res];
-  //     })
-  //     .catch((err) => {
-  //       if (err.response) {
-  //         const status = err.response.status;
-  //         return [status, err];
-  //       } else {
-  //         return [0, err];
-  //       }
-  //     });
-  // };
+  const postUpdatePassword = async () => {
+    try {
+      const response = await updatePassword({
+        old_pass: formValues.old_pass,
+        password: formValues.password,
+      }).unwrap();
 
-  // const postUpdatePassword = async () => {
-  //   const [status, response] = await fetchPostData({
-  //     ...formValues,
-  //     email: jwtDecode(localStorage.getItem('token')).userData.email,
-  //   });
+      let statusCode = response?.responseCode;
+      if (statusCode === 200 || statusCode === 202) {
+        MySwal.fire({
+          icon: 'success',
+          title: 'Please notice!',
+          text: response?.data?.result?.success,
+          customClass: {
+            confirmButton: 'btn btn-success',
+          },
+        }).then(() => {
+          setFormValues({
+            old_pass: '',
+            password: '',
+            password2: '',
+          });
+        });
+      } else if (statusCode === 406) {
+        const error = response?.data?.error;
+        const swalConfig = {
+          icon: 'error',
+          title: 'Failed!',
+          customClass: {
+            confirmButton: 'btn btn-danger',
+          },
+        };
 
-  //   if (status === 200 || status === 202) {
-  //     MySwal.fire({
-  //       icon: 'success',
-  //       title: 'Please notice !',
-  //       text: `${response?.data?.data?.result?.success}`,
-  //       customClass: {
-  //         confirmButton: 'btn btn-success',
-  //       },
-  //     }).then((result) => {
-  //       if (result.isConfirmed) {
-  //         setFormValues(response);
-  //         setLogout(true);
-  //       }
-  //     });
-  //   } else if (status === 406) {
-  //     const { error } = response?.response?.data?.data || {};
+        if (error?.detail) {
+          swalConfig.text = error.detail;
+        } else if (error?.message) {
+          swalConfig.text = error.message;
+        } else if (error?.password) {
+          swalConfig.html = error.password
+            .map((msg) => `<p>${msg}</p>`)
+            .join('');
+        }
 
-  //     if (status === 406) {
-  //       const swalConfig = {
-  //         icon: 'error',
-  //         title: 'Failed!',
-  //         customClass: {
-  //           confirmButton: 'btn btn-danger',
-  //         },
-  //       };
+        MySwal.fire(swalConfig);
+      }
+    } catch (error) {
+      toast('Something went wrong', {
+        hideProgressBar: true,
+        type: 'error',
+      });
+    }
+  };
 
-  //       if (error?.detail) {
-  //         swalConfig.text = error.detail;
-  //       } else if (error?.message) {
-  //         swalConfig.text = error.message;
-  //       } else if (error?.password) {
-  //         swalConfig.html = error.password
-  //           .map((msg) => `<p>${msg}</p>`)
-  //           .join('');
-  //       }
-
-  //       MySwal.fire(swalConfig);
-  //     }
-  //   } else if (status === 401 || status === 403) {
-  //     toast(response?.response?.data?.data?.error?.detail, {
-  //       hideProgressBar: true,
-  //       type: 'error',
-  //     });
-  //     // toast.error(
-  //     //   <Toast
-  //     //     msg={`${response?.response?.data?.data?.error?.detail}`}
-  //     //     type="danger"
-  //     //   />,
-  //     //   {
-  //     //     hideProgressBar: true,
-  //     //   }
-  //     // );
-  //     setLogout(true);
-  //   } else {
-  //     toast('Something went wrong', {
-  //       hideProgressBar: true,
-  //       type: 'error',
-  //     });
-  //     // toast.error(<Toast msg={'Something went wrong.'} type="danger" />, {
-  //     //   hideProgressBar: true,
-  //     // });
-  //   }
-  // };
-
-  //  to show sweet alert to confirm update password
-  // const handleConfirmText = () => {
-  //   return MySwal.fire({
-  //     text: `Are you sure want want to update it`,
-  //     title: 'Are you sure !',
-  //     icon: 'warning',
-  //     showCancelButton: true,
-  //     confirmButtonText: 'Yes, update it!',
-  //     customClass: {
-  //       confirmButton: 'btn btn-primary',
-  //       cancelButton: 'btn btn-outline-danger ml-1',
-  //     },
-  //     buttonsStyling: false,
-  //   }).then(function (result) {
-  //     // console.log()
-  //     // if (result.value) {
-  //     //   postUpdatePassword();
-  //     // }
-  //   });
-  // };
-
-  // on change function
   const onChangePassword = (event) => {
     const name = event.target.name;
     const value = event.target.value;
     setFormValues((values) => ({ ...values, [name]: value }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (formValues.password === formValues.password2) {
+      handleConfirmText();
+    } else {
+      toast('Re-check Password.', {
+        hideProgressBar: true,
+        type: 'error',
+      });
+    }
   };
 
   return (
@@ -167,28 +124,7 @@ const UpdatePassword = () => {
         <CardTitle tag="h4">New Password</CardTitle>
       </CardHeader>
       <CardBody>
-        <Form
-        // on submit form
-        //   onSubmit={(e) => {
-        //     e.preventDefault();
-        //     //  To validate password
-        //     if (formValues.password === formValues.password2) {
-        //       handleConfirmText();
-        //     } else {
-        //       toast('Re-check Password .', {
-        //         hideProgressBar: true,
-        //         type: 'error',
-        //       });
-        //       // toast.error(
-        //       //   <Toast msg={' Re-check Password .'} type="danger" />,
-        //       //   {
-        //       //     hideProgressBar: true,
-        //       //   }
-        //       // );
-        //     }
-        //   }
-        // }
-        >
+        <Form onSubmit={handleSubmit}>
           <FormGroup row>
             <Label sm="4" for="old_pass">
               Old Password
@@ -245,18 +181,10 @@ const UpdatePassword = () => {
 
           <FormGroup className="mb-0" row>
             <Col className="d-flex" md={{ size: 9, offset: 3 }}>
-              <Button className="mr-1" color="primary" type="submit">
+              <Button className="me-1" color="primary" type="submit">
                 Submit
               </Button>
-              {/* On reset the form */}
-              <Button
-                outline
-                color="secondary"
-                type="reset"
-                // onClick={(e) => {
-                //   setFormValues('');
-                // }}
-              >
+              <Button outline color="secondary" type="reset">
                 Reset
               </Button>
             </Col>
@@ -266,4 +194,5 @@ const UpdatePassword = () => {
     </Card>
   );
 };
+
 export default UpdatePassword;

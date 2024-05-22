@@ -373,11 +373,11 @@ const MeterAsset = (props) => {
       />
 
       {/* Next Button */}
-      <div className="d-flex gap-1 float-end">
+      <div className="d-flex justify-content-end">
         <Button
           color="primary"
           outline
-          className="mr-2"
+          className="me-2"
           onClick={() => setTableData([])}
         >
           Reset
