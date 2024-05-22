@@ -1,14 +1,15 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setIsMobileSidebarOpen } from '../../../app/redux/layoutSlice';
+import { setCollapsed } from '../../../app/redux/layoutSlice';
 function Drawer({ SideBar }) {
   const dispatch = useDispatch();
-  const isMobileSidebarOpen = useSelector(
-    (state) => state.layout.isMobileSidebarOpen
-  );
 
   const handleIsMobileSidebarOpen = () => {
     dispatch(setIsMobileSidebarOpen(false));
+  };
+  const handleCollapsed = () => {
+    dispatch(setCollapsed(false));
   };
   return (
     <div
@@ -16,6 +17,7 @@ function Drawer({ SideBar }) {
       tabIndex="-1"
       id="drawer"
       aria-labelledby="drawerLabel"
+      onClick={handleCollapsed}
     >
       <div
         className="offcanvas-header "
