@@ -13,19 +13,19 @@ function Drawer({ SideBar }) {
   return (
     <div
       className={`offcanvas offcanvas-start`}
-      tabindex="-1"
+      tabIndex="-1"
       id="drawer"
       aria-labelledby="drawerLabel"
     >
       <div
-        class="offcanvas-header "
+        className="offcanvas-header "
         style={{
           display: 'flex',
           justifyContent: 'space-between',
         }}
       >
         <div
-          class="offcanvas-title d-flex flex-row align-items-center gap-1 pt-1"
+          className="offcanvas-title d-flex flex-row align-items-center gap-1 pt-1"
           id="drawerLabel"
           style={{ flexWrap: 'nowrap' }}
         >
@@ -50,7 +50,7 @@ function Drawer({ SideBar }) {
         </div>
         <button
           type="button"
-          class="btn-close"
+          className="btn-close"
           data-bs-dismiss="offcanvas"
           aria-label="Close"
           onClick={handleIsMobileSidebarOpen}
