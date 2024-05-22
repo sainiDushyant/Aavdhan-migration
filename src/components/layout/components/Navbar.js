@@ -79,15 +79,8 @@ function Navbar() {
   const handleDropDown = () => {
     setOpenDropDown(!openDropDown);
   };
-  const handleLogout = async () => {
-    try {
-      await logout();
-    } catch (error) {
-      toast('Failed to logout', {
-        hideProgressBar: true,
-        type: 'error',
-      });
-    }
+  const handleLogout = () => {
+    logout();
   };
   const userProfileModal = () => {
     setUserProfile(!userProfile);

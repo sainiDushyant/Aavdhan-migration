@@ -13,18 +13,17 @@ const App = () => {
 
   const [tokenRefresh,tokenRefreshResponse]=useRefreshTokenMutation()
   const accessToken = localStorage.getItem('token')
-  const decodedToken = jwtDecode(accessToken)
   const refreshToken = localStorage.getItem('refreshToken')
-
+  if(typeof accessToken === 'string'){
+    const decodedToken = jwtDecode(accessToken) 
   const decodedRefreshToken = jwtDecode(refreshToken)
-
-
 if(accessToken && decodedToken.exp<Date.now()/1000){
         if(refreshToken && decodedRefreshToken.exp > Date.now() / 1000){
             tokenRefresh()
         }
 }
-
+  }
+  
 
 useEffect(()=>{
   if(tokenRefreshResponse.status === 'fulfilled'){

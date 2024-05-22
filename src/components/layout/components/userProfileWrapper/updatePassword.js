@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Card,
   CardHeader,
@@ -21,12 +21,13 @@ import { jwtDecode } from 'jwt-decode';
 const MySwal = withReactContent(Swal);
 
 const UpdatePassword = () => {
-  const [updatePassword] = useUpdatePasswordMutation();
+  const [updatePassword, updatePasswordResponse] = useUpdatePasswordMutation();
 
   const [formValues, setFormValues] = useState({
     old_pass: '',
     password: '',
     password2: '',
+    email: jwtDecode(localStorage.getItem('token')).userData.email,
   });
 
   const handleConfirmText = async () => {
@@ -44,69 +45,53 @@ const UpdatePassword = () => {
     });
 
     if (result.isConfirmed) {
+      if (
+        formValues.old_pass === formValues.password &&
+        formValues.old_pass === formValues.password2
+      ) {
+        toast('New password should not be same as old password', {
+          hideProgressBar: true,
+          type: 'error',
+        });
+        return;
+      }
       postUpdatePassword();
     }
   };
 
-  const postUpdatePassword = async () => {
-    try {
-      const payload = {
-        old_pass: formValues.old_pass,
-        password: formValues.password,
-        password2: formValues.password2,
-        email: jwtDecode(localStorage.getItem('token')).userData.email,
-      };
+  const postUpdatePassword = () => {
+    const payload = {
+      ...formValues,
+    };
 
-      const response = await updatePassword(payload);
-
-      if (response.error) {
-        throw new Error(response.error.data?.message || 'Request failed');
-      }
-      let statusCode = response.data?.responseCode;
-      if (statusCode === 200 || statusCode === 202) {
-        MySwal.fire({
-          icon: 'success',
-          title: 'Please notice!',
-          text: response.data?.data?.result?.success,
-          customClass: {
-            confirmButton: 'btn btn-success',
-          },
-        }).then(() => {
-          setFormValues({
-            old_pass: '',
-            password: '',
-            password2: '',
-          });
-        });
-      } else if (statusCode === 406) {
-        const error = response.data?.data?.error;
-        const swalConfig = {
-          icon: 'error',
-          title: 'Failed!',
-          customClass: {
-            confirmButton: 'btn btn-danger',
-          },
-        };
-
-        if (error?.detail) {
-          swalConfig.text = error.detail;
-        } else if (error?.message) {
-          swalConfig.text = error.message;
-        } else if (error?.password) {
-          swalConfig.html = error.password
-            .map((msg) => `<p>${msg}</p>`)
-            .join('');
-        }
-
-        MySwal.fire(swalConfig);
-      }
-    } catch (error) {
-      toast('Something went wrong', {
-        hideProgressBar: true,
-        type: 'error',
-      });
-    }
+    updatePassword(payload);
   };
+
+  useEffect(() => {
+    let statusCode = updatePasswordResponse?.data?.responseCode;
+    if (statusCode === 200 || statusCode === 202) {
+      MySwal.fire({
+        icon: 'success',
+        title: 'Please notice!',
+        text: updatePasswordResponse.data?.data?.result?.success,
+        customClass: {
+          confirmButton: 'btn btn-success',
+        },
+      }).then(() => {
+        setFormValues({
+          old_pass: '',
+          password: '',
+          password2: '',
+        });
+      });
+    } else if (
+      updatePasswordResponse.isError &&
+      updatePasswordResponse.error.code === 406
+    ) {
+      const error = updatePasswordResponse.error.data.data.error.message;
+      toast(error, { hideProgressBar: true, type: 'error' });
+    }
+  }, [updatePasswordResponse]);
 
   const onChangePassword = (event) => {
     const name = event.target.name;

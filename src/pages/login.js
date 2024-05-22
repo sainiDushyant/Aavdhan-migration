@@ -115,7 +115,7 @@ const Login = () => {
                   name="login-email"
                   placeholder="user@example.com"
                   className={classnames({
-                    'is-invalid': errors['email'],
+                    'is-invalid': errors['username'],
                   })}
                   innerRef={emailRef}
                   {...registerEmail}
@@ -142,18 +142,22 @@ const Login = () => {
                     innerRef={passwordRef}
                     {...registerPassword}
                   />
-                  {passwordVisible ? (
-                    <EyeOff
-                      size={14}
-                      className="position-absolute end-0 me-2 cursor-pointer"
-                      onClick={() => setPasswordVisible(false)}
-                    />
-                  ) : (
-                    <Eye
-                      size={14}
-                      className="position-absolute end-0 me-2 cursor-pointer "
-                      onClick={() => setPasswordVisible(true)}
-                    />
+                  {!errors['password'] && (
+                    <>
+                      {passwordVisible ? (
+                        <EyeOff
+                          size={14}
+                          className="position-absolute end-0 me-2 cursor-pointer"
+                          onClick={() => setPasswordVisible(false)}
+                        />
+                      ) : (
+                        <Eye
+                          size={14}
+                          className="position-absolute end-0 me-2 cursor-pointer "
+                          onClick={() => setPasswordVisible(true)}
+                        />
+                      )}
+                    </>
                   )}
                 </div>
               </FormGroup>

@@ -275,6 +275,49 @@ const CommandHistory = (props) => {
   //     });
   // };
 
+  const showData = (row) => {
+    const params = {
+      id: row.id,
+    };
+    getDlmsHistoryData(params);
+    setCenteredModal(true);
+    let statusCode = dlmsHistoryDataResponse?.data?.responseCode;
+    if (statusCode === 200 || statusCode === 202) {
+      let data = dlmsHistoryDataResponse?.data?.data?.result?.data;
+      if (Array.isArray(data)) {
+        const filteredData = data.filter(
+          (obj) => !obj.hasOwnProperty('MD_W_TOD_1')
+        );
+
+        // let data = response.data.data.result.data
+        if (Array.isArray(filteredData)) {
+          data = filteredData.map((item) => {
+            for (const key in item) {
+              if (item[key] === '65535-00-00 00:00:00') {
+                item[key] = '--';
+              }
+              // if (key.includes("import_Wh") || key.includes("import_VAh")) {
+              //   item[key] = item[key].toFixed(2)
+              // }
+            }
+
+            return item;
+          });
+        }
+      }
+
+      const cmdDetail = `Meter: ${row.meter_number}, Command: ${row.command}, Execution: ${row.start_time}`;
+      const newData = {
+        data,
+        cmd_detail: cmdDetail,
+      };
+      setCommandName(row.command);
+      setRowExecutionStatus(row);
+      setCommandSelectedToViewResponse(row.command);
+      setHistyData(newData);
+    }
+  };
+
   function createColumns() {
     const columns = [];
     const ignoreColumns = ['id', 'sc_no', 'parameter'];
@@ -373,48 +416,6 @@ const CommandHistory = (props) => {
           }
         },
       });
-      const showData = async (row) => {
-        const params = {
-          id: row.id,
-        };
-        getDlmsHistoryData(params);
-        setCenteredModal(true);
-        let statusCode = dlmsHistoryDataResponse?.data?.responseCode;
-        if (statusCode === 200 || statusCode === 202) {
-          let data = dlmsHistoryDataResponse?.data?.data?.result?.data;
-          if (Array.isArray(data)) {
-            const filteredData = data.filter(
-              (obj) => !obj.hasOwnProperty('MD_W_TOD_1')
-            );
-
-            // let data = response.data.data.result.data
-            if (Array.isArray(filteredData)) {
-              data = filteredData.map((item) => {
-                for (const key in item) {
-                  if (item[key] === '65535-00-00 00:00:00') {
-                    item[key] = '--';
-                  }
-                  // if (key.includes("import_Wh") || key.includes("import_VAh")) {
-                  //   item[key] = item[key].toFixed(2)
-                  // }
-                }
-
-                return item;
-              });
-            }
-          }
-
-          const cmdDetail = `Meter: ${row.meter_number}, Command: ${row.command}, Execution: ${row.start_time}`;
-          const newData = {
-            data,
-            cmd_detail: cmdDetail,
-          };
-          setCommandName(row.command);
-          setRowExecutionStatus(row);
-          setCommandSelectedToViewResponse(row.command);
-          setHistyData(newData);
-        }
-      };
       if (props.protocol === 'dlms') {
         columns.push({
           name: 'Action',
@@ -494,6 +495,33 @@ const CommandHistory = (props) => {
     });
     return sortedColumns;
   }
+
+  const customStyles = {
+    headCells: {
+      style: {
+        paddingLeft: '12px !important',
+        backgroundColor: 'inherit',
+        '&:nth-child(1)': {
+          position: 'sticky',
+          left: 0,
+          zIndex: 1,
+          borderRight: '1px solid rgba(0, 0, 0, 0.11)',
+        },
+      },
+    },
+    cells: {
+      style: {
+        paddingLeft: '12px !important',
+        backgroundColor: 'inherit',
+        '&:nth-child(1)': {
+          position: 'sticky',
+          left: 0,
+          zIndex: 1,
+          borderRight: '1px solid rgba(0, 0, 0, 0.11)',
+        },
+      },
+    },
+  };
 
   const isArray = (a) => {
     return !!a && a.constructor === Array;
@@ -828,6 +856,7 @@ const CommandHistory = (props) => {
                 totalRowsCount={totalCount}
                 onPageChange={onNextPageClicked}
                 isLoading={loading}
+                customStyles={customStyles}
                 //setShowForm={setShowForm}
                 pointerOnHover={true}
                 filter={!props.params && handleFilter}
