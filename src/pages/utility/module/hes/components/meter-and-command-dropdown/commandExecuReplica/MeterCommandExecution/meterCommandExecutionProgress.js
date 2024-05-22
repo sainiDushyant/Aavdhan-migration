@@ -1,14 +1,14 @@
-import { useRef, useState } from 'react'
-import Wizard from '@components/wizard'
-import { FileText, User, MapPin, Link } from 'react-feather'
+import { useRef, useState } from 'react';
+import Wizard from '../../../../../../../../@core/components/wizard';
+import { FileText, User } from 'react-feather';
 
-import MeterAsset from './meterAsset'
-import MeterCommand from './meterCommand'
+import MeterAsset from './meterAsset';
+import MeterCommand from './meterCommand';
 
-const MeterCommandExecutionProgress = props => {
-  const [stepper, setStepper] = useState(null)
-  const [tableData, setTableData] = useState([])
-  const ref = useRef(null)
+const MeterCommandExecutionProgress = (props) => {
+  const [stepper, setStepper] = useState(null);
+  const [tableData, setTableData] = useState([]);
+  const ref = useRef(null);
 
   const steps = [
     {
@@ -16,7 +16,15 @@ const MeterCommandExecutionProgress = props => {
       title: 'Select Asset',
       subtitle: 'Add  Meter .',
       icon: <FileText size={18} />,
-      content: <MeterAsset stepper={stepper} tableData={tableData} projectName={props.projectName} setTableData={setTableData} type='wizard-modern' />
+      content: (
+        <MeterAsset
+          stepper={stepper}
+          tableData={tableData}
+          projectName={props.projectName}
+          setTableData={setTableData}
+          type="wizard-modern"
+        />
+      ),
     },
     {
       id: 'personal-info',
@@ -28,21 +36,28 @@ const MeterCommandExecutionProgress = props => {
           stepper={stepper}
           tableData={tableData}
           setTableData={setTableData}
-          type='wizard-modern'
+          type="wizard-modern"
           refreshCommandHistory={props.refreshCommandHistory}
           projectName={props.projectName}
           toggleCommandExecutionModal={props.toggleCommandExecutionModal}
-          protocolSelectedForCommandExecution={props.protocolSelectedForCommandExecution}
+          protocolSelectedForCommandExecution={
+            props.protocolSelectedForCommandExecution
+          }
         />
-      )
-    }
-  ]
+      ),
+    },
+  ];
 
   return (
-    <div className='modern-horizontal-wizard mt-0 pt-0'>
-      <Wizard type='modern-horizontal' ref={ref} steps={steps} instance={el => setStepper(el)} />
+    <div className="modern-horizontal-wizard mt-0 pt-0">
+      <Wizard
+        type="modern-horizontal"
+        ref={ref}
+        steps={steps}
+        instance={(el) => setStepper(el)}
+      />
     </div>
-  )
-}
+  );
+};
 
-export default MeterCommandExecutionProgress
+export default MeterCommandExecutionProgress;

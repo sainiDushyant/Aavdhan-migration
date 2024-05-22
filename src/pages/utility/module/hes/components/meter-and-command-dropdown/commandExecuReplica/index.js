@@ -2,7 +2,7 @@ import { Fragment, useState } from 'react';
 import { TabContent, TabPane, Nav, NavItem, NavLink } from 'reactstrap';
 import SiteCommandExecutionProgress from './DTRCommandExecution/siteCommandExecutionProgress';
 import FeederCommandExecutionProgress from './FeederCommandExecution/feederCommandExecutionProgress';
-// import MeterCommandExecutionProgress from './MeterCommandExecution/meterCommandExecutionProgress'
+import MeterCommandExecutionProgress from './MeterCommandExecution/meterCommandExecutionProgress';
 import PssCommandExecutionProgress from './PSSCommandExecution/pssCommandExecutionProgress';
 
 const CommandTab = (props) => {
@@ -59,7 +59,6 @@ const CommandTab = (props) => {
       <TabContent className="py-50" activeTab={active}>
         <TabPane tabId="1">
           <PssCommandExecutionProgress
-            refreshCommandHistory={props.refreshCommandHistory}
             projectName={props.projectName}
             toggleCommandExecutionModal={props.toggleCommandExecutionModal}
             protocolSelectedForCommandExecution={
@@ -69,7 +68,6 @@ const CommandTab = (props) => {
         </TabPane>
         <TabPane tabId="2">
           <FeederCommandExecutionProgress
-            refreshCommandHistory={props.refreshCommandHistory}
             projectName={props.projectName}
             toggleCommandExecutionModal={props.toggleCommandExecutionModal}
             protocolSelectedForCommandExecution={
@@ -79,7 +77,6 @@ const CommandTab = (props) => {
         </TabPane>
         <TabPane tabId="3">
           <SiteCommandExecutionProgress
-            refreshCommandHistory={props.refreshCommandHistory}
             projectName={props.projectName}
             toggleCommandExecutionModal={props.toggleCommandExecutionModal}
             protocolSelectedForCommandExecution={
@@ -88,14 +85,14 @@ const CommandTab = (props) => {
           />
         </TabPane>
         <TabPane tabId="4">
-          {/* <MeterCommandExecutionProgress
+          <MeterCommandExecutionProgress
             refreshCommandHistory={props.refreshCommandHistory}
             projectName={props.projectName}
             toggleCommandExecutionModal={props.toggleCommandExecutionModal}
             protocolSelectedForCommandExecution={
               props.protocolSelectedForCommandExecution
             }
-          /> */}
+          />
         </TabPane>
       </TabContent>
     </Fragment>

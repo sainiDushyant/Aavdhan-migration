@@ -4,6 +4,7 @@ import logoutApi from './logoutSlice';
 
 const baseUrl = process.env.REACT_APP_BASE_URL;
 const MDASUrl = process.env.REACT_APP_MDAS_URL;
+const otherUrl = process.env.REACT_APP_OTHER_MODULES_URL;
 
 // Custom fetchBaseQuery with error handling
 const baseQueryWithReauth = async (args, api, extraOptions) => {
@@ -95,6 +96,12 @@ export const commandHistoryApi = createApi({
       }),
       invalidatesTags: ['DlmsCommandHistory'],
     }),
+    GISMeterSearch: builder.query({
+      query: (params) => ({
+        url: `${otherUrl}/api/v1/get/gis/search`,
+        params: params,
+      }),
+    }),
   }),
 });
 
@@ -110,4 +117,5 @@ export const {
   useGetDLMSDataDownloadRequestHistoryQuery,
   useLazyDLMSDataDownloadRequestQuery,
   useExecuteDlmsCommandMutation,
+  useLazyGISMeterSearchQuery,
 } = commandHistoryApi;
