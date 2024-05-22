@@ -1,6 +1,6 @@
 import { Fragment, useState } from 'react';
 import { TabContent, TabPane, Nav, NavItem, NavLink } from 'reactstrap';
-// import SiteCommandExecutionProgress from './DTRCommandExecution/siteCommandExecutionProgress'
+import SiteCommandExecutionProgress from './DTRCommandExecution/siteCommandExecutionProgress';
 import FeederCommandExecutionProgress from './FeederCommandExecution/feederCommandExecutionProgress';
 // import MeterCommandExecutionProgress from './MeterCommandExecution/meterCommandExecutionProgress'
 import PssCommandExecutionProgress from './PSSCommandExecution/pssCommandExecutionProgress';
@@ -78,19 +78,23 @@ const CommandTab = (props) => {
           />
         </TabPane>
         <TabPane tabId="3">
-          {/* <SiteCommandExecutionProgress
+          <SiteCommandExecutionProgress
             refreshCommandHistory={props.refreshCommandHistory}
             projectName={props.projectName}
             toggleCommandExecutionModal={props.toggleCommandExecutionModal}
-            protocolSelectedForCommandExecution={props.protocolSelectedForCommandExecution}
-          /> */}
+            protocolSelectedForCommandExecution={
+              props.protocolSelectedForCommandExecution
+            }
+          />
         </TabPane>
         <TabPane tabId="4">
           {/* <MeterCommandExecutionProgress
             refreshCommandHistory={props.refreshCommandHistory}
             projectName={props.projectName}
             toggleCommandExecutionModal={props.toggleCommandExecutionModal}
-            protocolSelectedForCommandExecution={props.protocolSelectedForCommandExecution}
+            protocolSelectedForCommandExecution={
+              props.protocolSelectedForCommandExecution
+            }
           /> */}
         </TabPane>
       </TabContent>

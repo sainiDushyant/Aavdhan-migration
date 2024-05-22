@@ -87,24 +87,38 @@ const PssAsset = (props) => {
   }, [selectedPss]);
 
   useEffect(() => {
-    let statusCode = GISMetersListResponse?.currentData?.responseCode;
+    if (GISMetersListResponse.status === 'fulfilled') {
+      let statusCode = GISMetersListResponse.currentData.responseCode;
+      if (statusCode) {
+        if (statusCode === 200) {
+          // Construct Meter List for DropDown
+          const temp_meter_list =
+            GISMetersListResponse.currentData.data.result.stat.meters;
 
-    if (statusCode) {
-      if (statusCode === 401 || statusCode === 403) {
-        setLogout(true);
-      } else if (statusCode === 200) {
-        // Construct Meter List for DropDown
-        const temp_meter_list =
-          GISMetersListResponse?.currentData?.data.result.stat.meters;
+          const meter_list = temp_meter_list
+            .map((meter) => {
+              // Create a shallow copy of the meter object
+              const temp_meter = { ...meter };
+              temp_meter['value'] = temp_meter['meter_number'];
+              temp_meter['label'] = temp_meter['meter_number'];
+              temp_meter['isFixed'] = 'true';
+              return temp_meter;
+            })
+            .filter(
+              (meter) =>
+                meter['grid_id'] !== undefined &&
+                meter['grid_id'] !== '' &&
+                meter['grid_id'] !== null &&
+                meter['meter_sw_version'] !== undefined &&
+                meter['meter_sw_version'] !== '' &&
+                meter['meter_sw_version'] !== null &&
+                meter['meter_address'] !== undefined &&
+                meter['meter_address'] !== '' &&
+                meter['meter_address'] !== null
+            );
 
-        const meterList = temp_meter_list.map((e) => {
-          let objCopy = { ...e };
-          objCopy.value = objCopy.meter_number;
-          objCopy.label = objCopy.meter_number;
-          objCopy.isFixed = 'true';
-          return objCopy;
-        });
-        setMeterList(meterList);
+          setMeterList(meter_list);
+        }
       }
     }
   }, [GISMetersListResponse]);
@@ -428,49 +442,37 @@ const PssAsset = (props) => {
             />
           </Col>
         )}
-
         {/* Meter DropDown */}
-        {!GISMetersListResponse.isFetching ? (
-          <>
-            <Col lg="4" sm="6" className="mb-1 ">
-              <Select
-                isClearable={true}
-                closeMenuOnSelect={false}
-                theme={selectThemeColors}
-                onChange={onMeterSelected}
-                value={meter}
-                options={meterList}
-                isSearchable
-                isMulti={true}
-                loadingMessage={'Loading...'}
-                components={{ Input: NumberInput }} // Use the custom input component
-                className="react-select border-secondary rounded "
-                classNamePrefix="select"
-                placeholder=""
-              />
-            </Col>
+        <>
+          <Col lg="4" sm="6" className="mb-1 ">
+            <Select
+              isClearable={true}
+              closeMenuOnSelect={false}
+              theme={selectThemeColors}
+              onChange={onMeterSelected}
+              value={meter}
+              options={meterList}
+              isSearchable
+              isMulti={true}
+              isLoading={GISMetersListResponse.isFetching}
+              components={{ Input: NumberInput }} // Use the custom input component
+              className="react-select border-secondary rounded "
+              classNamePrefix="select"
+              placeholder=""
+            />
+          </Col>
 
-            {/* Add Button */}
-            <Col lg="2" sm="5">
-              <Button
-                color="primary"
-                className="d-grid col-12 "
-                onClick={Submitresponse}
-              >
-                Add
-              </Button>
-            </Col>
-          </>
-        ) : (
-          <>
-            <Col lg="6" sm="5">
-              <Button color="primary" className=" mb-0 " outline disabled>
-                <Spinner color="primary" size="sm" />
-                <span className="ml-50">Loading...</span>
-              </Button>
-            </Col>
-          </>
-        )}
+          {/* Add Button */}
+          <Col lg="2" sm="5">
+            <Button
+              color="primary"
+              className="d-grid col-12 "
+              onClick={Submitresponse}
+            >
+              Add
+            </Button>
+          </Col>
+        </>
       </Row>
 
       <SimpleDataTable

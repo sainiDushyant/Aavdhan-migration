@@ -31,10 +31,6 @@ const FeederAsset = (props) => {
 
   // console.log(tableData)
 
-  const [hasError, setError] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
-  const [retry, setRetry] = useState(false);
-
   // Logout User
 
   // to get feeder list
@@ -85,22 +81,36 @@ const FeederAsset = (props) => {
 
   useEffect(() => {
     if (GISMetersListResponse.status === 'fulfilled') {
-      let statusCode = GISMetersListResponse?.currentData?.responseCode;
-
+      let statusCode = GISMetersListResponse.currentData.responseCode;
       if (statusCode) {
         if (statusCode === 200) {
           // Construct Meter List for DropDown
           const temp_meter_list =
-            GISMetersListResponse?.currentData?.data.result.stat.meters;
+            GISMetersListResponse.currentData.data.result.stat.meters;
 
-          const meterList = temp_meter_list.map((e) => {
-            let objCopy = { ...e };
-            objCopy.value = objCopy.meter_number;
-            objCopy.label = objCopy.meter_number;
-            objCopy.isFixed = 'true';
-            return objCopy;
-          });
-          setMeterList(meterList);
+          const meter_list = temp_meter_list
+            .map((meter) => {
+              // Create a shallow copy of the meter object
+              const temp_meter = { ...meter };
+              temp_meter['value'] = temp_meter['meter_number'];
+              temp_meter['label'] = temp_meter['meter_number'];
+              temp_meter['isFixed'] = 'true';
+              return temp_meter;
+            })
+            .filter(
+              (meter) =>
+                meter['grid_id'] !== undefined &&
+                meter['grid_id'] !== '' &&
+                meter['grid_id'] !== null &&
+                meter['meter_sw_version'] !== undefined &&
+                meter['meter_sw_version'] !== '' &&
+                meter['meter_sw_version'] !== null &&
+                meter['meter_address'] !== undefined &&
+                meter['meter_address'] !== '' &&
+                meter['meter_address'] !== null
+            );
+
+          setMeterList(meter_list);
         }
       }
     }
@@ -425,49 +435,41 @@ const FeederAsset = (props) => {
         )}
 
         {/* Meter DropDown */}
-        {!GISMetersListResponse.isFetching ? (
-          <>
-            <Col lg="4" sm="6" className="mb-1">
-              <Select
-                closeMenuOnSelect={false}
-                isClearable={true}
-                theme={selectThemeColors}
-                onChange={onMeterSelected}
-                value={meter}
-                options={meterList}
-                isSearchable
-                isMulti={true}
-                className="react-select border-secondary rounded"
-                classNamePrefix="select"
-                components={{ Input: NumberInput }}
-                placeholder=""
-              />
-            </Col>
 
-            {/* Add Button */}
-            <Col lg="2" sm="5">
-              <Button
-                color="primary"
-                className="btn-block "
-                onClick={Submitresponse}
-              >
-                Add
-              </Button>
-            </Col>
-          </>
-        ) : (
-          <>
-            <Col lg="6" sm="5">
-              <Button color="primary" className=" mb-0 " outline disabled>
-                <Spinner color="primary" size="sm" />
-                <span className="ml-50">Loading...</span>
-              </Button>
-            </Col>
-          </>
-        )}
+        <>
+          <Col lg="4" sm="6" className="mb-1">
+            <Select
+              closeMenuOnSelect={false}
+              isClearable={true}
+              theme={selectThemeColors}
+              onChange={onMeterSelected}
+              value={meter}
+              options={meterList}
+              isLoading={GISMetersListResponse.isFetching}
+              isSearchable
+              isMulti={true}
+              className="react-select border-secondary rounded"
+              classNamePrefix="select"
+              components={{ Input: NumberInput }}
+              placeholder=""
+            />
+          </Col>
+
+          {/* Add Button */}
+          <Col lg="2" sm="5">
+            <Button
+              color="primary"
+              className="btn-block "
+              onClick={Submitresponse}
+            >
+              Add
+            </Button>
+          </Col>
+        </>
       </Row>
       <SimpleDataTable
         columns={tblColumn()}
+        height={true}
         tblData={tableData}
         tableName={'Added feeder and Meter '}
         donotShowDownload={true}
