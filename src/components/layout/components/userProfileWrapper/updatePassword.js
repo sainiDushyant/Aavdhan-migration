@@ -16,6 +16,7 @@ import { useUpdatePasswordMutation } from '../../../../api/forgot-passwordSlice'
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
+import { jwtDecode } from 'jwt-decode';
 
 const MySwal = withReactContent(Swal);
 
@@ -49,17 +50,24 @@ const UpdatePassword = () => {
 
   const postUpdatePassword = async () => {
     try {
-      const response = await updatePassword({
+      const payload = {
         old_pass: formValues.old_pass,
         password: formValues.password,
-      }).unwrap();
+        password2: formValues.password2,
+        email: jwtDecode(localStorage.getItem('token')).userData.email,
+      };
 
-      let statusCode = response?.responseCode;
+      const response = await updatePassword(payload);
+
+      if (response.error) {
+        throw new Error(response.error.data?.message || 'Request failed');
+      }
+      let statusCode = response.data?.responseCode;
       if (statusCode === 200 || statusCode === 202) {
         MySwal.fire({
           icon: 'success',
           title: 'Please notice!',
-          text: response?.data?.result?.success,
+          text: response.data?.data?.result?.success,
           customClass: {
             confirmButton: 'btn btn-success',
           },
@@ -71,7 +79,7 @@ const UpdatePassword = () => {
           });
         });
       } else if (statusCode === 406) {
-        const error = response?.data?.error;
+        const error = response.data?.data?.error;
         const swalConfig = {
           icon: 'error',
           title: 'Failed!',

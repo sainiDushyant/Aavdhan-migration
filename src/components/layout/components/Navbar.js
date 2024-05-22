@@ -91,7 +91,7 @@ function Navbar() {
   };
   const userProfileModal = () => {
     setUserProfile(!userProfile);
-    handleDropDown();
+    setOpenDropDown(false);
   };
 
   return (
