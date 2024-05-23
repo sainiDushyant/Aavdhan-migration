@@ -66,14 +66,12 @@ const InputPasswordToggle = (props) => {
           {...rest}
           /*eslint-enable */
         />
-        {/* <InputGroupAddon addonType='append' onClick={() => setInputVisibility(!inputVisibility)}> */}
         <InputGroupText
-          className="cursor-pointer"
           onClick={() => setInputVisibility(!inputVisibility)}
+          className="cursor-pointer"
         >
           {renderIcon()}
         </InputGroupText>
-        {/* </InputGroupAddon> */}
       </InputGroup>
     </Fragment>
   );

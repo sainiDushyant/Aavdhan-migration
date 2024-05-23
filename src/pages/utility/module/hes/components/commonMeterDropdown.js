@@ -2,7 +2,6 @@ import { Col, Button, Row, Input } from 'reactstrap';
 import Select from 'react-select';
 
 import moment from 'moment';
-import { toast } from 'react-toastify';
 import Flatpickr from 'react-flatpickr';
 // import { useSelector } from 'react-redux'
 
@@ -23,13 +22,6 @@ const CommonMeterDropdown = (props) => {
       ? 'ipcl'
       : location.pathname.split('/')[2];
   const verticalName = location.pathname.split('/')[1];
-  // Logout User
-
-  // useEffect(() => {
-  //   if (logout) {
-  //     authLogout(history, dispatch);
-  //   }
-  // }, [logout]);
 
   // const responseData = useSelector(state => state.UtilityMdmsFlowReducer)
   const {
