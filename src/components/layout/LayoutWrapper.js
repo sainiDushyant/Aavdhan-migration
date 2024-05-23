@@ -3,7 +3,7 @@ import Drawer from './components/Drawer';
 import Navbar from './components/Navbar';
 import SideBar from './components/Navigator';
 import '../../styles/layout.scss';
-import Footer from '../../@core/layouts/components/footer';
+import Footer from './components/Footer';
 
 function LayoutWrapper({ children }) {
   return (
