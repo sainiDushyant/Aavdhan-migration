@@ -177,7 +177,20 @@ const UpdatePassword = () => {
               <Button className="me-1" color="primary" type="submit">
                 Submit
               </Button>
-              <Button outline color="secondary" type="reset">
+              <Button
+                outline
+                color="secondary"
+                type="reset"
+                onClick={() => {
+                  setFormValues({
+                    old_pass: '',
+                    password: '',
+                    password2: '',
+                    email: jwtDecode(localStorage.getItem('token')).userData
+                      .email,
+                  });
+                }}
+              >
                 Reset
               </Button>
             </Col>
