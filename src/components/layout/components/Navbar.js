@@ -21,6 +21,7 @@ function Navbar() {
   const [openDropDown, setOpenDropDown] = useState(false);
   const [logout, logoutResponse] = useLogoutMutation();
   const [userProfile, setUserProfile] = useState(false);
+  const refreshToken = localStorage.getItem('refreshToken');
   const token = localStorage.getItem('token') || '';
   let name = '';
   let role = '';
@@ -80,7 +81,7 @@ function Navbar() {
     setOpenDropDown(!openDropDown);
   };
   const handleLogout = () => {
-    logout();
+    logout(refreshToken);
   };
   const userProfileModal = () => {
     setUserProfile(!userProfile);

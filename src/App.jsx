@@ -17,6 +17,7 @@ const App = () => {
   if(typeof accessToken === 'string'){
     const decodedToken = jwtDecode(accessToken) 
   const decodedRefreshToken = jwtDecode(refreshToken)
+  console.log(decodedRefreshToken,"decode refresh token")
 if(accessToken && decodedToken.exp<Date.now()/1000){
         if(refreshToken && decodedRefreshToken.exp > Date.now() / 1000){
             tokenRefresh()

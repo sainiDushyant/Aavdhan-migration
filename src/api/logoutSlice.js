@@ -4,8 +4,6 @@ import { prepareHeaders } from '../hooks/Headers';
 const baseUrl = process.env.REACT_APP_BASE_URL;
 const loginUrl = process.env.REACT_APP_LOGIN_URL;
 
-const refreshToken = localStorage.getItem('refreshToken');
-
 const logoutApi = createApi({
   reducerPath: 'logoutApi',
   baseQuery: fetchBaseQuery({
@@ -14,7 +12,7 @@ const logoutApi = createApi({
   }),
   endpoints: (builder) => ({
     logout: builder.mutation({
-      query: () => ({
+      query: (refreshToken) => ({
         url: `${loginUrl}/users/auth/logout/`,
         method: 'POST',
         body: { refresh: refreshToken },

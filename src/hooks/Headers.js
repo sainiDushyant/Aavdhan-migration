@@ -6,7 +6,6 @@ export const getPreparedHeaders = () => {
     typeof window !== 'undefined'
       ? window.location.href.split('/').slice(4)
       : [];
-  console.log(urlParts, 'url parts');
   const vertical = urlParts[0] || '';
   const project = urlParts[1] || '';
   const module_ = urlParts[2] || '';
@@ -17,7 +16,6 @@ export const getPreparedHeaders = () => {
   try {
     if (token) {
       const userDetails = jwtDecode(token);
-      console.log(userDetails, 'detials');
       username = userDetails?.username;
     }
     uniqueId = localStorage?.getItem('uniqueId') || '';

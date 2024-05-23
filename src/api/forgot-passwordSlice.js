@@ -3,23 +3,25 @@ import { getPreparedHeaders } from '../hooks/Headers';
 import logoutApi from './logoutSlice';
 const baseUrl = process.env.REACT_APP_BASE_URL;
 const loginUrl = process.env.REACT_APP_LOGIN_URL;
+const refreshToken = localStorage.getItem('refreshToken');
 
 const { vertical, project, module, token, username, uniqueId } =
   getPreparedHeaders();
 const baseQueryWithReauth = async (args, api, extraOptions) => {
   const baseQuery = fetchBaseQuery({
     baseUrl: baseUrl,
-    // prepareHeaders: (headers) => {
-    //   headers.set('Vertical', 'forgot-password');
-    // },
   });
 
   const result = await baseQuery(args, api, extraOptions);
 
+  console.log(result);
+
   if (result.error) {
-    const status = result.error.originalStatus;
+    const status = result.error.status;
+    console.log(result);
     if (status === 401 || status === 403) {
-      api.dispatch(logoutApi.endpoints.logout.initiate());
+      console.log('logout');
+      api.dispatch(logoutApi.endpoints.logout.initiate(refreshToken));
       localStorage.clear();
       window.location.href = '/';
     }
