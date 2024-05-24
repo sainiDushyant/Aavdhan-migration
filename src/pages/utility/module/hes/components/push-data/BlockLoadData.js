@@ -16,7 +16,7 @@ import PushDataDownloadWrapper from './PushDataDownloadWrapper';
 import { X } from 'react-feather';
 
 import moment from 'moment';
-import { useGetBlockLoadDataQuery } from '../../../../../../api/push-dataSlice';
+import { useGetBlockLoadDataQuery } from '../../../../../../api/hes/push-dataSlice';
 
 const BlockLoadData = (props) => {
   const defaultStartDate = moment()

@@ -27,7 +27,7 @@ import moment from 'moment';
 import { useSelector } from 'react-redux';
 
 import { ArrowLeft } from 'react-feather';
-import { useExecuteDlmsCommandMutation } from '../../../../../../../../api/command-historySlice';
+import { useExecuteDlmsCommandMutation } from '../../../../../../../../api/hes/command-historySlice';
 
 const MeterCommand = (props) => {
   const { tableData, setTableData, projectName } = props;

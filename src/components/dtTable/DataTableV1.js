@@ -27,7 +27,6 @@ import { DownloadCSV, DownloadPDF } from '../dtTable/downloadTableData';
 import CardInfo from '../../components/ui-elements/cards/NoDataCardInfo';
 
 const DataTableV1 = (props) => {
-  // const data = props.data;
   const [data, setData] = useState(props.data);
   const totalRowsCount = props.totalRowsCount;
   const [currentPageData, setCurrentPageData] = useState([]);
@@ -82,6 +81,7 @@ const DataTableV1 = (props) => {
   };
 
   function paginateData(data, page) {
+    console.log(page, 'this is page');
     if (data?.length > 10) {
       if (page === 1) {
         setCurrentPageData(data.slice(0, 10));

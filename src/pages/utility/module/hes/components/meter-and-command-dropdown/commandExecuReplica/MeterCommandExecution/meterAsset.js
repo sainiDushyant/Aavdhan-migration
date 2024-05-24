@@ -3,7 +3,7 @@ import { ArrowRight, Trash2 } from 'react-feather';
 import { Col, Button, Row, InputGroup, Input, Form, Spinner } from 'reactstrap';
 import { useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { useLazyGISMeterSearchQuery } from '../../../../../../../../api/command-historySlice';
+import { useLazyGISMeterSearchQuery } from '../../../../../../../../api/hes/command-historySlice';
 
 import { caseInsensitiveSort } from '../../../../../../../../utils';
 

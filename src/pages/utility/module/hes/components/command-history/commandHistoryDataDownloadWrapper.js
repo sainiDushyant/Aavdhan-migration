@@ -23,7 +23,7 @@ import { Download } from 'react-feather';
 import {
   useLazyDLMSDataDownloadRequestQuery,
   useGetDLMSDataDownloadRequestHistoryQuery,
-} from '../../../../../../api/command-historySlice';
+} from '../../../../../../api/hes/command-historySlice';
 
 const CommandHistoryDataDownloadWrapper = () => {
   const location = useLocation();

@@ -18,7 +18,7 @@ import { toast } from 'react-toastify';
 import {
   useDownloadMeterConfigurationRequestReportQuery,
   useLazyDownloadMeterConfigurationReportQuery,
-} from '../../../../../../api/meter-configurationSlice';
+} from '../../../../../../api/hes/meter-configurationSlice';
 
 const MeterConfigurationDownloadWrapper = (props) => {
   const location = useLocation();

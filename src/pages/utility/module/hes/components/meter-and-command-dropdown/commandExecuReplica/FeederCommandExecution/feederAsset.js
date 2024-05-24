@@ -21,7 +21,7 @@ import { useSelector } from 'react-redux';
 import { ArrowRight, Eye, Trash2 } from 'react-feather';
 import MeterDetailsModal from '../selectedMeterDetailsModal';
 import { caseInsensitiveSort } from '../../../../../../../../utils';
-import { useLazyGISMetersListQuery } from '../../../../../../../../api/drop-downSlice';
+import { useLazyGISMetersListQuery } from '../../../../../../../../api/hes/drop-downSlice';
 
 const FeederAsset = (props) => {
   const location = useLocation();

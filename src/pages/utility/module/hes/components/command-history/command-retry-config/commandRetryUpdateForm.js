@@ -20,7 +20,7 @@ import { useLocation } from 'react-router-dom';
 
 import { toast } from 'react-toastify';
 
-import { useUpdateDLMSCommandRetryCommandMutation } from '../../../../../../../api/command-historySlice';
+import { useUpdateDLMSCommandRetryCommandMutation } from '../../../../../../../api/hes/command-historySlice';
 
 const CommandRetryUpDateForm = (props) => {
   const [updateCommandRetry, response] =

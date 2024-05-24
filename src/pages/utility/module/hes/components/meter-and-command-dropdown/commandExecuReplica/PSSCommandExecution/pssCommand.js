@@ -28,7 +28,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { ArrowLeft } from 'react-feather';
 
-import { useExecuteDlmsCommandMutation } from '../../../../../../../../api/command-historySlice';
+import { useExecuteDlmsCommandMutation } from '../../../../../../../../api/hes/command-historySlice';
 
 const PssCommand = (props) => {
   const { tableData, setTableData, projectName } = props;

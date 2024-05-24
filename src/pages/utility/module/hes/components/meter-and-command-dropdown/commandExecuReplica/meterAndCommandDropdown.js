@@ -17,7 +17,7 @@ import {
 import {
   useCommandInfoDLMSQuery,
   useCommandInfoAssetsQuery,
-} from '../../../../../../../api/drop-downSlice';
+} from '../../../../../../../api/hes/drop-downSlice';
 // import useJwt from '@src/auth/jwt/useJwt';
 
 import { ChevronDown, Command, X } from 'react-feather';

@@ -26,7 +26,7 @@ import {
   useGetMdasDlmsCommandHistoryQuery,
   useGetMdasTapCommandHistoryQuery,
   useLazyGetMdasDlmsHistoryDataQuery,
-} from '../../../../../../api/command-historySlice';
+} from '../../../../../../api/hes/command-historySlice';
 import FilterForm from './filterForm';
 import '../../../../../../assets/css/util.scss';
 const CommandHistory = (props) => {

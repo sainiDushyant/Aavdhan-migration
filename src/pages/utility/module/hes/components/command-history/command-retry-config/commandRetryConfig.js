@@ -22,7 +22,7 @@ import CardInfo from '../../../../../../../components/ui-elements/cards/cardInfo
 
 import CommandRetryUpDateForm from './commandRetryUpdateForm';
 
-import { useGetCommandRetryConfigDataQuery } from '../../../../../../../api/command-historySlice';
+import { useGetCommandRetryConfigDataQuery } from '../../../../../../../api/hes/command-historySlice';
 
 const CommandRetryConfig = () => {
   const location = useLocation();

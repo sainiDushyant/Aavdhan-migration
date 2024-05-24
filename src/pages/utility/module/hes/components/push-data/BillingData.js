@@ -15,7 +15,7 @@ import PushDataDownloadWrapper from './PushDataDownloadWrapper';
 import { X } from 'react-feather';
 
 import { getDefaultDateTimeRange } from '../../../../../../utils';
-import { useGetBillingDataQuery } from '../../../../../../api/push-dataSlice';
+import { useGetBillingDataQuery } from '../../../../../../api/hes/push-dataSlice';
 import DataTableV1 from '../../../../../../components/dtTable/DataTableV1';
 
 const BillingData = () => {

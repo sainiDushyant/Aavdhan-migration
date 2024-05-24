@@ -42,23 +42,37 @@ function SideBar() {
           <SubMenu icon={<Award size={18} />} label="LPDD">
             <MenuItem
               icon={<Circle size={12} />}
-              // component={<Link to={'/utility/lpdd/hes'} />}
               onClick={() => navigate('/utility/lpdd/hes')}
               active={location.pathname === '/utility/lpdd/hes'}
               data-bs-dismiss={isMobileSidebarOpen ? 'offcanvas' : ''}
             >
               HES
             </MenuItem>
+            <MenuItem
+              icon={<Circle size={12} />}
+              onClick={() => navigate('/utility/lpdd/mdms')}
+              active={location.pathname === '/utility/lpdd/mdms'}
+              data-bs-dismiss={isMobileSidebarOpen ? 'offcanvas' : ''}
+            >
+              MDMS
+            </MenuItem>
           </SubMenu>
           <SubMenu icon={<Award size={18} />} label="SBPDCL">
             <MenuItem
               icon={<Circle size={12} />}
-              // component={<Link to={'/utility/sbpdcl/hes'} />}
               onClick={() => navigate('/utility/sbpdcl/hes')}
               active={location.pathname === '/utility/sbpdcl/hes'}
               data-bs-dismiss={isMobileSidebarOpen ? 'offcanvas' : ''}
             >
               HES
+            </MenuItem>
+            <MenuItem
+              icon={<Circle size={12} />}
+              onClick={() => navigate('/utility/sbpdcl/mdms')}
+              active={location.pathname === '/utility/sbpdcl/mdms'}
+              data-bs-dismiss={isMobileSidebarOpen ? 'offcanvas' : ''}
+            >
+              MDMS
             </MenuItem>
           </SubMenu>
         </Menu>

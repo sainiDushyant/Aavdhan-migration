@@ -111,7 +111,7 @@ export function csvTxtToJSON(txt) {
     const rowValues = rawRow.split(',');
     const row = {};
     keys.map((key, index) => {
-      row[key] = rowValues[index].trim();
+      return (row[key] = rowValues[index].trim());
     });
     return row;
   });

@@ -1,5 +1,5 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
-import { baseQueryWithReauth } from './utils/baseQueryWithAuth';
+import { baseQueryWithReauth } from '../utils/baseQueryWithAuth';
 
 const MDASUrl = process.env.REACT_APP_MDAS_URL;
 const otherUrl = process.env.REACT_APP_OTHER_MODULES_URL;

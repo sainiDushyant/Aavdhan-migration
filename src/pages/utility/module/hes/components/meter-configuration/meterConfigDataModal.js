@@ -16,9 +16,9 @@ import Flatpickr from 'react-flatpickr';
 import {
   useGetMeterMetaDataQuery,
   useLazyEditCommunicationProtocolQuery,
-} from '../../../../../../api/meter-configurationSlice';
+} from '../../../../../../api/hes/meter-configurationSlice';
 
-import { useExecuteDlmsCommandMutation } from '../../../../../../api/command-historySlice';
+import { useExecuteDlmsCommandMutation } from '../../../../../../api/hes/command-historySlice';
 
 import { selectThemeColors } from '../../../../../../utils';
 

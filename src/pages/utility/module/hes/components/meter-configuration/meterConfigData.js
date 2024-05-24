@@ -20,7 +20,7 @@ import { useLocation } from 'react-router-dom';
 
 import CardInfo from '../../../../../../components/ui-elements/cards/cardInfo';
 import Loader from '../../../../../../components/loader/loader';
-import { useGetMeterConfigurationListQuery } from '../../../../../../api/meter-configurationSlice';
+import { useGetMeterConfigurationListQuery } from '../../../../../../api/hes/meter-configurationSlice';
 import { Edit, X } from 'react-feather';
 import DataTableV1 from '../../../../../../components/dtTable/DataTableV1';
 import CommonMeterDropdown from '../commonMeterDropdown';

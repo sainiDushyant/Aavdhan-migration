@@ -8,11 +8,10 @@ import Flatpickr from 'react-flatpickr';
 import { useState, useEffect } from 'react';
 
 import { useLocation } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
 import {
   useCommandInfoAssetsQuery,
   useLazyGISMetersListQuery,
-} from '../../../../../api/drop-downSlice';
+} from '../../../../../api/hes/drop-downSlice';
 
 const CommonMeterDropdown = (props) => {
   const location = useLocation();

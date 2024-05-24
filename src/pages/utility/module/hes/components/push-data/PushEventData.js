@@ -15,7 +15,7 @@ import { caseInsensitiveSort } from '../../../../../../utils';
 import PushDataDownloadWrapper from './PushDataDownloadWrapper';
 import DataTableV1 from '../../../../../../components/dtTable/DataTableV1';
 import { X } from 'react-feather';
-import { useGetPushBasedEventQuery } from '../../../../../../api/push-dataSlice';
+import { useGetPushBasedEventQuery } from '../../../../../../api/hes/push-dataSlice';
 
 const PushEventData = () => {
   const location = useLocation();

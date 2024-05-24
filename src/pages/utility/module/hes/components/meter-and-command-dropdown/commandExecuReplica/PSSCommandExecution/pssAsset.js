@@ -20,7 +20,7 @@ import SimpleDataTable from '../../../../../../../../components/dtTable/simpleTa
 import { ArrowLeft, ArrowRight, Eye, Trash2 } from 'react-feather';
 import MeterDetailsModal from '../selectedMeterDetailsModal';
 import { caseInsensitiveSort } from '../../../../../../../../utils';
-import { useLazyGISMetersListQuery } from '../../../../../../../../api/drop-downSlice';
+import { useLazyGISMetersListQuery } from '../../../../../../../../api/hes/drop-downSlice';
 
 const PssAsset = (props) => {
   const location = useLocation();
