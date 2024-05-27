@@ -13,6 +13,7 @@ import { pushDataApi } from '../api/hes/push-dataSlice';
 import { meterConfigurationApi } from '../api/hes/meter-configurationSlice';
 import layoutReducer from './redux/layoutSlice';
 import { energyConsumptionApi } from '../api/mdms/energy-consumptionSlice';
+import { operationalStatsApi } from '../api/mdms/operational-statisticsSlice';
 
 const rootReducer = combineReducers({
   [loginApi.reducerPath]: loginApi.reducer,
@@ -22,6 +23,7 @@ const rootReducer = combineReducers({
   [logoutApi.reducerPath]: logoutApi.reducer,
   [meterConfigurationApi.reducerPath]: meterConfigurationApi.reducer,
   [energyConsumptionApi.reducerPath]: energyConsumptionApi.reducer,
+  [operationalStatsApi.reducerPath]: operationalStatsApi.reducer,
   layout: layoutReducer,
   [dropdownsApi.reducerPath]: dropdownsApi.reducer,
   utilityMDASAssetList: utilityMDASAssetListReducer,

@@ -891,3 +891,37 @@ export const getDefaultDateTimeRange = () => {
 
   return { startDateTime: start_date, endDateTime: end_date };
 };
+
+export const iconsStore = {
+  colors: [
+    'light-primary',
+    'light-info',
+    'light-danger',
+    'light-success',
+    'light-warning',
+    'light-primary',
+    'light-secondary',
+  ],
+  icons: [
+    'TrendingUp',
+    'Cpu',
+    'Download',
+    'ZapOff',
+    'Calendar',
+    'Check',
+    'ChevronRight',
+    'ChevronLeft',
+    'Clock',
+    'Bell',
+    'User',
+    'Grid',
+    'Activity',
+    'RefreshCw',
+    'MapPin',
+    'Sliders',
+    'Settings',
+    'Unlock',
+    'Circle',
+    'Award',
+  ],
+};

@@ -2,13 +2,14 @@ import { Row, Col } from 'reactstrap';
 
 import '../../../../../@core/scss/react/libs/charts/apex-charts.scss';
 // import '@styles/base/pages/dashboard-ecommerce.scss';
+import '../../../../../@core/scss/base/pages/dashboard-ecommerce.scss';
 
 //Wrapper Functions
 import EnergyConsumptionWrapper from '../components/EnergyConsumptionInformationWrapper';
 import { useDispatch } from 'react-redux';
 
 import { updateMDMSHierarchyProgress } from '../../../../../app/redux/mdmsHeirarchySlice';
-// import OperationalInformationWrapper from '../components/OperationalInformationWrapper';
+import OperationalInformationWrapper from '../components/OperationalInformationWrapper';
 
 // import { Spinner, Card } from 'reactstrap'
 
@@ -56,7 +57,7 @@ const MdmsPssModule = (props) => {
             <TopAlertsWrapper hierarchy={'pss'} height='height-615' />
           </Row>
         </Col> */}
-        {/* <OperationalInformationWrapper hierarchy={'pss'} /> */}
+        <OperationalInformationWrapper hierarchy={'pss'} />
       </Row>
     </div>
   );

@@ -6,7 +6,7 @@ import '../../../../../@core/scss/react/libs/charts/apex-charts.scss';
 //Wrapper Functions
 import EnergyConsumptionWrapper from '../components/EnergyConsumptionInformationWrapper';
 
-// import OperationalInformationWrapper from '../components/OperationalInformationWrapper';
+import OperationalInformationWrapper from '../components/OperationalInformationWrapper';
 
 import { useDispatch } from 'react-redux';
 
@@ -63,7 +63,7 @@ const MdmsDtrModule = (props) => {
             <TopAlertsWrapper hierarchy={'dtr'} height='height-595' />
           </Row>
         </Col> */}
-        {/* <OperationalInformationWrapper hierarchy={'dtr'} /> */}
+        <OperationalInformationWrapper hierarchy={'dtr'} />
       </Row>
     </div>
   );
