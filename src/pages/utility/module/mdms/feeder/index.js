@@ -4,7 +4,7 @@ import '../../../../../@core/scss/react/libs/charts/apex-charts.scss';
 
 //Wrapper Functions
 import EnergyConsumptionWrapper from '../components/EnergyConsumptionInformationWrapper';
-// import OperationalInformationWrapper from '../components/OperationalInformationWrapper';
+import OperationalInformationWrapper from '../components/OperationalInformationWrapper';
 
 import { useSelector, useDispatch } from 'react-redux';
 
@@ -14,6 +14,8 @@ import { updateMDMSHierarchyProgress } from '../../../../../app/redux/mdmsHeirar
 const MdmsFeederModule = (props) => {
   const dispatch = useDispatch();
   const hierarchy = useSelector((state) => state.MDMSHierarchyProgress.data);
+
+  console.log(hierarchy, 'feeder level');
 
   // console.log("Hierarchy Progress in redux Store ....")
   // console.log(responseData)
@@ -69,7 +71,7 @@ const MdmsFeederModule = (props) => {
             <TopAlertsWrapper hierarchy={'feeder'} height='height-595' />
           </Row>
         </Col> */}
-        {/* <OperationalInformationWrapper hierarchy={'feeder'} /> */}
+        <OperationalInformationWrapper hierarchy={'feeder'} />
       </Row>
     </div>
   );

@@ -121,7 +121,7 @@ const DataTableV1 = (props) => {
   } else {
     return (
       <>
-        <Card className="p-1" style={{ minHeight: '668px' }}>
+        <Card className="p-1" style={{ minHeight: '300px' }}>
           <Row className="border-bottom">
             <Col className="p-1 w-100 d-flex">
               <div className="d-flex align-items-center gap-1 h-100">

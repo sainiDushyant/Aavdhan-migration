@@ -26,6 +26,7 @@ export const operationalStatsApi = createApi({
       }),
     }),
   }),
+  keepUnusedDataFor: 300,
 });
 
 // Export hooks for usage in functional components, which are

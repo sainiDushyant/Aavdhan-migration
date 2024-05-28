@@ -8,12 +8,14 @@ import EnergyConsumptionWrapper from '../components/EnergyConsumptionInformation
 
 import OperationalInformationWrapper from '../components/OperationalInformationWrapper';
 
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { ChevronLeft } from 'react-feather';
 import { updateMDMSHierarchyProgress } from '../../../../../app/redux/mdmsHeirarchySlice';
 
 const MdmsDtrModule = (props) => {
+  const hierarchy = useSelector((state) => state.MDMSHierarchyProgress.data);
+
   const dispatch = useDispatch();
 
   const onDtrTableRowClickHandler = (dtr, row) => {
@@ -26,6 +28,7 @@ const MdmsDtrModule = (props) => {
     //Update Hierarchy Progress
     dispatch(
       updateMDMSHierarchyProgress({
+        ...hierarchy,
         dtr_name: dtr,
         dtr_real_name: row.dtr,
         mdms_state: 'user',

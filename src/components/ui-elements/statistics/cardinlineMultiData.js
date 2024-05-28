@@ -13,10 +13,13 @@ import {
 import IcoFun from '../dynamicIcon/dynamicIcon';
 import { iconsStore as iconStore } from '../../../utils';
 
+console.log(
+  iconStore.colors[Math.floor(Math.random() * iconStore.colors.length)],
+  'icon store'
+);
+
 const CardinlineMultiData = (props) => {
   const renderData = () => {
-    // console.log("Operational Statistics Data :: ", props.data)
-
     let data = props.data;
     const keyToRemove = 'title';
     const valueToRemove = 'Total Consumption';
@@ -27,11 +30,7 @@ const CardinlineMultiData = (props) => {
       const margin = Object.keys(props.cols);
       return (
         <Col key={index} {...props.cols} className="mb-2">
-          <Media
-            className={
-              props.data.length - 1 === index ? 'my-1' : 'my-1 border-right'
-            }
-          >
+          <Media className="d-flex justify-content-center gap-1 align-items-center my-1">
             <Avatar
               color={
                 iconStore.colors[

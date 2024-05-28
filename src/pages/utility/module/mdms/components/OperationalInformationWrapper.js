@@ -18,7 +18,9 @@ import {
 
 const OperationalInformationWrapper = (props) => {
   const location = useLocation();
-  const [response, SetResponse] = useState([]);
+  const [energyData, setEnergyData] = useState([]);
+  const [rechargeData, setRechargeData] = useState([]);
+  const [metersData, setMetersData] = useState([]);
   const currentMonth = moment().format('MM'); // Month number, e.g., "05"
   const currentYear = moment().format('YYYY');
 
@@ -87,7 +89,7 @@ const OperationalInformationWrapper = (props) => {
     if (opsStatsEnergyStatus === 'fulfilled') {
       let statusCode = opsStatsEnergyData.responseCode;
       if (statusCode === 200) {
-        SetResponse([...response, ...opsStatsEnergyData.data.result.stat]);
+        setEnergyData(opsStatsEnergyData.data.result.stat);
       }
     }
   }, [opsStatsEnergyData]);
@@ -96,7 +98,7 @@ const OperationalInformationWrapper = (props) => {
     if (opsStatsRechargeStatus === 'fulfilled') {
       let statusCode = opsStatsRechargeData.responseCode;
       if (statusCode === 200) {
-        SetResponse([...response, ...opsStatsRechargeData.data.result.stat]);
+        setRechargeData(opsStatsRechargeData.data.result.stat);
       }
     }
   }, [opsStatsRechargeData]);
@@ -105,10 +107,12 @@ const OperationalInformationWrapper = (props) => {
     if (opsStatsMetersStatus === 'fulfilled') {
       let statusCode = opsStatsMetersData.responseCode;
       if (statusCode === 200) {
-        SetResponse([...response, ...opsStatsMetersData.data.result.stat]);
+        setMetersData(opsStatsMetersData.data.result.stat);
       }
     }
   }, [opsStatsMetersData]);
+
+  const response = [...energyData, ...rechargeData, ...metersData];
 
   useEffect(() => {
     try {
@@ -117,11 +121,17 @@ const OperationalInformationWrapper = (props) => {
   });
 
   const retryAgain = () => {
+    if (opsStatsEnergyError && opsStatsRechargeError && opsStatsMetersError) {
+      fetchEnergydata();
+      fetchRechargeData();
+      fetchMetersData();
+      return;
+    }
     if (opsStatsEnergyError) {
       fetchEnergydata();
     } else if (opsStatsRechargeError) {
       fetchRechargeData();
-    } else {
+    } else if (opsStatsMetersError) {
       fetchMetersData();
     }
   };
@@ -133,10 +143,12 @@ const OperationalInformationWrapper = (props) => {
           props={{
             message: { errorMessage: 'Something went wrong...' },
             retryFun: { retryAgain },
-            retry:
-              opsSatsEnergyLoading ||
-              opsSatsMetersLoading ||
-              opsSatsRechargeLoading,
+            retry: {
+              retry:
+                opsSatsEnergyLoading ||
+                opsSatsMetersLoading ||
+                opsSatsRechargeLoading,
+            },
           }}
         />
       ) : (

@@ -893,15 +893,7 @@ export const getDefaultDateTimeRange = () => {
 };
 
 export const iconsStore = {
-  colors: [
-    'light-primary',
-    'light-info',
-    'light-danger',
-    'light-success',
-    'light-warning',
-    'light-primary',
-    'light-secondary',
-  ],
+  colors: ['info', 'danger', 'success', 'warning', 'primary'],
   icons: [
     'TrendingUp',
     'Cpu',

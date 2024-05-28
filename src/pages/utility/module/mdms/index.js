@@ -9,7 +9,8 @@ import MdmsDtrModule from './dtr';
 // import MdmsDtrModule from '@src/views/project/utility/module/mdms/dtr';
 // import Error from '@src/views/Error';
 
-// import AllUsers from '@src/views/project/utility/module/mdms/users';
+import AllUsers from './users';
+
 // import MdmsUserConsumptionModule from '@src/views/project/utility/module/mdms/userProfile';
 
 const MdmsUtility = () => {
@@ -43,6 +44,15 @@ const MdmsUtility = () => {
     <MdmsFeederModule statehandler={mdmsStateHandler} />
   ) : mdmsState === 'dtr' ? (
     <MdmsDtrModule statehandler={mdmsStateHandler} />
+  ) : mdmsState === 'user' ? (
+    <AllUsers
+      updateConnectionType={updateConnectionType}
+      // id={props.dtr_list[0]['id']}
+      txtLen={16}
+      tableName={'All Users'}
+      updateMdmsState={mdmsStateHandler}
+      showBackButton={usersBackButton}
+    />
   ) : (
     ''
   );
