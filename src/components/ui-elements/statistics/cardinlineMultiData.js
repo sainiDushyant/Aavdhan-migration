@@ -30,7 +30,10 @@ const CardinlineMultiData = (props) => {
       const margin = Object.keys(props.cols);
       return (
         <Col key={index} {...props.cols} className="mb-2">
-          <Media className="d-flex justify-content-center gap-1 align-items-center my-1">
+          <Media 
+          className='mb-1 mt-1 d-flex align-items-start'
+          style={{borderRight:'1px solid #ebe9f1 !important'}}
+          >
             <Avatar
               color={
                 iconStore.colors[
@@ -43,7 +46,7 @@ const CardinlineMultiData = (props) => {
                 ],
                 24
               )}
-              className="mr-1"
+              className="me-1"
               style={{ cursor: 'default' }}
             />
             <Media className="my-auto" body>

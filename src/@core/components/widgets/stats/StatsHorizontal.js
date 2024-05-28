@@ -50,9 +50,7 @@ const StatsHorizontal = ({
             )
           ) : (
             <div
-              className={`avatar avatar-stats p-50 m-0 ${
-                color ? `bg-light-${color}` : 'bg-light-primary'
-              }`}
+              className={`bg-light-primary avatar-stats p-50 m-0 `}
               style={click ? { cursor: 'pointer' } : { cursor: 'default' }}
             >
               {avatar ? icon : <div className="avatar-content">{icon}</div>}
