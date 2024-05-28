@@ -10,8 +10,8 @@ import { updateMDMSHierarchyProgress } from '../../../../../app/redux/mdmsHeirar
 import { ChevronLeft } from 'react-feather';
 
 import DailyLoadWrapper from './wrapper/dailyLoadData';
-// import BlockLoadWrapper from "./wrapper/blockLoadData"
-// import BillingHistoryWrapper from "./wrapper/billingHistoryData"
+import BlockLoadWrapper from './wrapper/blockLoadData';
+import BillingHistoryWrapper from './wrapper/billingHistoryData';
 
 const AllUsers = (props) => {
   const dispatch = useDispatch();
@@ -65,10 +65,10 @@ const AllUsers = (props) => {
               <DailyLoadWrapper />
             </Col>
             <Col lg="4" xs="6" className="pl-0">
-              {/* <BlockLoadWrapper /> */}
+              <BlockLoadWrapper />
             </Col>
             <Col lg="4" xs="6" className="pl-0">
-              {/* <BillingHistoryWrapper /> */}
+              <BillingHistoryWrapper />
             </Col>
             <OperationalInformationWrapper
               height="height-367"

@@ -5,57 +5,33 @@ import {
   ModalHeader,
   ModalBody,
   Button,
-  InputGroup,
   Label,
-  Card,
-  CardBody,
 } from 'reactstrap';
 import moment from 'moment';
-import Loader from '@src/views/project/misc/loader';
-import CreateTable from '@src/views/ui-elements/dtTable/createTable';
+import Loader from '../../../../../../components/loader/loader';
+import { useFetcher, useLocation } from 'react-router-dom';
+
 import Flatpickr from 'react-flatpickr';
-import '@styles/react/libs/flatpickr/flatpickr.scss';
-import { useContext, useState, useEffect } from 'react';
-import useJwt from '@src/auth/jwt/useJwt';
-import { useSelector, useDispatch } from 'react-redux';
-import SimpleDataTablePaginated from '@src/views/ui-elements/dtTable/simpleTablePaginated';
-import Toast from '@src/views/ui-elements/cards/actions/createToast';
+import { useState, useEffect } from 'react';
+
+import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import Select from 'react-select';
-import { selectThemeColors } from '@utils';
-
-import { useLocation, useHistory } from 'react-router-dom';
-import authLogout from '../../../../../../../auth/jwt/logoutlogic';
-import CardInfo from '@src/views/ui-elements/cards/actions/cardInfo';
+import { selectThemeColors } from '../../../../../../utils';
+import CardInfo from '../../../../../../components/ui-elements/cards/cardInfo';
+import { useLazyGetMDMSGroupMeterBlockLoadDataQuery } from '../../../../../../api/mdms/loadSlice';
+import DataTableV1 from '../../../../../../components/dtTable/DataTableV1';
 
 const BlockLoadDataModal = (props) => {
-  const dispatch = useDispatch();
-  const history = useHistory();
+  const location = useLocation();
+  const projectName = location.pathname.split('/')[2];
+  const hierarchy = useSelector((state) => state.MDMSHierarchyProgress.data);
 
   // Error Handling
   const [errorMessage, setErrorMessage] = useState('');
-  const [hasError, setError] = useState(false);
-  const [retry, setRetry] = useState(false);
 
-  // Logout User
-  const [logout, setLogout] = useState(false);
-  useEffect(() => {
-    if (logout) {
-      authLogout(history, dispatch);
-    }
-  }, [logout]);
-
-  const [fetchingData, setFetchingData] = useState(true);
   const [response, setResponse] = useState([]);
-  const [totalCount, setTotalCount] = useState(120);
   const [currentPage, setCurrentPage] = useState(1);
-  // const [startDateTime, setStartDateTime] = useState(undefined)
-  // const [endDateTime, setEndDateTime] = useState(undefined)
-
-  const selected_month = useSelector((state) => state.calendarReducer.month);
-  const HierarchyProgress = useSelector(
-    (state) => state.UtilityMDMSHierarchyProgressReducer.responseData
-  );
 
   const [startDateTime, setStartDateTime] = useState(undefined);
   const [startDateTimeAsPerFormat, setStartDateTimeAsPerFormat] =
@@ -70,98 +46,57 @@ const BlockLoadDataModal = (props) => {
   //   console.log("Hierarchy Progress ....")
   //   console.log(HierarchyProgress)
 
-  let project = '';
+  let project = projectName;
   let site = '';
   let site_real_name = '';
-  if (HierarchyProgress && HierarchyProgress.project_name) {
-    project = HierarchyProgress.project_name;
+
+  if (hierarchy && hierarchy.dtr_name) {
+    site = hierarchy.dtr_name;
   }
-  if (HierarchyProgress && HierarchyProgress.dtr_name) {
-    site = HierarchyProgress.dtr_name;
-  }
-  if (HierarchyProgress && HierarchyProgress.dtr_real_name) {
-    site_real_name = HierarchyProgress.dtr_real_name;
+  if (hierarchy && hierarchy.dtr_real_name) {
+    site_real_name = hierarchy.dtr_real_name;
   }
 
-  // console.log('Periodic Push Data .....')
-  // console.log(response)
-
-  const fetchData = async (params) => {
-    return await useJwt
-      // .getMDMSGroupMeterNamePlateData(params)
-      .getMDMSGroupMeterBlockLoadData(params)
-      .then((res) => {
-        const status = res.status;
-        return [status, res];
-      })
-      .catch((err) => {
-        if (err.response) {
-          const status = err.response.status;
-          return [status, err];
-        } else {
-          return [0, err];
-        }
-      });
-  };
-
-  useEffect(async () => {
-    if (fetchingData || retry) {
-      let params = undefined;
-
-      if (startDateTimeAsPerFormat && endDateTimeAsPerFormat) {
-        params = {
-          project,
-          site,
-          page: currentPage,
-          page_size: 10,
-          data_state: selectDataPosition,
-          start_date: startDateTime,
-          end_date: endDateTime,
-        };
-      } else {
-        params = {
-          project,
-          site,
-          page: currentPage,
-          page_size: 10,
-          data_state: selectDataPosition,
-        };
-      }
-      const [statusCode, response] = await fetchData(params);
-
-      if (statusCode === 200) {
-        // setTotalCount(response.data.data.result.count)
-
-        // const _temp = response.data.data.result.results
-        // const _response_temp = []
-        // for (let i = 0; i < _temp.length; i++) {
-        //   const temp = _temp[i]['data']
-        //   temp['data_reporting_time'] = _temp[i]['report_timestamp']
-        //   _response_temp.push(temp)
-        // }
-        // setResponse(_response_temp)
-        setResponse(response.data.data.result);
-        setFetchingData(false);
-        setRetry(false);
-      } else if (statusCode === 401 || statusCode === 403) {
-        setLogout(true);
-      } else {
-        setRetry(false);
-        setError(true);
-        setErrorMessage('Network Error, please retry');
-      }
+  const getParams = () => {
+    let params;
+    if (startDateTimeAsPerFormat && endDateTimeAsPerFormat) {
+      params = {
+        project,
+        site,
+        page: currentPage,
+        page_size: 10,
+        data_state: selectDataPosition,
+        start_date: startDateTimeAsPerFormat,
+        end_date: endDateTimeAsPerFormat,
+      };
+    } else {
+      params = {
+        project,
+        site,
+        page: currentPage,
+        page_size: 10,
+        data_state: selectDataPosition,
+      };
     }
-  }, [fetchingData, retry]);
-
-  const onNextPageClicked = (number) => {
-    setCurrentPage(number + 1);
-    setFetchingData(true);
+    return params;
   };
 
-  const reloadData = () => {
-    setCurrentPage(1);
-    setFetchingData(true);
-  };
+  const [fetchBlockLoad, data] = useLazyGetMDMSGroupMeterBlockLoadDataQuery();
+
+  useEffect(() => {
+    fetchBlockLoad(getParams(), { preferCacheValue: true });
+  }, []);
+
+  useEffect(() => {
+    if (data.status === 'fulfilled') {
+      let statusCode = data.currentData.responseCode;
+      if (statusCode === 200) {
+        setResponse(data.currentData.data.result);
+      }
+    } else if (data.isError) {
+      setErrorMessage('Something went wrong, please retry');
+    }
+  }, [data]);
 
   const dateTimeFormat = (inputDate) => {
     return ''.concat(
@@ -180,61 +115,133 @@ const BlockLoadDataModal = (props) => {
   };
 
   const onStartTimeSelected = (time) => {
-    // console.log("Start Time Selected ...")
-    // console.log(time[0])
-    // console.log("As per date time format ....")
-    // console.log(dateTimeFormat(time[0]))
     setStartDateTime(time[0]);
     setStartDateTimeAsPerFormat(dateTimeFormat(time[0]));
   };
 
   const onEndTimeSelected = (time) => {
-    // console.log("End Time Selected ...")
-    // console.log(time[0])
-    // console.log("As per date time format ....")
-    // console.log(dateTimeFormat(time[0]))
     setEndDateTime(time[0]);
     setEndDateTimeAsPerFormat(dateTimeFormat(time[0]));
   };
 
   const onDataPositionSelected = (position) => {
-    // console.log("Position Selected ...")
-    // console.log(position['value'])
     setSelectDataPosition(position['value']);
   };
 
-  const onSubmitButtonClicked = () => {
-    // console.log("On Submit Button Clicked ...")
+  const refresh = () => {
+    fetchBlockLoad(getParams());
+  };
 
+  const onSubmitButtonClicked = () => {
     if (startDateTimeAsPerFormat && !endDateTimeAsPerFormat) {
       // Set End Time Error
-      toast.error(<Toast msg="Please Select End Time" type="danger" />, {
+      toast('Please Select End Time', {
         hideProgressBar: true,
       });
     } else if (!startDateTimeAsPerFormat && endDateTimeAsPerFormat) {
       // Set Start Time Error
-      toast.error(<Toast msg="Please Select Start Time" type="danger" />, {
+      toast('Please Select Start Time', {
         hideProgressBar: true,
+        type: 'warning',
       });
     } else if (startDateTimeAsPerFormat && endDateTimeAsPerFormat) {
       // Both Time are set Compare
       if (startDateTimeAsPerFormat > endDateTimeAsPerFormat) {
-        toast.error(
-          <Toast
-            msg="Start Date Time should be smaller than End Date Time"
-            type="danger"
-          />,
-          { hideProgressBar: true }
-        );
+        toast('Start Date Time should be smaller than End Date Time', {
+          hideProgressBar: true,
+          type: 'warning',
+        });
       } else {
-        reloadData();
+        fetchBlockLoad(getParams());
       }
-      // toast.error(<Toast msg='Please enter meter serial.' type='danger' />, { hideProgressBar: true })
+      // toast('Please enter meter serial.' type='danger' />, { hideProgressBar: true })
     } else {
       // Both the time are not set look for only data position value
       // toast.error(<Toast msg='Please enter meter serial.' type='danger' />, { hideProgressBar: true })
-      reloadData();
+      fetchBlockLoad(getParams());
     }
+  };
+
+  const tblColumn = (data) => {
+    const column = [];
+    const custom_width = ['manufacturer_name', 'exec_datetime'];
+
+    for (const i in data[0]) {
+      const col_config = {};
+      if (
+        i !== 'id' &&
+        i !== 'SM_device_id' &&
+        i !== 'MD_W_TOD_1' &&
+        i !== 'MD_W_TOD_2' &&
+        i !== 'MD_W_TOD_3' &&
+        i !== 'MD_W_TOD_4' &&
+        i !== 'MD_W_TOD_1' &&
+        i !== 'MD_VA_TOD_1' &&
+        i !== 'MD_VA_TOD_2' &&
+        i !== 'MD_VA_TOD_3' &&
+        i !== 'MD_VA_TOD_4' &&
+        i !== 'MD_W_TOD_1_datetime' &&
+        i !== 'MD_W_TOD_2_datetime' &&
+        i !== 'MD_W_TOD_3_datetime' &&
+        i !== 'MD_W_TOD_4_datetime' &&
+        i !== 'MD_VA_TOD_1_datetime' &&
+        i !== 'MD_VA_TOD_2_datetime' &&
+        i !== 'MD_VA_TOD_3_datetime' &&
+        i !== 'MD_VA_TOD_4_datetime' &&
+        i !== 'exec_datetime' &&
+        i !== 'cumm_VARH_lead' &&
+        i !== 'MD_W_datetime' &&
+        i !== 'MD_VA_datetime'
+      ) {
+        col_config.name = `${i.charAt(0).toUpperCase()}${i.slice(
+          1
+        )}`.replaceAll('_', ' ');
+        col_config.serch = i;
+        col_config.selector = (row) => row[i];
+        col_config.sortable = true;
+
+        col_config.width = '190px';
+        col_config.cell = (row) => {
+          if (row[i] === undefined || row[i] === null) {
+            return (
+              <div className="d-flex">
+                <span className="d-block font-weight-bold ">{'-'}</span>
+              </div>
+            );
+          } else if (i === 'from_push' && row[i] === true) {
+            return (
+              <div className="d-flex">
+                <span className="d-block font-weight-bold ">{'Yes'}</span>
+              </div>
+            );
+          } else if (i === 'from_push' && row[i] === false) {
+            return (
+              <div className="d-flex">
+                <span className="d-block font-weight-bold ">{'No'}</span>
+              </div>
+            );
+          } else
+            return (
+              <div className="d-flex">
+                <span className="d-block font-weight-bold ">{row[i]}</span>
+              </div>
+            );
+        };
+        column.push(col_config);
+      }
+    }
+    column.unshift({
+      name: 'Sr',
+      width: '90px',
+      cell: (row, i) => {
+        return (
+          <div className="d-flex  justify-content-center">
+            {currentPage + i}
+          </div>
+        );
+      },
+    });
+    return column;
   };
 
   const showData = () => {
@@ -254,37 +261,41 @@ const BlockLoadDataModal = (props) => {
           // } ${minutes ? minutes.toString().concat(' min') : ''} ${seconds
           //   .toString()
           //   .concat(' sec')}`;
-
-          item.avg_current = Number(item.avg_current).toFixed(2);
-
           return item;
         });
+
         return (
           <div className="table-wrapper" key={index}>
-            <CreateTable
+            <DataTableV1
+              columns={tblColumn(response[key])}
               data={response[key]}
-              height="max"
-              rowCount={10}
-              tableName={`BlockLoad Data`}
+              rowCount={8}
+              tableName={'Block Load Data'}
+              currentPage={currentPage}
+              showRefreshButton={true}
+              refreshFn={refresh}
             />
           </div>
         );
       });
     } else {
       return (
-        <CreateTable
-          data={[]}
-          height="max"
-          rowCount={10}
-          tableName={`BlockLoad Data`}
-        />
+        <div className="table-wrapper">
+          <DataTableV1
+            data={[]}
+            rowCount={8}
+            tableName={'Daily Load Data'}
+            currentPage={currentPage}
+            showRefreshButton={true}
+            refreshFn={refresh}
+          />
+        </div>
       );
     }
   };
 
   const retryAgain = () => {
-    setError(false);
-    setRetry(true);
+    fetchBlockLoad(getParams());
   };
 
   return (
@@ -298,7 +309,7 @@ const BlockLoadDataModal = (props) => {
         {props.title}
       </ModalHeader>
       <ModalBody>
-        {fetchingData ? (
+        {data.isFetching ? (
           <Loader hight="min-height-484" />
         ) : (
           <div>
@@ -366,29 +377,23 @@ const BlockLoadDataModal = (props) => {
               <Col lg="2" xs="4">
                 <Button
                   color="primary"
-                  className="btn-block mt-2"
+                  style={{
+                    marginTop: '25px',
+                  }}
+                  className="btn w-100"
                   onClick={onSubmitButtonClicked}
                 >
                   Submit
                 </Button>
               </Col>
             </Row>
-            {/* <SimpleDataTablePaginated
-              columns={tblColumn()}
-              tblData={response}
-              rowCount={100}
-              tableName={'Site : '.concat(site_real_name)}
-              refresh={reloadData}
-              currentPage={currentPage}
-              totalCount={totalCount}
-              onNextPageClicked={onNextPageClicked}
-            /> */}
-            {hasError ? (
+
+            {data.isError ? (
               <CardInfo
                 props={{
                   message: { errorMessage },
                   retryFun: { retryAgain },
-                  retry: { retry },
+                  retry: { retry: data.isFetching },
                 }}
               />
             ) : (

@@ -8,38 +8,6 @@ import LayoutWrapper from './components/layout/LayoutWrapper';
 
 
 const App = () => {
-  // const [tokenRefresh, tokenRefreshResponse] = useRefreshTokenMutation();
-  // const accessToken = localStorage.getItem('token');
-  // const refreshToken = localStorage.getItem('refreshToken');
-  // if (typeof accessToken === 'string') {
-  //   const decodedToken = jwtDecode(accessToken);
-  //   const decodedRefreshToken = jwtDecode(refreshToken);
-  //   if (accessToken && decodedToken.exp < Date.now() / 1000) {
-  //     if (refreshToken && decodedRefreshToken.exp > Date.now() / 1000) {
-  //       tokenRefresh();
-  //     }
-  //   }
-  // }
-
-  // tokenRefresh();
-
-  // useEffect(() => {
-  //   if (tokenRefreshResponse.status === 'fulfilled') {
-  //     if (tokenRefreshResponse.isSuccess) {
-  //       localStorage.setItem(
-  //         'accessToken',
-  //         tokenRefreshResponse.data.data.result.access
-  //       );
-  //       localStorage.setItem('refreshToken', refreshToken);
-  //     } else if (tokenRefreshResponse.isError) {
-  //       toast('Failed to get new token. Please logout and login again', {
-  //         hideProgressBar: true,
-  //         type: 'error',
-  //       });
-  //     }
-  //   }
-  // }, [tokenRefreshResponse]);
-
   return (
     <HashRouter>
       <Routes>

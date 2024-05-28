@@ -8,6 +8,7 @@ import { pushDataApi } from '../api/hes/push-dataSlice';
 import { meterConfigurationApi } from '../api/hes/meter-configurationSlice';
 import { energyConsumptionApi } from '../api/mdms/energy-consumptionSlice';
 import { operationalStatsApi } from '../api/mdms/operational-statisticsSlice';
+import { loadsApi } from '../api/mdms/loadSlice';
 
 const middleware = new MiddlewareArray().concat(
   loginApi.middleware,
@@ -18,7 +19,8 @@ const middleware = new MiddlewareArray().concat(
   meterConfigurationApi.middleware,
   logoutApi.middleware,
   energyConsumptionApi.middleware,
-  operationalStatsApi.middleware
+  operationalStatsApi.middleware,
+  loadsApi.middleware
 );
 
 export default middleware;

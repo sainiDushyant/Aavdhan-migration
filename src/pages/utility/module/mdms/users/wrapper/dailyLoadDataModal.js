@@ -19,7 +19,7 @@ import { toast } from 'react-toastify';
 import Select from 'react-select';
 import { selectThemeColors } from '../../../../../../utils';
 import CardInfo from '../../../../../../components/ui-elements/cards/cardInfo';
-import { useLazyGetMDMSGroupMeterDailyLoadDataQuery } from '../../../../../../api/mdms/energy-consumptionSlice';
+import { useLazyGetMDMSGroupMeterDailyLoadDataQuery } from '../../../../../../api/mdms/loadSlice';
 import DataTableV1 from '../../../../../../components/dtTable/DataTableV1';
 
 const DailyLoadDataModal = (props) => {
