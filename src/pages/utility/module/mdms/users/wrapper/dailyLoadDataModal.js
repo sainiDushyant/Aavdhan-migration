@@ -260,6 +260,7 @@ const DailyLoadDataModal = (props) => {
               rowCount={8}
               tableName={'Daily Load Data'}
               currentPage={currentPage}
+              showDownloadButton={true}
               showRefreshButton={true}
               refreshFn={refresh}
             />
@@ -274,6 +275,7 @@ const DailyLoadDataModal = (props) => {
             rowCount={8}
             tableName={'Daily Load Data'}
             currentPage={currentPage}
+            showDownloadButton={true}
             showRefreshButton={true}
             refreshFn={refresh}
           />

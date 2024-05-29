@@ -167,7 +167,11 @@ export const DownloadExcel = (tableName, columns, tableData) => {
 
 // function to dowload data in pdf
 export const DownloadPDF = (tableName, columns, tblData) => {
-  // console.log(tblData)
+  console.log(tblData);
+  if (tblData.length === 0) {
+    return;
+  }
+
   const unit = 'pt';
   const size = 'A4'; // Use A1, A2, A3, or A4
   const orientation = columns.length < 6 ? 'portrait' : 'landscape'; // portrait or landscape

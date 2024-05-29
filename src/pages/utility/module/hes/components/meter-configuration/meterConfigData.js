@@ -76,49 +76,40 @@ const MeterConfigData = () => {
     project = location.pathname.split('/')[2];
   }
 
+  const [params, setParams] = useState({
+    project,
+    ...filterParams,
+    page: currentPage,
+    page_size: 10,
+  });
+  const [disabledRowCounts, setDisabledRowCounts] = useState([]);
+
+  useEffect(() => {
+    let disabledCounts = [];
+    if (Math.ceil(totalCount / 20) < currentPage) {
+      disabledCounts = [10, 20, 25, 50];
+    } else if (Math.ceil(totalCount / 25) < currentPage) {
+      disabledCounts = [25, 50];
+    } else if (Math.ceil(totalCount / 50) < currentPage) {
+      disabledCounts = [50];
+    }
+    setDisabledRowCounts(disabledCounts);
+  }, [currentPage]);
+  const setRowCount = (rowCount) => {
+    setParams((prevParams) => ({ ...prevParams, page_size: rowCount }));
+  };
+
   // useEffect(async () => {
   // if (fetchingData || retry) {
   //   setLoader(true)
-  let params = {};
-
-  //   // console.log('Filter Params ....')
-  //   // console.log(filterParams)
-
   // if (!filterParams.hasOwnProperty('site')) {
   // If No Site Selected, add all sites access available
   // let dtr_list = ' '
   // for (let i = 0; i < responseData.responseData.dtr_list.length; i++) {
   //   dtr_list += `${responseData.responseData.dtr_list[i]['dtr_id']},`
   // }
-  params = {
-    project,
-    ...filterParams,
-    page: currentPage,
-    page_size: 10,
-  };
-  // params['site'] = dtr_list
-  // } else {
-  //   params = {
-  //     project,
-  //     ...filterParams,
-  //     page: currentPage,
-  //     page_size: 10,
-  //     site_id: filterParams.site,
-  //   };
-
-  //   // params = {
-  //   //   project,
-  //   //   site_id: filterParams.site,
-  //   //   page: currentPage,
-  //   //   page_size: 10
-  //   // }
-  // }
 
   // const [statusCode, response] = await fetchData(params)
-
-  // console.log('Status Code for Meter Configuration .....')
-  // console.log(statusCode)
-  // console.log(response)
   const { data, isError, isFetching, refetch } =
     useGetMeterConfigurationListQuery(params);
   useEffect(() => {
@@ -165,9 +156,6 @@ const MeterConfigData = () => {
 
       setResponse(meterConfigurationResponse);
       setTotalCount(data?.data.result.count);
-
-      // console.log('Error .....')
-      // console.log(error)
       setErrorMessage('Something went wrong, please retry');
     } else {
       setErrorMessage('Network Error, please retry');
@@ -177,98 +165,6 @@ const MeterConfigData = () => {
   const onEditModal = () => {
     setEditCommunicationProtocolModal(!editCommunicationProtocolModal);
   };
-
-  // const tblColumn = () => {
-  //   const column = [];
-  //   const custom_width = ['create_time'];
-
-  //   for (const i in response[0]) {
-  //     const col_config = {};
-  //     if (i !== 'id' || i !== 'other_config') {
-  //       col_config.name = `${i.charAt(0).toUpperCase()}${i.slice(
-  //         1
-  //       )}`.replaceAll('_', ' ');
-  //       col_config.serch = i;
-  //       col_config.sortable = true;
-  //       col_config.reorder = true;
-  //       // col_config.width = '150px'
-  //       col_config.selector = (row) => row[i];
-  //       col_config.sortFunction = (rowA, rowB) =>
-  //         caseInsensitiveSort(rowA, rowB, i);
-
-  //       if (custom_width.includes(i)) {
-  //         col_config.width = '250px';
-  //       }
-
-  //       col_config.cell = (row) => {
-  //         return (
-  //           <div className="d-flex">
-  //             <span
-  //               className="d-block font-weight-bold "
-  //               title={
-  //                 row[i]
-  //                   ? row[i]
-  //                     ? row[i] !== ''
-  //                       ? row[i].toString().length > 20
-  //                         ? row[i]
-  //                         : ''
-  //                       : '-'
-  //                     : '-'
-  //                   : '-'
-  //               }
-  //             >
-  //               {row[i]
-  //                 ? row[i] && row[i] !== ''
-  //                   ? row[i].toString().substring(0, 25)
-  //                   : '-'
-  //                 : '-'}
-  //               {row[i]
-  //                 ? row[i] && row[i] !== ''
-  //                   ? row[i].toString().length > 25
-  //                     ? '...'
-  //                     : ''
-  //                   : '-'
-  //                 : '-'}
-  //             </span>
-  //           </div>
-  //         );
-  //       };
-  //       column.push(col_config);
-  //     }
-  //   }
-  //   column.push({
-  //     name: 'Action',
-  //     width: '70px',
-  //     cell: (row) => {
-  //       return (
-  //         <>
-  //           <Edit
-  //             size="15"
-  //             color="blue"
-  //             className="ml-1 cursor-pointer"
-  //             onClick={() => {
-  //               setRowdata(row);
-  //               onEditModal();
-  //             }}
-  //           />
-  //         </>
-  //       );
-  //     },
-  //   });
-  //   column.unshift({
-  //     name: 'Sr No.',
-  //     width: '90px',
-  //     sortable: false,
-  //     cell: (row, i) => {
-  //       return (
-  //         <div className="d-flex justify-content-center">
-  //           {i + 1 + 10 * (currentPage - 1)}
-  //         </div>
-  //       );
-  //     },
-  //   });
-  //   return column;
-  // };
   function createColumns() {
     const columns = [];
     const ignoreColumns = ['id', 'sc_no', 'parameter'];
@@ -373,7 +269,7 @@ const MeterConfigData = () => {
         cell: (row, i) => {
           return (
             <div className="d-flex w-100 justify-content-center">
-              {i + 1 + 10 * (currentPage - 1)}
+              {i + 1 + params.page_size * (currentPage - 1)}
             </div>
           );
         },
@@ -382,8 +278,10 @@ const MeterConfigData = () => {
     }
   }
 
-  const onNextPageClicked = (number) => {
-    setCurrentPage(number + 1);
+  const onNextPageClicked = (page) => {
+    //setCurrentPage(number + 1);
+    setParams({ ...params, page: page + 1 });
+    setCurrentPage(page + 1);
     // setFetchingData(true)
     //isFetching();
   };
@@ -408,8 +306,6 @@ const MeterConfigData = () => {
   // }
 
   const onSubmitButtonClicked = (filterParams) => {
-    // console.log('Value passed from child to parent ....')
-    // console.log(dummy)
     setFilterParams(filterParams);
     setCurrentPage(1);
     //setFetchingData(true)
@@ -434,8 +330,6 @@ const MeterConfigData = () => {
       onClick={handleReportDownloadModal}
     />
   );
-
-  console.log(data, 'this is data');
 
   return (
     <>
@@ -463,32 +357,12 @@ const MeterConfigData = () => {
         ) : (
           !isFetching && (
             <div className="table-wrapper">
-              {/* <SimpleDataTableMDAS
-                columns={tblColumn()}
-                tblData={response}
-                rowCount={10}
-                tableName={'Meter Configuration Table'}
-                refresh={refetch}
-                currentPage={currentPage}
-                totalCount={totalCount}
-                onNextPageClicked={onNextPageClicked}
-                showRequestDownloadModal={true}
-                isDownloadModal={'yes'}
-                extraTextToShow={
-                  <h5
-                    className={`${
-                      totalCount ? 'text-success' : 'text-danger'
-                    } m-0`}
-                  >
-                    Total Meter Count: {totalCount}
-                  </h5>
-                }
-                handleReportDownloadModal={handleReportDownloadModal}
-              /> */}
               <DataTableV1
                 columns={createColumns()}
                 data={response}
-                rowCount={10}
+                rowCount={params.page_size}
+                setRowCount={setRowCount}
+                disabledCounts={disabledRowCounts}
                 tableName={'Meter Configuration Table'}
                 showDownloadButton={true}
                 showRefreshButton={true}

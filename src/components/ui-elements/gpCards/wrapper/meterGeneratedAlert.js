@@ -110,7 +110,7 @@ const MeterGeneratedAlert = (props) => {
     if (response.length > 0) {
       return (
         <div>
-          <Row className="mb-1">
+          <Row className="mb-1 ">
             <Col className="pl_30">
               {/* Filter dropdown */}
               {/* <Select
@@ -131,13 +131,13 @@ const MeterGeneratedAlert = (props) => {
                   <Spinner
                     id="refresh_table"
                     size="sm"
-                    className="mt_10 float-right"
+                    className="mt_10 float-end me-1"
                   />
                 ) : (
                   <RefreshCw
                     id="refresh_table"
                     size="14"
-                    className="mt_10 float-right"
+                    className="mt_10 float-end me-1"
                     onClick={refreshAlerts}
                   />
                 )}
@@ -150,8 +150,8 @@ const MeterGeneratedAlert = (props) => {
           <Col className={`${props.height} webi_scroller`}>
             {response.map((value, index) => {
               return (
-                <Row key={index} className="border-top py_10">
-                  <Col className="col-3 border-right super-center">
+                <Row key={index} className="border-top py_10 w-100">
+                  <Col className="col-3 border-right super-center ">
                     <div>
                       <Avatar
                         className="rounded"
@@ -256,11 +256,10 @@ const MeterGeneratedAlert = (props) => {
     }
   } else if (isFetching) {
     return (
-      <div className="super-center alert_dv">
-        <Loader height="300px" />
+      <div className={`super-center alert_dv ${props.loaderHeight}`}>
+        <Loader />
       </div>
     );
   }
 };
-
 export default MeterGeneratedAlert;

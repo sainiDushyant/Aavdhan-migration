@@ -92,7 +92,7 @@ const MdmsUserConsumptionModule = (props) => {
           </Col>
           <Col>
             <span
-              className="float-right mx-1 cursor-pointer"
+              className="float-end mx-1 cursor-pointer"
               onClick={() => setIsOpen(true)}
             >
               <Settings />
@@ -139,8 +139,8 @@ const MdmsUserConsumptionModule = (props) => {
           <Col lg="5">
             {/* Change Hierarchy value to userProfile when API for user level alerts is created */}
             <AlertCard
-              height="height-290"
-              loaderHeight="height-550"
+              height="height-300"
+              loaderHeight="height-300"
               hierarchy={'userProfile'}
             />
           </Col>
@@ -219,7 +219,7 @@ const MdmsUserConsumptionModule = (props) => {
           </Col>
           <Col>
             <span
-              className="float-right mx-1 cursor-pointer"
+              className="float-end mx-1 cursor-pointer"
               onClick={() => setIsOpen(true)}
             >
               <Settings />
@@ -262,7 +262,7 @@ const MdmsUserConsumptionModule = (props) => {
             {/* Change Hierarchy value to userProfile when API for user level alerts is created */}
             <AlertCard
               height="height-250"
-              loaderHeight="height-400"
+              loaderHeight="height-250"
               hierarchy={'userProfile'}
             />
           </Col>

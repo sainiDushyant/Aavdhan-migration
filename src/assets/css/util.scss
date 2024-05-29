@@ -9,6 +9,10 @@
   width: 100%;
   // height: calc(100% - 2rem);
 }
+// styles for height of components
+.height-300 {
+  height: 300px;
+}
 
 // Style for min, max height
 @for $i from 1 to 1000 {
@@ -258,11 +262,11 @@
 .rdt_Table .rdt_TableBody .rdt_TableRow:nth-child(even) {
   background-color: var(--even-row-bg-color);
 }
-.rdt_Table .rdt_TableBody .rdt_TableRow:hover {
-  // background-color: rgba(0, 136, 255, 0.237);
-  // border-bottom: 1px solid rgba(0, 0, 0, 0.3);
-  // border-top: 1px solid rgba(0, 0, 0, 0.3);
-}
+//.rdt_Table .rdt_TableBody .rdt_TableRow:hover {
+// background-color: rgba(0, 136, 255, 0.237);
+// border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+// border-top: 1px solid rgba(0, 0, 0, 0.3);
+//}
 
 // Style for left side legend button
 .left_side_legend_dv {
@@ -697,7 +701,7 @@ body::-webkit-scrollbar-thumb:hover {
   background-color: transparent !important;
 }
 
-.spinner-border-sm spinner-border text-primary{
+.spinner-border-sm spinner-border text-primary {
   margin-right: 10px;
 }
 // Extra Small devices (landscape phones, 300px and up)

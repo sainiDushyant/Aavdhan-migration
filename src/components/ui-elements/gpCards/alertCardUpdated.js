@@ -59,9 +59,11 @@ const AlertCard = (props) => {
     <Card className="card-developer-meetup">
       <CardHeader className="px-1 py-0 d-flex flex-column">
         {/* Header */}
-        <h3 className="my-1">Recent Alerts</h3>
+        <h3 className="my-1 fw-bolder" style={{ color: '#5E5873' }}>
+          Recent Alerts
+        </h3>
         {/* Navigation tab */}
-        <Nav className="m-0" tabs>
+        <Nav className="m-0" tabs justified>
           <NavItem>
             <NavLink
               active={active === '1'}
@@ -91,6 +93,7 @@ const AlertCard = (props) => {
               <MeterGeneratedAlert
                 hierarchy={props.hierarchy}
                 height={props.height}
+                loaderHeight={props.loaderHeight}
                 MGFilterOption={MGFilterOption}
               />
             </TabPane>
@@ -98,6 +101,7 @@ const AlertCard = (props) => {
               <SystemGeneratedAlert
                 hierarchy={props.hierarchy}
                 height={props.height}
+                loaderHeight={props.loaderHeight}
                 SGFilterOption={SGFilterOption}
               />
             </TabPane>

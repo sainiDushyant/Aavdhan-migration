@@ -47,31 +47,34 @@ const BlockLoadData = (props) => {
     project = location.pathname.split('/')[2];
   }
 
-  let params = undefined;
+  const [params, setParams] = useState({
+    project,
+    ...filterParams,
+    page: currentPage,
+    page_size: 10,
+  });
 
-  // console.log('Filter Params ....')
-  // console.log(filterParams)
+  const [disabledRowCounts, setDisabledRowCounts] = useState([]);
 
+  useEffect(() => {
+    let disabledCounts = [];
+    if (Math.ceil(totalCount / 20) < currentPage) {
+      disabledCounts = [10, 20, 25, 50];
+    } else if (Math.ceil(totalCount / 25) < currentPage) {
+      disabledCounts = [25, 50];
+    } else if (Math.ceil(totalCount / 50) < currentPage) {
+      disabledCounts = [50];
+    }
+    setDisabledRowCounts(disabledCounts);
+  }, [currentPage]);
+  const setRowCount = (rowCount) => {
+    setParams((prevParams) => ({ ...prevParams, page_size: rowCount }));
+  };
   // if (!filterParams.hasOwnProperty('site')) {
   // If No Site Selected, add all sites access available
   // let dtr_list = ' '
   // for (let i = 0; i < responseData.responseData.dtr_list.length; i++) {
   //   dtr_list += `${responseData.responseData.dtr_list[i]['dtr_id']},`
-  // }
-  params = {
-    project,
-    ...filterParams,
-    page: currentPage,
-    page_size: 10,
-  };
-  // params['site'] = dtr_list
-  // } else {
-  //   params = {
-  //     project,
-  //     ...filterParams,
-  //     page: currentPage,
-  //     page_size: 10,
-  //   };
   // }
   const { data, isFetching, isError, refetch } =
     useGetBlockLoadDataQuery(params);
@@ -195,7 +198,7 @@ const BlockLoadData = (props) => {
         cell: (row, i) => {
           return (
             <div className="d-flex w-100 justify-content-center">
-              {i + 1 + 10 * (currentPage - 1)}
+              {i + 1 + params.page_size * (currentPage - 1)}
             </div>
           );
         },
@@ -209,6 +212,7 @@ const BlockLoadData = (props) => {
   };
 
   const onNextPageClicked = (number) => {
+    setParams({ ...params, page: number + 1 });
     setCurrentPage(number + 1);
   };
 
@@ -261,7 +265,9 @@ const BlockLoadData = (props) => {
               <DataTableV1
                 columns={createColumns()}
                 data={response}
-                rowCount={10}
+                rowCount={params.page_size}
+                setRowCount={setRowCount}
+                disabledCounts={disabledRowCounts}
                 tableName={'Block Load Table'}
                 showDownloadButton={true}
                 showRefreshButton={true}

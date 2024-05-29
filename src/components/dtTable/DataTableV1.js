@@ -25,6 +25,7 @@ import {
 } from 'reactstrap';
 import { DownloadCSV, DownloadPDF } from '../dtTable/downloadTableData';
 import CardInfo from '../../components/ui-elements/cards/NoDataCardInfo';
+import PaginationDropDown from '../layout/components/paginationDropDown/paginationDropDown';
 
 const DataTableV1 = (props) => {
   console.log(props.data);
@@ -34,32 +35,41 @@ const DataTableV1 = (props) => {
   const [refreshTooltip, setRefreshTooltip] = useState(false);
   const [downloadTooltip, setDownloadTooltip] = useState(false);
   const [filterTooltip, setFilterTooltip] = useState(false);
-
   const CustomPagination = () => (
-    <ReactPaginate
-      previousLabel=""
-      nextLabel=""
-      forcePage={props.currentPage - 1}
-      onPageChange={(page) => props.onPageChange(page.selected)}
-      pageCount={Math.ceil(totalRowsCount / props.rowCount || 1)}
-      breakLabel="..."
-      pageRangeDisplayed={2}
-      marginPagesDisplayed={2}
-      activeClassName="active"
-      pageClassName="page-item"
-      nextClassName={`page-item next ${
-        Math.trunc(totalRowsCount / props.rowCount) + 1 === props.currentPage
-          ? 'disabled'
-          : ''
-      }`}
-      nextLinkClassName="page-link"
-      previousClassName="page-item prev"
-      previousLinkClassName="page-link"
-      pageLinkClassName="page-link"
-      breakClassName="page-item"
-      breakLinkClassName="page-link"
-      containerClassName="pagination react-paginate separated-pagination pagination-sm justify-content-end mt-1 mb-1"
-    />
+    <div className="pagination react-paginate separated-pagination pagination-sm align-items-center justify-content-end mt-1 mb-1">
+      {props.setRowCount && (
+        <PaginationDropDown
+          rowCount={props.rowCount}
+          setRowCount={props.setRowCount}
+          disabledCounts={props.disabledCounts}
+          disabled={props.rowCount < 10 || data.length < 10}
+        />
+      )}
+      <ReactPaginate
+        previousLabel=""
+        nextLabel=""
+        forcePage={props.currentPage - 1}
+        onPageChange={(page) => props.onPageChange(page.selected)}
+        pageCount={Math.ceil(totalRowsCount / props.rowCount || 1)}
+        breakLabel="..."
+        pageRangeDisplayed={2}
+        marginPagesDisplayed={2}
+        activeClassName="active"
+        pageClassName="page-item"
+        nextClassName={`page-item next ${
+          Math.trunc(totalRowsCount / props.rowCount) + 1 === props.currentPage
+            ? 'disabled'
+            : ''
+        }`}
+        nextLinkClassName="page-link"
+        previousClassName="page-item prev"
+        previousLinkClassName="page-link"
+        pageLinkClassName="page-link"
+        breakClassName="page-item"
+        breakLinkClassName="page-link"
+        containerClassName="pagination react-paginate separated-pagination pagination-sm justify-content-end mt-1 mb-1"
+      />
+    </div>
   );
 
   const customStyles = {
@@ -82,16 +92,20 @@ const DataTableV1 = (props) => {
   };
 
   function paginateData(data, page) {
-    if (data?.length > 10) {
+    // console.log(page, 'this is page');
+    if (data?.length > props.rowCount) {
       if (page === 1) {
-        setCurrentPageData(data.slice(0, 10));
+        setCurrentPageData(data.slice(0, props.rowCount));
       } else {
-        setCurrentPageData(data.slice(page * 10 - 10, page * 10));
+        setCurrentPageData(
+          data.slice((page - 1) * props.rowCount, page * props.rowCount)
+        );
       }
     } else {
       setCurrentPageData(data);
     }
   }
+
   const onProtocolSelection = (value) => {
     props.protocolSelected(value);
   };
@@ -106,7 +120,7 @@ const DataTableV1 = (props) => {
 
   useEffect(() => {
     paginateData(data, props.currentPage);
-  }, [props.currentPage, data]);
+  }, [props.currentPage, data, props.rowCount]);
 
   useEffect(() => {
     setData(props.data);

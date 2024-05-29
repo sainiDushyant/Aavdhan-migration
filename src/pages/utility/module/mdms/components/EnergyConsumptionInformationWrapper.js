@@ -22,6 +22,7 @@ const EnergyConsumptionWrapper = (props) => {
 
   const [currentPage, setCurrentPage] = useState(1);
   const [response, setResponse] = useState([]);
+  const [pageSize, setPageSize] = useState(10);
 
   const project = location.pathname.split('/')[2];
 
@@ -55,6 +56,26 @@ const EnergyConsumptionWrapper = (props) => {
   // } else {
   //   responseData = []
   // }
+  const [disabledRowCounts, setDisabledRowCounts] = useState([]);
+
+  useEffect(() => {
+    let disabledCounts = [];
+    if (currentPage !== 1) {
+      if (Math.ceil(response?.length / 20) < currentPage) {
+        disabledCounts = [10, 20, 25, 50];
+      } else if (Math.ceil(response?.length / 25) < currentPage) {
+        disabledCounts = [25, 50];
+      } else if (Math.ceil(response?.length / 50) < currentPage) {
+        disabledCounts = [50];
+      }
+    }
+    setDisabledRowCounts(disabledCounts);
+  }, [currentPage, pageSize]);
+  // console.log(pageSize, 'pageSize');
+  const setRowCount = (rowCount) => {
+    setPageSize(rowCount);
+    refetch();
+  };
   const getParams = () => {
     let params;
     if (props.hierarchy === 'pss') {
@@ -90,7 +111,6 @@ const EnergyConsumptionWrapper = (props) => {
     }
     return params;
   };
-
   const { data, isFetching, isError, status, refetch } =
     useGetAssetsenergyConsumptionQuery(getParams());
 
@@ -256,7 +276,7 @@ const EnergyConsumptionWrapper = (props) => {
       cell: (row, i) => {
         return (
           <div className="d-flex  justify-content-center">
-            {i + 1 + 10 * (currentPage - 1)}
+            {i + 1 + pageSize * (currentPage - 1)}
           </div>
         );
       },
@@ -274,9 +294,13 @@ const EnergyConsumptionWrapper = (props) => {
       <DataTableV1
         columns={tblColumn()}
         data={response}
-        rowCount={10}
+        rowCount={pageSize}
+        setRowCount={setRowCount}
+        disabledCounts={disabledRowCounts}
         currentPage={currentPage}
         ispagination
+        showRefreshButton={true}
+        refreshFn={refetch}
         onPageChange={onPageChange}
         pointerOnHover={true}
         totalRowsCount={response.length}

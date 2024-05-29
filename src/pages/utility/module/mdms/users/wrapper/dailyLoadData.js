@@ -12,7 +12,6 @@ const DailyLoadWrapper = () => {
       <Col className=" ">
         <StatsHorizontal
           icon={<ChevronsRight size={21} />}
-          color="primary"
           stats="Daily Load"
           statTitle=""
           clas="h6"

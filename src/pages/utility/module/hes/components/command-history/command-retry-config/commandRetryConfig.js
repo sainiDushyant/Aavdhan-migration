@@ -45,6 +45,25 @@ const CommandRetryConfig = () => {
   const params = {
     project,
   };
+  const [pageSize, setPageSize] = useState(10);
+  const [disabledRowCounts, setDisabledRowCounts] = useState([]);
+
+  useEffect(() => {
+    let disabledCounts = [];
+    if (Math.ceil(totalCount / 20) < currentPage) {
+      disabledCounts = [10, 20, 25, 50];
+    } else if (Math.ceil(totalCount / 25) < currentPage) {
+      disabledCounts = [25, 50];
+    } else if (Math.ceil(totalCount / 50) < currentPage) {
+      disabledCounts = [50];
+    }
+    setDisabledRowCounts(disabledCounts);
+  }, [currentPage]);
+
+  const setRowCount = (rowCount) => {
+    setPageSize(rowCount);
+    refetch();
+  };
   const { isFetching, refetch, data, isError } =
     useGetCommandRetryConfigDataQuery(params);
 
@@ -212,7 +231,9 @@ const CommandRetryConfig = () => {
           <DataTableV1
             columns={createColumns()}
             data={commandRetryResponse}
-            rowCount={10}
+            rowCount={pageSize}
+            setRowCount={setRowCount}
+            disabledCounts={disabledRowCounts}
             tableName={'Command Retry Configuration'}
             showDownloadButton={true}
             showRefreshButton={true}

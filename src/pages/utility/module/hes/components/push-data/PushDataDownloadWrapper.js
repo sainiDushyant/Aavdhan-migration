@@ -34,7 +34,6 @@ const PushDataDownloadWrapper = (props) => {
     project = location.pathname.split('/')[2];
   }
 
-  const [pageSize, setPageSize] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(120);
   const [errorMessage, setErrorMessage] = useState('');
@@ -60,12 +59,28 @@ const PushDataDownloadWrapper = (props) => {
   //       });
   //   }
   // };
+  const [params, setParams] = useState({
+    page: currentPage,
+    page_size: 10,
+    project,
+    report_name: props.report_name,
+  });
+  const [disabledRowCounts, setDisabledRowCounts] = useState([]);
 
-  const params = {};
-  params['page'] = currentPage;
-  params['page_size'] = pageSize;
-  params['project'] = project;
-  params['report_name'] = props.report_name;
+  useEffect(() => {
+    let disabledCounts = [];
+    if (Math.ceil(totalCount / 20) < currentPage) {
+      disabledCounts = [10, 20, 25, 50];
+    } else if (Math.ceil(totalCount / 25) < currentPage) {
+      disabledCounts = [25, 50];
+    } else if (Math.ceil(totalCount / 50) < currentPage) {
+      disabledCounts = [50];
+    }
+    setDisabledRowCounts(disabledCounts);
+  }, [currentPage]);
+  const setRowCount = (rowCount) => {
+    setParams((prevParams) => ({ ...prevParams, page_size: rowCount }));
+  };
 
   const { data, isFetching, isError, refetch } =
     useDownloadPushDataQuery(params);
@@ -233,6 +248,7 @@ const PushDataDownloadWrapper = (props) => {
   };
 
   const onNextPageClicked = (number) => {
+    setParams({ ...params, page: number + 1 });
     setCurrentPage(number + 1);
   };
 
@@ -336,7 +352,9 @@ const PushDataDownloadWrapper = (props) => {
             <DataTableV1
               columns={tblColumn()}
               data={response}
-              rowCount={10}
+              rowCount={params.page_size}
+              setRowCount={setRowCount}
+              disabledCounts={disabledRowCounts}
               tableName={props.table_name || 'Data Table'}
               showDownloadButton={true}
               showRefreshButton={true}

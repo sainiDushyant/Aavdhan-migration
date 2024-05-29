@@ -72,7 +72,32 @@ const CommandHistory = (props) => {
   const [commandName, setCommandName] = useState('');
 
   const currentTime = moment().tz('Asia/Kolkata');
+  const [params, setParams] = useState({
+    page: currentPage,
+    page_size: 10,
+    project: projectName,
+    ...filterAppliedParams,
+  });
 
+  const setRowCount = (newRowCount) => {
+    const oldRowCount = params.page_size;
+    const newPage = newRowCount > oldRowCount
+      ? Math.min(currentPage, Math.ceil(totalCount / newRowCount))
+      : Math.ceil(totalCount / newRowCount);
+  
+    setParams((prevParams) => ({
+      ...prevParams,
+      page_size: newRowCount,
+      page: newPage,
+    }));
+  
+    setCurrentPage(newPage);
+  };
+  console.log(currentPage, 'currentPage')
+
+  // const setRowCount = (rowCount) => {
+  //   setParams((prevParams) => ({...prevParams, page_size:rowCount}))
+  // }
   const getParams = () => {
     let params = {};
     if (filterAppliedParams) {
@@ -119,13 +144,46 @@ const CommandHistory = (props) => {
       return params;
     }
   };
+  // const getParams = () => {
+  //   let updatedParams = { ...params };
 
+  //   if (props.filterAppliedParams) {
+  //     if ('site_id' in props.filterAppliedParams) {
+  //       updatedParams = {
+  //         ...updatedParams,
+  //         ...props.filterAppliedParams,
+  //       };
+  //     } else {
+  //       const dtr_list = ''; // Define dtr_list as needed
+  //       updatedParams = {
+  //         ...updatedParams,
+  //         site_id: dtr_list,
+  //         ...props.filterAppliedParams,
+  //       };
+  //     }
+  //   } else {
+  //     const dtr_list = ''; // Define dtr_list as needed
+  //     updatedParams = {
+  //       ...updatedParams,
+  //       site_id: dtr_list,
+  //       asset_type: 'dtr',
+  //     };
+  //   }
+
+  //   if (props.protocol === 'dlms') {
+  //     return updatedParams;
+  //   } else if (props.protocol === 'tap') {
+  //     updatedParams['command'] =
+  //       'turn_relay_on,turn_relay_off,relay_manual_control,relay_auto_control';
+  //     return updatedParams;
+  //   }
+  // };
   const {
     data: dlmsCommandHistoryResponse,
     isFetching: dlmsCommandHistoryLoading,
     isError: dlmsCommandHistoryError,
     refetch: fetchCommandHistory,
-  } = useGetMdasDlmsCommandHistoryQuery(getParams());
+  } = useGetMdasDlmsCommandHistoryQuery(params);
 
   const loading = dlmsCommandHistoryLoading;
   const hasError = dlmsCommandHistoryError; // Logout User
@@ -488,7 +546,7 @@ const CommandHistory = (props) => {
       cell: (row, i) => {
         return (
           <div className="d-flex w-100 justify-content-center">
-            {i + 1 + 10 * (currentPage - 1)}
+            {i + 1 + params.page_size * (currentPage - 1)}
           </div>
         );
       },
@@ -774,6 +832,7 @@ const CommandHistory = (props) => {
   };
 
   const onNextPageClicked = (page) => {
+    setParams({ ...params, page: page + 1 });
     setCurrentPage(page + 1);
   };
 
@@ -846,7 +905,8 @@ const CommandHistory = (props) => {
               <DataTableV1
                 columns={createColumns()}
                 data={response}
-                rowCount={10}
+                rowCount={params.page_size}
+                setRowCount={setRowCount}
                 tableName={tableName}
                 showDownloadButton={true}
                 showRefreshButton={true}

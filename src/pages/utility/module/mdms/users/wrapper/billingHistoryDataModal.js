@@ -351,6 +351,7 @@ const BillingHistoryDataModal = (props) => {
             rowCount={8}
             tableName={'Billing History Data'}
             currentPage={currentPage}
+            showDownloadButton={true}
             showRefreshButton={true}
             refreshFn={reloadData}
           />
@@ -364,6 +365,7 @@ const BillingHistoryDataModal = (props) => {
             rowCount={8}
             tableName={'Billing History Data'}
             currentPage={currentPage}
+            showDownloadButton={true}
             showRefreshButton={true}
             refreshFn={reloadData}
           />

@@ -272,6 +272,7 @@ const BlockLoadDataModal = (props) => {
               rowCount={8}
               tableName={'Block Load Data'}
               currentPage={currentPage}
+              showDownloadButton={true}
               showRefreshButton={true}
               refreshFn={refresh}
             />
@@ -286,6 +287,7 @@ const BlockLoadDataModal = (props) => {
             rowCount={8}
             tableName={'Daily Load Data'}
             currentPage={currentPage}
+            showDownloadButton={true}
             showRefreshButton={true}
             refreshFn={refresh}
           />

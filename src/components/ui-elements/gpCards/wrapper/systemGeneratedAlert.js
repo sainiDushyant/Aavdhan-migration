@@ -71,13 +71,13 @@ const SystemGeneratedAlert = (props) => {
                   <Spinner
                     id="refresh_table"
                     size="sm"
-                    className="mt_10 float-right"
+                    className="mt_10 float-end me-1"
                   />
                 ) : (
                   <RefreshCw
                     id="refresh_table"
                     size="14"
-                    className="mt_10 float-right"
+                    className="mt_10 float-end me-1"
                     onClick={refetch}
                   />
                 )}
@@ -110,13 +110,13 @@ const SystemGeneratedAlert = (props) => {
                   <Spinner
                     id="refresh_table"
                     size="sm"
-                    className="mt_10 float-right"
+                    className="mt_10 float-end me-1"
                   />
                 ) : (
                   <RefreshCw
                     id="refresh_table"
                     size="14"
-                    className="mt_10 float-right"
+                    className="mt_10 float-end me-1"
                     onClick={refetch}
                   />
                 )}
@@ -137,8 +137,8 @@ const SystemGeneratedAlert = (props) => {
     }
   } else if (isFetching) {
     return (
-      <div className="super-center alert_dv">
-        <Loader hight={props.loaderHeight} />
+      <div className={`super-center alert_dv ${props.loaderHeight}`}>
+        <Loader />
       </div>
     );
   }

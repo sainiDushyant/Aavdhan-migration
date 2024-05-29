@@ -85,15 +85,41 @@ const PushEventData = () => {
     }
   }, [dtr]);
 
-  let params = undefined;
+  // let params = undefined;
 
-  params = {
+  // params = {
+  //   project,
+  //   ...filterParams,
+  //   page: currentPage,
+  //   page_size: 10,
+  // };
+  const [params, setParams] = useState({
     project,
     ...filterParams,
     page: currentPage,
     page_size: 10,
-  };
+  });
 
+  const [disabledRowCounts, setDisabledRowCounts] = useState([]);
+
+  useEffect(() => {
+    let disabledCounts = [];
+    if (Math.ceil(totalCount / 20) < currentPage) {
+      disabledCounts = [10, 20, 25, 50];
+    } else if (Math.ceil(totalCount / 25) < currentPage) {
+      disabledCounts = [25, 50];
+    } else if (Math.ceil(totalCount / 50) < currentPage) {
+      disabledCounts = [50];
+    }
+    setDisabledRowCounts(disabledCounts);
+  }, [currentPage]);
+
+  const setRowCount = (rowCount) => {
+    setParams((prevParams) => ({
+      ...prevParams,
+      page_size: rowCount,
+    }));
+  };
   const { data, isFetching, isError, refetch } =
     useGetPushBasedEventQuery(params);
 
@@ -194,7 +220,7 @@ const PushEventData = () => {
       cell: (row, i) => {
         return (
           <div className="d-flex justify-content-center">
-            {i + 1 + 10 * (currentPage - 1)}
+            {i + 1 + params.page_size * (currentPage - 1)}
           </div>
         );
       },
@@ -228,6 +254,7 @@ const PushEventData = () => {
   };
 
   const onNextPageClicked = (number) => {
+    setParams({ ...params, page: number + 1 });
     setCurrentPage(number + 1);
   };
 
@@ -290,7 +317,9 @@ const PushEventData = () => {
               <DataTableV1
                 columns={tblColumn()}
                 data={response}
-                rowCount={10}
+                rowCount={params.page_size}
+                setRowCount={setRowCount}
+                disabledCounts={disabledRowCounts}
                 tableName={'Push Event Data'}
                 showDownloadButton={true}
                 showRefreshButton={true}
