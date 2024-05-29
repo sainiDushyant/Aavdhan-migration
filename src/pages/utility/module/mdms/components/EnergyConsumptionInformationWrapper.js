@@ -93,8 +93,6 @@ const EnergyConsumptionWrapper = (props) => {
     return params;
   };
 
-  console.log(hierarchy);
-
   const { data, isFetching, isError, status, refetch } =
     useGetAssetsenergyConsumptionQuery(getParams());
 

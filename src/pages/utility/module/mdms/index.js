@@ -5,9 +5,7 @@ import MdmsPssModule from './pss';
 import MdmsFeederModule from './feeder';
 import MdmsDtrModule from './dtr';
 
-// import MdmsFeederModule from '@src/views/project/utility/module/mdms/feeder';
-// import MdmsDtrModule from '@src/views/project/utility/module/mdms/dtr';
-// import Error from '@src/views/Error';
+import MdmsUserConsumptionModule from './userProfile';
 
 import AllUsers from './users';
 
@@ -53,29 +51,16 @@ const MdmsUtility = () => {
       updateMdmsState={mdmsStateHandler}
       showBackButton={usersBackButton}
     />
+  ) : mdmsState === 'userConsumption' || mdmsState === 'user_profile' ? (
+    <MdmsUserConsumptionModule
+      showBackButton={true}
+      connection_type={connectionType}
+      updateMdmsState={mdmsStateHandler}
+    />
   ) : (
     ''
   );
-  // ) : mdmsState === 'dtr' ? (
-  //   <MdmsDtrModule statehandler={mdmsStateHandler} />
-  // ) : mdmsState === 'user' ? (
-  //   <AllUsers
-  //     updateConnectionType={updateConnectionType}
-  //     // id={props.dtr_list[0]['id']}
-  //     txtLen={16}
-  //     tableName={'All Users'}
-  //     updateMdmsState={mdmsStateHandler}
-  //     showBackButton={usersBackButton}
-  //   />
-  // ) : mdmsState === 'userConsumption' || mdmsState === 'user_profile' ? (
-  //   <MdmsUserConsumptionModule
-  //     showBackButton={true}
-  //     connection_type={connectionType}
-  //     updateMdmsState={mdmsStateHandler}
-  //   />
-  // ) : (
-  //   ''
-  // );
+
   // return <MdmsPssModule statehandler={mdmsStateHandler} />;
 };
 

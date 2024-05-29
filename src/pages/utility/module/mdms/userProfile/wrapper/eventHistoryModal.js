@@ -1,92 +1,82 @@
 import { Modal, ModalHeader, ModalBody } from 'reactstrap';
-import SimpleDataTablePaginated from '@src/views/ui-elements/dtTable/simpleTablePaginated';
-import SimpleDataTable from '@src/views/ui-elements/dtTable/simpleTable';
 import { Eye } from 'react-feather';
 import { useEffect, useState } from 'react';
-import CreateTable from '@src/views/ui-elements/dtTable/createTable';
-import useJwt from '@src/auth/jwt/useJwt';
-import Loader from '@src/views/project/misc/loader';
+import Loader from '../../../../../../components/loader/loader';
 import { toast } from 'react-toastify';
-import Toast from '@src/views/ui-elements/cards/actions/createToast';
-import { useSelector, useDispatch } from 'react-redux';
-import moment from 'moment';
-import { useLocation, useHistory } from 'react-router-dom';
-import authLogout from '../../../../../../../auth/jwt/logoutlogic';
+import { useSelector } from 'react-redux';
+import { useLocation } from 'react-router-dom';
+import CardInfo from '../../../../../../components/ui-elements/cards/cardInfo';
 
-import { caseInsensitiveSort } from '@src/views/utils.js';
+import { caseInsensitiveSort } from '../../../../../../utils';
+
+import { useGetPullBasedTamperEventQuery } from '../../../../../../api/mdms/userConsumptionSlice';
+import DataTableV1 from '../../../../../../components/dtTable/DataTableV1';
 
 const EventHistoryModal = (props) => {
-  const dispatch = useDispatch();
-  const history = useHistory();
   const location = useLocation();
 
-  // Logout User
-  const [logout, setLogout] = useState(false);
-  useEffect(() => {
-    if (logout) {
-      authLogout(history, dispatch);
-    }
-  }, [logout]);
+  const [err, setErr] = useState('');
 
-  const [fetchingData, setFetchingData] = useState(true);
-  const [histyData, setHistyData] = useState();
+  const [histyData, setHistyData] = useState([]);
   const [centeredModal, setCenteredModal] = useState(false);
-  const [response, setResponse] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [response, setResponse] = useState({ push_data: [], pull_data: [] });
 
-  const [page1, setpage1] = useState(0);
-  const [page2, setpage2] = useState(0);
+  const [page1, setPage1] = useState(1);
+  const [page2, setPage2] = useState(1);
+  const [page3, setPage3] = useState(1);
+
+  const [currentPage] = useState(0);
 
   const projectName =
     location.pathname.split('/')[2] === 'sbpdcl'
       ? 'ipcl'
       : location.pathname.split('/')[2];
   const HierarchyProgress = useSelector(
-    (state) => state.UtilityMDMSHierarchyProgressReducer.responseData
+    (state) => state.MDMSHierarchyProgress.data
   );
 
-  let user_name = '';
-  let meter_serial = '';
+  let user_name;
+  let meter_serial;
   if (HierarchyProgress && HierarchyProgress.user_name) {
     user_name = HierarchyProgress.user_name;
     meter_serial = HierarchyProgress.meter_serial_number;
   }
 
-  const fetchEventHistory = async (params) => {
-    return await useJwt
-      .getPullBasedTamperEvent(params)
-      .then((res) => {
-        const status = res.status;
-        return [status, res];
-      })
-      .catch((err) => {
-        if (err.response) {
-          const status = err.response.status;
-          return [status, err];
-        } else {
-          return [0, err];
-        }
-      });
+  const params = {
+    page: currentPage,
+    meter: HierarchyProgress.meter_serial_number,
+    project: projectName,
+    start_date: '',
+    end_date: '',
+    tamperd: '',
   };
 
-  useEffect(async () => {
-    const params = {
-      page: currentPage,
-      meter: HierarchyProgress.meter_serial_number,
-      project: projectName,
-      start_date: '',
-      end_date: '',
-      tamperd: '',
-    };
-    // console.log(params)
-    const [statusCode, resp] = await fetchEventHistory(params);
-    if (statusCode === 200) {
-      setResponse(resp.data.data.result.results);
-      setFetchingData(false);
-    } else if (statusCode === 401 || statusCode === 403) {
-      setLogout(true);
+  const { data, isFetching, isError, status, refetch } =
+    useGetPullBasedTamperEventQuery(params);
+
+  useEffect(() => {
+    if (status === 'fulfilled') {
+      setResponse(data?.data?.result?.results);
+    } else if (isError) {
+      setErr('Something went wrong, please retry.');
     }
-  }, [fetchingData, props.isOpen]);
+  }, [data, isError, status]);
+
+  const retryAgain = () => {
+    refetch();
+  };
+
+  const onNextPageClicked1 = (page) => {
+    setPage1(page + 1);
+  };
+
+  const onNextPageClicked2 = (page) => {
+    setPage2(page + 1);
+  };
+
+  const onNextPageClicked3 = (page) => {
+    setPage3(page + 1);
+  };
 
   const tblColumn1 = () => {
     const column = [];
@@ -163,48 +153,18 @@ const EventHistoryModal = (props) => {
         Array.isArray(data) ? setHistyData(data) : setHistyData([data]);
         setCenteredModal(true);
       } else {
-        toast.error(<Toast msg="No data found." type="danger" />, {
+        toast('No data found.', {
           hideProgressBar: true,
+          type: 'danger',
         });
       }
     };
-    // column.push({
-    //   name: "Response Time",
-    //   cell: (row) => {
-    //     console.log(row)
-
-    //     const timeDifferenceInSeconds = moment(row.reporting_timestamp).diff(
-    //       row.datetime,
-    //       "seconds"
-    //     )
-    //     const hours = Math.floor(timeDifferenceInSeconds / 3600)
-    //     const minutes = Math.floor((timeDifferenceInSeconds % 3600) / 60)
-    //     const seconds = timeDifferenceInSeconds % 60
-
-    //     return `${hours ? hours.toString().concat(hours === 1 ? " hr" : " hrs") : ""} ${
-    //       minutes ? minutes.toString().concat(" min") : ""
-    //     } ${seconds.toString().concat(" sec")}`
-    //   }
-    // })
-    // column.push({
-    //   name: 'Action',
-    //   maxWidth: '100px',
-    //   style: {
-    //     minHeight: '40px',
-    //     maxHeight: '40px'
-    //   },
-    //   cell: row => {
-    //     return <Eye size='20' className={row.data ? 'ml-1 cursor-pointer' : 'd-none'} onClick={() => showData(row)} />
-    //   }
-    // })
     column.unshift({
       name: 'Sr',
       width: '90px',
       cell: (row, i) => {
         return (
-          <div className="d-flex  justify-content-center">
-            {page1 * 10 + 1 + i}
-          </div>
+          <div className="d-flex  justify-content-center">{page1 + i}</div>
         );
       },
     });
@@ -215,7 +175,7 @@ const EventHistoryModal = (props) => {
   const tblColumn2 = () => {
     const column = [];
 
-    for (const i in response.pull_data[0]) {
+    for (const i in response?.pull_data[0]) {
       const col_config = {};
       if (i !== 'data' && i !== 'meter_id') {
         col_config.id = i;
@@ -226,7 +186,6 @@ const EventHistoryModal = (props) => {
         col_config.serch = i;
         col_config.sortable = true;
         col_config.selector = (row) => row[i];
-        // col_config.selector = i
         col_config.style = {
           minHeight: '40px',
           maxHeight: '40px',
@@ -285,30 +244,12 @@ const EventHistoryModal = (props) => {
         Array.isArray(data) ? setHistyData(data) : setHistyData([data]);
         setCenteredModal(true);
       } else {
-        toast.error(<Toast msg="No data found." type="danger" />, {
+        toast('No data found.', {
           hideProgressBar: true,
+          type: 'danger',
         });
       }
     };
-
-    // column.push({
-    //   name: "Response Time",
-    //   cell: (row) => {
-    //     console.log(row)
-
-    //     const timeDifferenceInSeconds = moment(row.reporting_timestamp).diff(
-    //       row.datetime,
-    //       "seconds"
-    //     )
-    //     const hours = Math.floor(timeDifferenceInSeconds / 3600)
-    //     const minutes = Math.floor((timeDifferenceInSeconds % 3600) / 60)
-    //     const seconds = timeDifferenceInSeconds % 60
-
-    //     return `${hours ? hours.toString().concat(hours === 1 ? " hr" : " hrs") : ""} ${
-    //       minutes ? minutes.toString().concat(" min") : ""
-    //     } ${seconds.toString().concat(" sec")}`
-    //   }
-    // })
 
     column.push({
       name: 'View',
@@ -332,9 +273,7 @@ const EventHistoryModal = (props) => {
       width: '90px',
       cell: (row, i) => {
         return (
-          <div className="d-flex  justify-content-center">
-            {page2 * 10 + 1 + i}
-          </div>
+          <div className="d-flex  justify-content-center">{page2 + i}</div>
         );
       },
     });
@@ -342,15 +281,66 @@ const EventHistoryModal = (props) => {
     return column;
   };
 
-  const onNextPageClicked = (number) => {
-    setCurrentPage(number + 1);
-    setFetchingData(true);
-  };
+  const tblColumn = (data) => {
+    const column = [];
+    const custom_width = ['manufacturer_name', 'exec_datetime'];
 
-  // const reloadData = () => {
-  //   setCurrentPage(1)
-  //   setFetchingData(true)
-  // }
+    for (const i in data[0]) {
+      const col_config = {};
+      if (
+        i !== 'id' &&
+        i !== 'SM_device_id' &&
+        i !== 'MD_W_TOD_1' &&
+        i !== 'MD_W_TOD_2' &&
+        i !== 'MD_W_TOD_3' &&
+        i !== 'MD_W_TOD_4' &&
+        i !== 'MD_W_TOD_1' &&
+        i !== 'MD_VA_TOD_1' &&
+        i !== 'MD_VA_TOD_2' &&
+        i !== 'MD_VA_TOD_3' &&
+        i !== 'MD_VA_TOD_4' &&
+        i !== 'MD_W_TOD_1_datetime' &&
+        i !== 'MD_W_TOD_2_datetime' &&
+        i !== 'MD_W_TOD_3_datetime' &&
+        i !== 'MD_W_TOD_4_datetime' &&
+        i !== 'MD_VA_TOD_1_datetime' &&
+        i !== 'MD_VA_TOD_2_datetime' &&
+        i !== 'MD_VA_TOD_3_datetime' &&
+        i !== 'MD_VA_TOD_4_datetime' &&
+        i !== 'exec_datetime' &&
+        i !== 'cumm_VARH_lead' &&
+        i !== 'MD_W_datetime' &&
+        i !== 'MD_VA_datetime'
+      ) {
+        col_config.name = `${i.charAt(0).toUpperCase()}${i.slice(
+          1
+        )}`.replaceAll('_', ' ');
+        col_config.serch = i;
+        col_config.selector = (row) => row[i];
+        col_config.sortable = true;
+
+        col_config.width = '190px';
+        col_config.cell = (row) => {
+          return (
+            <div className="d-flex">
+              <span className="d-block font-weight-bold ">{row[i]}</span>
+            </div>
+          );
+        };
+        column.push(col_config);
+      }
+    }
+    column.unshift({
+      name: 'Sr',
+      width: '90px',
+      cell: (row, i) => {
+        return (
+          <div className="d-flex  justify-content-center">{page3 + i}</div>
+        );
+      },
+    });
+    return column;
+  };
 
   return (
     <>
@@ -364,43 +354,43 @@ const EventHistoryModal = (props) => {
           {props.title}
         </ModalHeader>
         <ModalBody>
-          {fetchingData ? (
+          {isError ? (
+            <div className="h-100 w-100">
+              <CardInfo
+                props={{
+                  message: { err },
+                  retryFun: { retryAgain },
+                  retry: { isFetching },
+                }}
+              />
+            </div>
+          ) : isFetching && !isError ? (
             <Loader hight="min-height-600" />
           ) : (
             <>
-              <SimpleDataTable
+              <DataTableV1
                 columns={tblColumn2()}
-                tblData={response.pull_data}
-                defaultSortFieldId="datetime"
+                data={response.pull_data}
+                showRefreshButton={true}
+                refreshFn={refetch}
                 rowCount={10}
-                currentpage={page2}
-                ispagination
-                selectedPage={setpage2}
-                tableName={'Pull data'.concat('(', meter_serial, ')')}
+                currentPage={page2}
+                onPageChange={onNextPageClicked2}
+                totalRowsCount={response.pull_data.length}
+                tableName={`Pull data ${meter_serial}`}
               />
-              <SimpleDataTable
+              <DataTableV1
                 columns={tblColumn1()}
-                tblData={response.push_data}
-                additional_columns={['meter_id']}
-                defaultSortFieldId="datetime"
+                data={response.push_data}
+                refreshFn={refetch}
+                showRefreshButton={true}
+                totalRowsCount={response.push_data.length}
                 rowCount={10}
-                currentpage={page1}
-                ispagination
-                selectedPage={setpage1}
-                tableName={'Push data'.concat('(', meter_serial, ')')}
+                currentPage={page1}
+                onPageChange={onNextPageClicked1}
+                tableName={`Push data ${meter_serial}`}
               />
             </>
-            // <SimpleDataTablePaginated
-            //   columns={tblColumn()}
-            //   tblData={response}
-            //   rowCount={10}
-            //   height={props.height ? props.height : false}
-            //   tableName={props.title}
-            //   // refresh={reloadData}
-            //   currentPage={currentPage}
-            //   totalCount={totalCount}
-            //   onNextPageClicked={onNextPageClicked}
-            // />
           )}
         </ModalBody>
       </Modal>
@@ -414,9 +404,13 @@ const EventHistoryModal = (props) => {
           Event History data
         </ModalHeader>
         <ModalBody>
-          <CreateTable
+          <DataTableV1
+            columns={tblColumn(histyData)}
             data={histyData}
-            height="max"
+            rowCount={10}
+            currentPage={page3}
+            onPageChange={onNextPageClicked3}
+            totalRowsCount={histyData.length}
             tableName="Event History data"
           />
         </ModalBody>
@@ -426,163 +420,3 @@ const EventHistoryModal = (props) => {
 };
 
 export default EventHistoryModal;
-
-// // ************************************** Old code ***********************************************
-// // This is commented because this was showing only pull event data
-
-// import { Modal, ModalHeader, ModalBody } from 'reactstrap'
-// import SimpleDataTablePaginated from '@src/views/ui-elements/dtTable/simpleTablePaginated'
-// import { Eye } from 'react-feather'
-// import { useEffect, useState } from 'react'
-// import CreateTable from '@src/views/ui-elements/dtTable/createTable'
-// import useJwt from '@src/auth/jwt/useJwt'
-// import Loader from '@src/views/project/misc/loader'
-// import { toast } from 'react-toastify'
-// import Toast from '@src/views/ui-elements/cards/actions/createToast'
-// import { useSelector } from 'react-redux'
-
-// const EventHistoryModal = props => {
-//   const [fetchingData, setFetchingData] = useState(true)
-//   const [histyData, setHistyData] = useState()
-//   const [centeredModal, setCenteredModal] = useState(false)
-//   const [response, setResponse] = useState([])
-//   const [currentPage, setCurrentPage] = useState(1)
-//   const [totalCount, setTotalCount] = useState(120)
-
-//   const projectName = location.pathname.split('/')[2] === 'sbpdcl' ? 'ipcl' : location.pathname.split('/')[2]
-//   const HierarchyProgress = useSelector(state => state.UtilityMDMSHierarchyProgressReducer.responseData)
-
-//   const fetchEventHistory = async params => {
-//     return await useJwt
-//       .getPullBasedEvent(params)
-//       .then(res => {
-//         const status = res.status
-//         return [status, res]
-//       })
-//       .catch(err => {
-//         const status = 0
-//         return [status, err]
-//       })
-//   }
-
-//   useEffect(async () => {
-//     const params = {
-//       page: currentPage,
-//       meter: HierarchyProgress.meter_serial_number,
-//       project: projectName
-//     }
-//     const [statusCode, resp] = await fetchEventHistory(params)
-//     if (statusCode === 200) {
-//       // if (resp.data.data.result.results.length > 0) {
-//       //   setResponse(resp.data.data.result.results)
-//       //   setTotalCount(resp.data.data.result.count)
-//       // } else {
-//       //   toast.error(<Toast msg='No data found.' type='danger' />, { hideProgressBar: true })
-//       //   props.handleModalState(!props.isOpen)
-//       // }
-//       setResponse(resp.data.data.result.results)
-//       setTotalCount(resp.data.data.result.count)
-//       setFetchingData(false)
-//     }
-//   }, [fetchingData, props.isOpen])
-
-//   const tblColumn = () => {
-//     const column = []
-
-//     for (const i in response[0]) {
-//       const col_config = {}
-//       if (i !== 'data') {
-//         col_config.name = `${i.charAt(0).toUpperCase()}${i.slice(1)}`.replace('_', ' ')
-//         col_config.serch = i
-//         col_config.sortable = true
-//         col_config.selector = row => row[i]
-//         col_config.style = {
-//           minHeight: '40px',
-//           maxHeight: '40px'
-//         }
-//         col_config.width = i === 'meter_id' ? '100px' : i === 'event_message' ? '400px' : i === 'event_code' ? '120px' : ''
-
-//         col_config.cell = row => {
-//           return (
-//             <div className='d-flex'>
-//               <span
-//                 className='d-block font-weight-bold text-truncate cursor-pointer'
-//                 onClick={() => handleRowClick(row.id, row.connection_type, row.meter_serial, 'pss')}
-//                 title={row[i] ? (row[i] !== '' ? (row[i].toString().length > 10 ? row[i] : '') : '-') : '-'}>
-//                 {row[i] && row[i] !== '' ? row[i].toString().substring(0, 10) : '-'}
-//                 {row[i] && row[i] !== '' ? (row[i].toString().length > 10 ? '...' : '') : '-'}
-//               </span>
-//             </div>
-//           )
-//         }
-//         column.push(col_config)
-//       }
-//     }
-
-//     const showData = async row => {
-//       if (Object.keys(row.data).length > 0) {
-//         setHistyData([row.data])
-//         setCenteredModal(true)
-//       } else {
-//         toast.error(<Toast msg='No data found.' type='danger' />, { hideProgressBar: true })
-//       }
-//     }
-//     column.push({
-//       name: 'Action',
-//       maxWidth: '100px',
-//       style: {
-//         minHeight: '40px',
-//         maxHeight: '40px'
-//       },
-//       cell: row => {
-//         return <Eye size='20' className='ml-1 cursor-pointer' onClick={() => showData(row)} />
-//       }
-//     })
-
-//     return column
-//   }
-
-//   const onNextPageClicked = number => {
-//     setCurrentPage(number + 1)
-//     setFetchingData(true)
-//   }
-
-//   // const reloadData = () => {
-//   //   setCurrentPage(1)
-//   //   setFetchingData(true)
-//   // }
-
-//   return (
-//     <>
-//       <Modal isOpen={props.isOpen} toggle={() => props.handleModalState(!props.isOpen)} scrollable className='modal_size'>
-//         <ModalHeader toggle={() => props.handleModalState(!props.isOpen)}>{props.title}</ModalHeader>
-//         <ModalBody>
-//           {fetchingData ? (
-//             <Loader hight='min-height-600' />
-//           ) : (
-//             <SimpleDataTablePaginated
-//               columns={tblColumn()}
-//               tblData={response}
-//               rowCount={10}
-//               height={props.height ? props.height : false}
-//               tableName={props.title}
-//               // refresh={reloadData}
-//               currentPage={currentPage}
-//               totalCount={totalCount}
-//               onNextPageClicked={onNextPageClicked}
-//             />
-//           )}
-//         </ModalBody>
-//       </Modal>
-
-//       <Modal isOpen={centeredModal} toggle={() => setCenteredModal(!centeredModal)} className={`modal-xl modal-dialog-centered`}>
-//         <ModalHeader toggle={() => setCenteredModal(!centeredModal)}>Event History data</ModalHeader>
-//         <ModalBody>
-//           <CreateTable data={histyData} height='max' tableName='Event History data' />
-//         </ModalBody>
-//       </Modal>
-//     </>
-//   )
-// }
-
-// export default EventHistoryModal

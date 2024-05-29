@@ -15,15 +15,7 @@ const MdmsFeederModule = (props) => {
   const dispatch = useDispatch();
   const hierarchy = useSelector((state) => state.MDMSHierarchyProgress.data);
 
-  console.log(hierarchy, 'feeder level');
-
-  // console.log("Hierarchy Progress in redux Store ....")
-  // console.log(responseData)
-
   const onFeederTableRowClickHandler = (feeder, row) => {
-    // console.log("Feeder Row Clicked ...")
-    // console.log(row)
-
     //Move to DTR Level
     props.statehandler('dtr');
 

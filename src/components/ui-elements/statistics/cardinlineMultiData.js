@@ -13,11 +13,6 @@ import {
 import IcoFun from '../dynamicIcon/dynamicIcon';
 import { iconsStore as iconStore } from '../../../utils';
 
-console.log(
-  iconStore.colors[Math.floor(Math.random() * iconStore.colors.length)],
-  'icon store'
-);
-
 const CardinlineMultiData = (props) => {
   const renderData = () => {
     let data = props.data;
@@ -30,9 +25,9 @@ const CardinlineMultiData = (props) => {
       const margin = Object.keys(props.cols);
       return (
         <Col key={index} {...props.cols} className="mb-2">
-          <Media 
-          className='mb-1 mt-1 d-flex align-items-start'
-          style={{borderRight:'1px solid #ebe9f1 !important'}}
+          <Media
+            className="mb-1 mt-1 d-flex align-items-start"
+            style={{ borderRight: '1px solid #ebe9f1 !important' }}
           >
             <Avatar
               color={
@@ -63,7 +58,7 @@ const CardinlineMultiData = (props) => {
   return (
     <Card className="card-statistics">
       <CardHeader className="border-bottom p-1">
-        <CardTitle tag="h4">Operational statistics</CardTitle>
+        <CardTitle tag="h4">Operational Statistics</CardTitle>
       </CardHeader>
       <CardBody className="p-2">
         <Row>{renderData()}</Row>

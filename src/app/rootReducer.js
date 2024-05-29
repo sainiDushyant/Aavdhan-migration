@@ -15,6 +15,7 @@ import layoutReducer from './redux/layoutSlice';
 import { energyConsumptionApi } from '../api/mdms/energy-consumptionSlice';
 import { operationalStatsApi } from '../api/mdms/operational-statisticsSlice';
 import { loadsApi } from '../api/mdms/loadSlice';
+import { userConsumptionApi } from '../api/mdms/userConsumptionSlice';
 
 const rootReducer = combineReducers({
   [loginApi.reducerPath]: loginApi.reducer,
@@ -26,6 +27,7 @@ const rootReducer = combineReducers({
   [energyConsumptionApi.reducerPath]: energyConsumptionApi.reducer,
   [operationalStatsApi.reducerPath]: operationalStatsApi.reducer,
   [loadsApi.reducerPath]: loadsApi.reducer,
+  [userConsumptionApi.reducerPath]: userConsumptionApi.reducer,
   layout: layoutReducer,
   [dropdownsApi.reducerPath]: dropdownsApi.reducer,
   utilityMDASAssetList: utilityMDASAssetListReducer,
