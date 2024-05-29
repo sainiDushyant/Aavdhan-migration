@@ -37,6 +37,26 @@ export const userConsumptionApi = createApi({
       }),
       keepUnusedDataFor: 300,
     }),
+
+    //Fetch User profile
+
+    getUserPersonalInformationUpdated: builder.query({
+      query: (params) => ({
+        url: `${url}/api/v1/get/consumer/details/dlms`,
+        params: params,
+      }),
+      keepUnusedDataFor: 300,
+    }),
+
+    // Billing history
+
+    getUserBillingHistory: builder.query({
+      query: (params) => ({
+        url: `${url}/api/v1/consumer/get/billing/history`,
+        params: params,
+      }),
+      keepUnusedDataFor: 300,
+    }),
   }),
 });
 
@@ -47,4 +67,6 @@ export const {
   useGetAssetHierarchyWiseMeterAlertsQuery,
   useGetPullBasedTamperEventQuery,
   useGetAssetHierarchyWiseSystemAlertsQuery,
+  useGetUserPersonalInformationUpdatedQuery,
+  useGetUserBillingHistoryQuery,
 } = userConsumptionApi;

@@ -257,7 +257,7 @@ const MeterGeneratedAlert = (props) => {
   } else if (isFetching) {
     return (
       <div className="super-center alert_dv">
-        <Loader />
+        <Loader height="300px" />
       </div>
     );
   }

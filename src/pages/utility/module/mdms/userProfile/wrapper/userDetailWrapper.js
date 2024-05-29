@@ -1,135 +1,83 @@
-import UserDetailCard from '@src/views/ui-elements/cards/gpCards/userDetailNewCard'
-import { Row, Col, Card, CardBody, Spinner, Button } from 'reactstrap'
+import UserDetailCard from '../../../../../../components/ui-elements/gpCards/userDetailNewCard';
 
-import { useContext, useState, useEffect } from 'react'
+import { useState, useEffect } from 'react';
 
-import { useSelector, useDispatch } from 'react-redux'
+import { useSelector } from 'react-redux';
 
-import { handleConsumerProfileInformationData } from '@store/actions/UtilityProject/MDMS/userprofile'
+import moment from 'moment';
 
-import Loader from '@src/views/project/misc/loader'
+import Loader from '../../../../../../components/loader/loader';
 
-import useJwt from '@src/auth/jwt/useJwt'
-import Avatar from '@components/avatar'
-import { useLocation, useHistory } from 'react-router-dom'
-import authLogout from '../../../../../../../auth/jwt/logoutlogic'
+import { useLocation } from 'react-router-dom';
 
-import CardInfo from '@src/views/ui-elements/cards/actions/cardInfo'
-import { AlertTriangle, RefreshCw } from 'react-feather'
+import CardInfo from '../../../../../../components/ui-elements/cards/cardInfo';
 
-const UserDetailWrapper = props => {
-  const dispatch = useDispatch()
-  const history = useHistory()
+import { useGetUserPersonalInformationUpdatedQuery } from '../../../../../../api/mdms/userConsumptionSlice';
 
-  // Error Handling
-  const [errorMessage, setErrorMessage] = useState('')
-  const [hasError, setError] = useState(false)
-  const [retry, setRetry] = useState(false)
+const UserDetailWrapper = (props) => {
+  const location = useLocation();
+  const [errorMessage, setErrorMessage] = useState('');
 
-  // Logout User
-  const [logout, setLogout] = useState(false)
+  const HierarchyProgress = useSelector(
+    (state) => state.MDMSHierarchyProgress.data
+  );
+  const currentMonth = moment().format('MM');
+  const currentYear = moment().format('YYYY');
+  const project = location.pathname.split('/')[2];
+  const [response, setResponse] = useState([]);
+
+  const params = {
+    project: project,
+    substation: HierarchyProgress.pss_name,
+    feeder: HierarchyProgress.feeder_name,
+    dtr: HierarchyProgress.dtr_name,
+    sc_no: HierarchyProgress.user_name,
+    year: currentYear,
+    month: currentMonth,
+  };
+
+  const { data, isFetching, isError, status, refetch } =
+    useGetUserPersonalInformationUpdatedQuery(params);
+
   useEffect(() => {
-    if (logout) {
-      authLogout(history, dispatch)
-    }
-  }, [logout])
-  const response = useSelector(state => state.UtilityMdmsConsumerProfileInformationReducer)
-  const HierarchyProgress = useSelector(state => state.UtilityMDMSHierarchyProgressReducer.responseData)
-  const selected_month = useSelector(state => state.calendarReducer.month)
-
-  let responseData
-  if (response && response.responseData) {
-    responseData = response.responseData
-  } else {
-    responseData = []
-  }
-
-  const fetchData = async params => {
-    return await useJwt
-      .getUserPersonalInformationMDMSModuleUpdated(params)
-      .then(res => {
-        const status = res.status
-        // console.log(res)
-        return [status, res]
-      })
-      .catch(err => {
-        if (err.response) {
-          const status = err.response.status
-          return [status, err]
-        } else {
-          return [0, err]
-        }
-      })
-  }
-
-  useEffect(async () => {
-    if (!response || response.callAPI || retry) {
-      const params = {
-        project: HierarchyProgress.project_name,
-        substation: HierarchyProgress.pss_name,
-        feeder: HierarchyProgress.feeder_name,
-        dtr: HierarchyProgress.dtr_name,
-        sc_no: HierarchyProgress.user_name,
-        year: selected_month.year,
-        month: selected_month.month
-      }
-
-      const [statusCode, response] = await fetchData(params)
-
+    if (status === 'fulfilled') {
+      let statusCode = data.responseCode;
       if (statusCode === 200) {
-        try {
-          dispatch(handleConsumerProfileInformationData(response.data.data.result.stat))
-          setRetry(false)
-        } catch (error) {
-          setRetry(false)
-          setError(true)
-          setErrorMessage('Something went wrong, please retry')
-        }
-      } else if (statusCode === 401 || statusCode === 403) {
-        setLogout(true)
-      } else {
-        setRetry(false)
-        setError(true)
-        setErrorMessage('Network Error, please retry')
+        setResponse(data.data.result.stat);
       }
+    } else if (isError) {
+      setErrorMessage('Something went wrong, please retry.');
     }
-  }, [response, retry])
+  }, [data, status, isError]);
 
   const retryAgain = () => {
-    setError(false)
-    setRetry(true)
-  }
+    refetch();
+  };
   return (
     <div>
-      {hasError ? (
+      {isError ? (
         <div>
-          {/* <CardInfo props={{ message: { errorMessage }, retryFun: { retryAgain }, retry: { retry } }} /> */}
-          <Card>
-            <CardBody className='super-center '>
-              <Avatar color='light-danger' size='xl' icon={<AlertTriangle />} />
-              <h4 className='mt-2'>Network Error Occured 🕵🏻‍♀️</h4>
-              <p className='mb-2 mt-1'> {errorMessage}</p>
-              {retry ? (
-                <Spinner color='dark' size='md' />
-              ) : (
-                <Button.Ripple to='/' color='btn btn-outline-danger' onClick={retryAgain} className='mb_3'>
-                  Retry
-                  <RefreshCw size='15' className='cursor-pointer mx_5' />
-                </Button.Ripple>
-              )}
-            </CardBody>
-          </Card>
+          <CardInfo
+            props={{
+              message: { errorMessage },
+              retryFun: { retryAgain },
+              retry: { isFetching },
+            }}
+          />
         </div>
       ) : (
         <>
-          {(!response || response.callAPI) && <Loader hight={props.height} />}
-          {response && responseData.hasOwnProperty('primaryInformation') && responseData.primaryInformation.length && (
-            <UserDetailCard data={responseData} height={props.height} />
+          {isFetching ? (
+            <Loader height={props.height} />
+          ) : response.hasOwnProperty('primaryInformation') ? (
+            <UserDetailCard data={response} height={props.height} />
+          ) : (
+            ''
           )}
         </>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default UserDetailWrapper
+export default UserDetailWrapper;

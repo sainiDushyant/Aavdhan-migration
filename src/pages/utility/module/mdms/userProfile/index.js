@@ -11,11 +11,11 @@ import AlertCard from '../../../../../components/ui-elements/gpCards/alertCardUp
 // import BlockLoad from "@src/views/project/utility/module/mdms/userProfile/wrapper/blockLoad"
 // import DailyLoad from "@src/views/project/utility/module/mdms/userProfile/wrapper/dailyLoad"
 // import MonthlyBillDetermine from "@src/views/project/utility/module/mdms/userProfile/wrapper/monthlyBillDetermine"
-// import UserDetailWrapper from "./wrapper/userDetailWrapper"
+import UserDetailWrapper from './wrapper/userDetailWrapper';
 // import TotalRechargesWrapper from "./wrapper/totalRechargesWrapper"
 // import CommandInfoTableWrapper from "./wrapper/commandInfoTableWrapper"
 // import PrepaidLedgerWrapper from "./wrapper/prepaidLedgerWrapper"
-// import GeneratedBillsWrapper from "./wrapper/generatedBillsWrapper"
+import GeneratedBillsWrapper from './wrapper/generatedBillsWrapper';
 // import MeterProfileConfig from "@src/views/project/utility/module/mdms/userProfile/wrapper/meterProfileConfig"
 
 import { useLocation } from 'react-router-dom';
@@ -112,11 +112,11 @@ const MdmsUserConsumptionModule = (props) => {
           <Col lg="7">
             <Row className="match-height">
               <Col md="6">
-                {/* <UserDetailWrapper hierarchy={"userProfile"} height='height-248' /> need to uncomment */}
+                <UserDetailWrapper hierarchy={'userProfile'} height="248px" />
               </Col>
               <Col md="6">
                 {/* <TotalConsumptionWrapper hierarchy={"userProfile"} dvClas='py_10' /> */}
-                {/* <GeneratedBillsWrapper dvClas='py_10' /> need to uncomment */}
+                <GeneratedBillsWrapper dvClas="py_10" />
               </Col>
               {/* <Col lg='6' xs='6'>
                 <PeriodicWrapper />

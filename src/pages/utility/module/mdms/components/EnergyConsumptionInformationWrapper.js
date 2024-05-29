@@ -17,8 +17,6 @@ import { useGetAssetsenergyConsumptionQuery } from '../../../../../api/mdms/ener
 const EnergyConsumptionWrapper = (props) => {
   // Error Handling
   const [errorMessage, setErrorMessage] = useState('');
-  const [hasError, setError] = useState(false);
-  const [retry, setRetry] = useState(false);
 
   const location = useLocation();
 

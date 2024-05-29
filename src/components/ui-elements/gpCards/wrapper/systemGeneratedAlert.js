@@ -124,7 +124,7 @@ const SystemGeneratedAlert = (props) => {
             </Col>
           </Row>
           <div className="super-center alert_dv">
-            <div>
+            <div className="d-flex flex-column align-items-center">
               <img
                 src={'no_data.svg'}
                 style={{ height: '150px', width: '150px' }}
