@@ -10,6 +10,7 @@ import {
   Button,
 } from 'reactstrap';
 import StatsHorizontal from '../../../../../../@core/components/widgets/stats/StatsHorizontal';
+import StatsVertical from '../../../../../../@core/components/widgets/stats/StatsVertical';
 
 import { FileText } from 'react-feather';
 import { useState, useEffect } from 'react';
@@ -84,11 +85,13 @@ const GeneratedBillsWrapper = (props) => {
 
   return (
     <>
-      <StatsHorizontal
+      <StatsVertical
         icon={<FileText size={21} />}
-        color="info"
         stats="Generated Bills"
         statTitle=""
+        className={
+          'd-flex justify-content-center align-items-center flex-column'
+        }
         click={() => setCenteredModal(!centeredModal)}
         clas="h4"
         dvClas={props.dvClas ? props.dvClas : ''}

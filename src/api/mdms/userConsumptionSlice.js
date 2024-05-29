@@ -57,6 +57,16 @@ export const userConsumptionApi = createApi({
       }),
       keepUnusedDataFor: 300,
     }),
+
+    // Daily load
+
+    getMDMSUserDailyLoadData: builder.query({
+      query: (params) => ({
+        url: `${dlmsUrl}/api/hes/mdm/dailyload/`,
+        params: params,
+      }),
+      keepUnusedDataFor: 300,
+    }),
   }),
 });
 
@@ -69,4 +79,5 @@ export const {
   useGetAssetHierarchyWiseSystemAlertsQuery,
   useGetUserPersonalInformationUpdatedQuery,
   useGetUserBillingHistoryQuery,
+  useGetMDMSUserDailyLoadDataQuery,
 } = userConsumptionApi;

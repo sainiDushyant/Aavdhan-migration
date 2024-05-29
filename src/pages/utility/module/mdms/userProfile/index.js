@@ -2,21 +2,14 @@ import { useState, useEffect } from 'react';
 import { Row, Col, Spinner } from 'reactstrap';
 import { ChevronLeft, Settings } from 'react-feather';
 
-//Wrapper Functions
-
 import AlertCard from '../../../../../components/ui-elements/gpCards/alertCardUpdated';
 
-// import PeriodicWrapper from "./wrapper/periodicData"
+import BlockLoad from './wrapper/blockLoad';
+import DailyLoad from './wrapper/dailyLoad';
 
-// import BlockLoad from "@src/views/project/utility/module/mdms/userProfile/wrapper/blockLoad"
-// import DailyLoad from "@src/views/project/utility/module/mdms/userProfile/wrapper/dailyLoad"
 // import MonthlyBillDetermine from "@src/views/project/utility/module/mdms/userProfile/wrapper/monthlyBillDetermine"
 import UserDetailWrapper from './wrapper/userDetailWrapper';
-// import TotalRechargesWrapper from "./wrapper/totalRechargesWrapper"
-// import CommandInfoTableWrapper from "./wrapper/commandInfoTableWrapper"
-// import PrepaidLedgerWrapper from "./wrapper/prepaidLedgerWrapper"
 import GeneratedBillsWrapper from './wrapper/generatedBillsWrapper';
-// import MeterProfileConfig from "@src/views/project/utility/module/mdms/userProfile/wrapper/meterProfileConfig"
 
 import { useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
@@ -122,10 +115,10 @@ const MdmsUserConsumptionModule = (props) => {
                 <PeriodicWrapper />
               </Col> */}
               <Col lg="6" xs="6">
-                {/* <BlockLoad /> need */}
+                <BlockLoad />
               </Col>
               <Col lg="6" xs="6">
-                {/* <DailyLoad />  need*/}
+                <DailyLoad />
               </Col>
               <Col lg="12" md="12" xs="12">
                 {/* <MonthlyBillDetermine /> need */}

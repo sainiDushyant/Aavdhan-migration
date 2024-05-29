@@ -16,7 +16,7 @@ function LayoutWrapper({ children }) {
         <Navbar />
         <main>
           <div className="m-2">
-            <div> {children}</div>
+            <div style={{ minHeight: '90vh' }}> {children}</div>
             <Footer />
           </div>
         </main>
