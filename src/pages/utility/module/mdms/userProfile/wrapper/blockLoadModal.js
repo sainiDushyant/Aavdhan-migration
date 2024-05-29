@@ -54,14 +54,14 @@ const BlobkLoadModal = (props) => {
         page: currentPage,
         start_date: startDateTime,
         end_date: endDateTime,
-        page_size: 100,
+        page_size: rowCount,
       };
     } else {
       params = {
         project: project,
         meter: HierarchyProgress.meter_serial_number,
         page: currentPage,
-        page_size: 100,
+        page_size: rowCount,
       };
     }
     return params;

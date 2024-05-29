@@ -27,8 +27,7 @@ import { DownloadCSV, DownloadPDF } from '../dtTable/downloadTableData';
 import CardInfo from '../../components/ui-elements/cards/NoDataCardInfo';
 
 const DataTableV1 = (props) => {
-  console.log(props.columns, 'col');
-
+  console.log(props.data);
   const [data, setData] = useState(props.data);
   const totalRowsCount = props.totalRowsCount;
   const [currentPageData, setCurrentPageData] = useState([]);
