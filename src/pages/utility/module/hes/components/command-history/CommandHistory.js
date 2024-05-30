@@ -16,7 +16,6 @@ import DataTableV1 from '../../../../../../components/dtTable/DataTableV1';
 import CardInfo from '../../../../../../components/ui-elements/cards/cardInfo';
 
 import Loader from '../../../../../../components/loader/loader';
-import { caseInsensitiveSort } from '../../../../../../utils';
 
 import CommandRetryConfig from './command-retry-config/commandRetryConfig';
 import CommandHistoryDataDownloadWrapper from './commandHistoryDataDownloadWrapper';
@@ -40,7 +39,6 @@ const CommandHistory = (props) => {
     location.pathname.split('/')[2] === 'sbpdcl'
       ? 'ipcl'
       : location.pathname.split('/')[2];
-  const verticalName = location.pathname.split('/')[1];
   const [histyData, setHistyData] = useState();
   const [tapHistyData, setTapHistyData] = useState(undefined);
   const [centeredModal, setCenteredModal] = useState(false);
@@ -49,7 +47,6 @@ const CommandHistory = (props) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [filterModal, setFilterModal] = useState(false);
   const [filterAppliedParams, setFilterAppliedParams] = useState(undefined);
-  const [schedulerState, setSchedulerState] = useState(false);
 
   const [tableName, setTableName] = useState('Command History');
   const [tableNameUpdated, setTableNameUpdated] = useState(false);
@@ -59,8 +56,6 @@ const CommandHistory = (props) => {
   const [rowExecutionStatus, setRowExecutionStatus] = useState([]);
 
   // const [protocolSelectionOption, setProtocolSelectionOption] = useState(props.selectProtocol)
-
-  const [selected_project, set_selected_project] = useState(undefined);
 
   const [commandRetryConfigModal, setCommandRetryConfigModal] = useState(false);
 
@@ -81,19 +76,19 @@ const CommandHistory = (props) => {
 
   const setRowCount = (newRowCount) => {
     const oldRowCount = params.page_size;
-    const newPage = newRowCount > oldRowCount
-      ? Math.min(currentPage, Math.ceil(totalCount / newRowCount))
-      : Math.ceil(totalCount / newRowCount);
-  
+    const newPage =
+      newRowCount > oldRowCount
+        ? Math.min(currentPage, Math.ceil(totalCount / newRowCount))
+        : Math.ceil(totalCount / newRowCount);
+
     setParams((prevParams) => ({
       ...prevParams,
       page_size: newRowCount,
       page: newPage,
     }));
-  
+
     setCurrentPage(newPage);
   };
-  console.log(currentPage, 'currentPage')
 
   // const setRowCount = (rowCount) => {
   //   setParams((prevParams) => ({...prevParams, page_size:rowCount}))
@@ -333,15 +328,15 @@ const CommandHistory = (props) => {
   //     });
   // };
 
-  const showData = (row) => {
+  const showData = async (row) => {
     const params = {
       id: row.id,
     };
-    getDlmsHistoryData(params);
+    let response = await getDlmsHistoryData(params);
     setCenteredModal(true);
-    let statusCode = dlmsHistoryDataResponse?.data?.responseCode;
+    let statusCode = response?.data?.responseCode;
     if (statusCode === 200 || statusCode === 202) {
-      let data = dlmsHistoryDataResponse?.data?.data?.result?.data;
+      let data = response?.data?.data?.result?.data;
       if (Array.isArray(data)) {
         const filteredData = data.filter(
           (obj) => !obj.hasOwnProperty('MD_W_TOD_1')

@@ -25,7 +25,10 @@ const OperationalInformationWrapper = (props) => {
   const currentYear = moment().format('YYYY');
 
   const hierarchy = useSelector((state) => state.MDMSHierarchyProgress.data);
-  const project = location.pathname.split('/')[2];
+  const project =
+    location.pathname.split('/')[2] === 'sbpdcl'
+      ? 'ipcl'
+      : location.pathname.split('/')[2];
 
   const getParams = () => {
     let params;

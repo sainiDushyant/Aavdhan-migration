@@ -67,6 +67,15 @@ export const userConsumptionApi = createApi({
       }),
       keepUnusedDataFor: 300,
     }),
+
+    // Meter Recharge related
+    putOfflineRecharge: builder.mutation({
+      query: (data) => ({
+        url: `${url}/api/v1/put/offline/recharge`,
+        method: 'PUT',
+        body: data,
+      }),
+    }),
   }),
 });
 
@@ -80,4 +89,5 @@ export const {
   useGetUserPersonalInformationUpdatedQuery,
   useGetUserBillingHistoryQuery,
   useGetMDMSUserDailyLoadDataQuery,
+  usePutOfflineRechargeMutation,
 } = userConsumptionApi;

@@ -40,7 +40,10 @@ const GeneratedBillsWrapper = (props) => {
 
   const currentMonth = moment().format('MM');
   const currentYear = moment().format('YYYY');
-  const project = location.pathname.split('/')[2];
+  const project =
+    location.pathname.split('/')[2] === 'sbpdcl'
+      ? 'ipcl'
+      : location.pathname.split('/')[2];
 
   const params = {
     project: project,

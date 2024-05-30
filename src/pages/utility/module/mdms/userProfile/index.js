@@ -6,8 +6,11 @@ import AlertCard from '../../../../../components/ui-elements/gpCards/alertCardUp
 
 import BlockLoad from './wrapper/blockLoad';
 import DailyLoad from './wrapper/dailyLoad';
+import MonthlyBillDetermine from './wrapper/monthlyBillDetermine';
+import MeterProfileConfig from './wrapper/meterProfileConfig';
 
-// import MonthlyBillDetermine from "@src/views/project/utility/module/mdms/userProfile/wrapper/monthlyBillDetermine"
+import CommandInfoTableWrapper from './wrapper/commandInfoTableWrapper';
+
 import UserDetailWrapper from './wrapper/userDetailWrapper';
 import GeneratedBillsWrapper from './wrapper/generatedBillsWrapper';
 
@@ -121,7 +124,7 @@ const MdmsUserConsumptionModule = (props) => {
                 <DailyLoad />
               </Col>
               <Col lg="12" md="12" xs="12">
-                {/* <MonthlyBillDetermine /> need */}
+                <MonthlyBillDetermine />
               </Col>
             </Row>
           </Col>
@@ -154,26 +157,25 @@ const MdmsUserConsumptionModule = (props) => {
         </Row> */}
         <Row>
           <Col>
-            {/* <CommandInfoTableWrapper
+            <CommandInfoTableWrapper
               HierarchyProgress={props.HierarchyProgress}
-              tableName={"Command info"}
-              hierarchy={"user"}
+              tableName={'Command info'}
+              hierarchy={'user'}
               txtLen={20}
-              length={"12"}
-            /> need to uncomment */}
+              length={'12'}
+            />
           </Col>
         </Row>
 
-        {
-          isOpen && ''
-          // <MeterProfileConfig
-          //   updateMdmsState={props.updateMdmsState}
-          //   isOpen={isOpen}
-          //   setIsOpen={setIsOpen}
-          //   consumerType={hierarchy.user_type}
-          //   title='Profile setting'
-          // /> need to uncomment
-        }
+        {isOpen && (
+          <MeterProfileConfig
+            updateMdmsState={props.updateMdmsState}
+            isOpen={isOpen}
+            setIsOpen={setIsOpen}
+            consumerType={hierarchy.user_type}
+            title="Profile setting"
+          />
+        )}
       </div>
     );
   } else {
@@ -198,7 +200,7 @@ const MdmsUserConsumptionModule = (props) => {
                 Meter status :{' '}
                 {meterConnectionStatus ? (
                   meterConnectionStatus === 'Connected' ? (
-                    <strong>connected</strong>
+                    <strong>Connected</strong>
                   ) : (
                     <strong>Disconnected</strong>
                   )
@@ -244,7 +246,10 @@ const MdmsUserConsumptionModule = (props) => {
             </Col> */}
             <Row className="match-height px-1">
               <Col>
-                {/* <UserDetailWrapper hierarchy={"userProfile"} height='height-280' /> need to uncomment */}
+                <UserDetailWrapper
+                  hierarchy={'userProfile'}
+                  height="height-280"
+                />
               </Col>
               <Col>
                 {/* <TotalConsumptionWrapper hierarchy={"userProfile"} /> */}
@@ -255,7 +260,9 @@ const MdmsUserConsumptionModule = (props) => {
               <Col>
                 {/* <PrepaidLedgerWrapper project={hierarchy.project_name} /> uncomment */}
               </Col>
-              <Col>{/* <GeneratedBillsWrapper uncomment /> */}</Col>
+              <Col>
+                <GeneratedBillsWrapper />
+              </Col>
             </Row>
           </Col>
           <Col lg="5">
@@ -288,15 +295,14 @@ const MdmsUserConsumptionModule = (props) => {
           length={"12"}
         /> */}
 
-        {
-          isOpen && ''
-          // <MeterProfileConfig
-          //   updateMdmsState={props.updateMdmsState}
-          //   isOpen={isOpen}
-          //   setIsOpen={setIsOpen}
-          //   title='Profile setting'
-          // />
-        }
+        {isOpen && (
+          <MeterProfileConfig
+            updateMdmsState={props.updateMdmsState}
+            isOpen={isOpen}
+            setIsOpen={setIsOpen}
+            title="Profile setting"
+          />
+        )}
       </div>
     );
   }

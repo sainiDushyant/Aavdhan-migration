@@ -1,409 +1,324 @@
-import { useState, useEffect } from "react"
-import Loader from "@src/views/project/misc/loader"
-import SimpleDataTable from "@src/views/ui-elements/dtTable/simpleTable"
-import BillDetermineActionModal from "@src/views/project/utility/module/mdms/userProfile/wrapper/billDetermineActionModal"
-import { Eye } from "react-feather"
+import { useState, useEffect } from 'react';
+import Loader from '../../../../../../components/loader/loader';
+import BillDetermineActionModal from './billDetermineActionModal';
 
-import Toast from "@src/views/ui-elements/cards/actions/createToast"
-import { toast } from "react-toastify"
-import useJwt from "@src/auth/jwt/useJwt"
+import { toast } from 'react-toastify';
 
-import {
-  Row,
-  Col,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  Button,
-  InputGroup,
-  Label,
-  Card,
-  CardBody
-} from "reactstrap"
-import Flatpickr from "react-flatpickr"
+import { Row, Col, Button, InputGroup } from 'reactstrap';
+import Flatpickr from 'react-flatpickr';
 
-import { useSelector, useDispatch } from "react-redux"
+import { useSelector, useDispatch } from 'react-redux';
 
-import { useLocation, useHistory } from "react-router-dom"
-import authLogout from "../../../../../../../auth/jwt/logoutlogic"
-import { caseInsensitiveSort } from "@src/views/utils.js"
-import CardInfo from "@src/views/ui-elements/cards/actions/cardInfo"
-import moment from "moment"
-const BillDetermine = (props) => {
-  const dispatch = useDispatch()
-  const history = useHistory()
+import { useLocation } from 'react-router-dom';
+import { caseInsensitiveSort } from '../../../../../../utils';
+import CardInfo from '../../../../../../components/ui-elements/cards/cardInfo';
+import moment from 'moment';
+import { useGetBillingDataQuery } from '../../../../../../api/hes/push-dataSlice';
+import DataTableV1 from '../../../../../../components/dtTable/DataTableV1';
 
-  // Logout User
-  const [logout, setLogout] = useState(false)
-  useEffect(() => {
-    if (logout) {
-      authLogout(history, dispatch)
-    }
-  }, [logout])
+const BillDetermine = () => {
+  const location = useLocation();
+  const project =
+    location.pathname.split('/')[2] === 'sbpdcl'
+      ? 'ipcl'
+      : location.pathname.split('/')[2];
 
-  const selected_month = useSelector((state) => state.calendarReducer.month)
   const HierarchyProgress = useSelector(
-    (state) => state.UtilityMDMSHierarchyProgressReducer.responseData
-  )
+    (state) => state.MDMSHierarchyProgress.data
+  );
 
-  let user_name = ""
-  let meter_serial = ""
+  let user_name = '';
+  let meter_serial = '';
   if (HierarchyProgress && HierarchyProgress.user_name) {
-    user_name = HierarchyProgress.user_name
-    meter_serial = HierarchyProgress.meter_serial_number
+    user_name = HierarchyProgress.user_name;
+    meter_serial = HierarchyProgress.meter_serial_number;
   }
-  const [centeredModal, setCenteredModal] = useState(false)
-  const [eventHistoryStartTime, setEventHistoryStartTime] = useState(undefined)
-  const [eventHistoryEndTime, setEventHistoryEndTime] = useState(undefined)
+  const [centeredModal, setCenteredModal] = useState(false);
+  const [eventHistoryStartTime, setEventHistoryStartTime] = useState(undefined);
+  const [eventHistoryEndTime, setEventHistoryEndTime] = useState(undefined);
 
   // Local State to manage Billing Determinant History
-  const [BillingDeterminantHistory, setBillingDeterminantHistory] = useState([])
-  const [fetchingData, setFetchingData] = useState(false)
-  const [rowCount, setRowCount] = useState(6)
-  const [page, setPage] = useState(0)
+  const [BillingDeterminantHistory, setBillingDeterminantHistory] = useState(
+    []
+  );
+  const [rowCount, setRowCount] = useState(6);
+  const [page, setPage] = useState(1);
 
-  const defaultStartDate = moment().startOf("month").format("YYYY-MM-DD 00:00:00")
+  const defaultStartDate = moment()
+    .startOf('month')
+    .format('YYYY-MM-DD 00:00:00');
 
   // Set default end date to the current date and time
-  const defaultEndDate = moment().format("YYYY-MM-DD HH:mm:ss")
+  const defaultEndDate = moment().format('YYYY-MM-DD HH:mm:ss');
 
-  // console.log("Default End Date:", defaultStartDate)
-  const [startDateTime, setStartDateTime] = useState(defaultStartDate)
-  // console.log("Default End Date:", defaultEndDate)
-  const [endDateTime, setEndDateTime] = useState(defaultEndDate)
+  const [startDateTime, setStartDateTime] = useState(defaultStartDate);
+  const [endDateTime, setEndDateTime] = useState(defaultEndDate);
 
-  const [loader, setLoader] = useState(false)
-  const [errorMessage, setErrorMessage] = useState("")
-  const [hasError, setError] = useState(false)
-  const [retry, setRetry] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('');
+  const [skip, setSkip] = useState(false);
 
-  const fetchData = async (params) => {
-    return await useJwt
-      .getMDMSUserBillingData(params)
-      .then((res) => {
-        const status = res.status
-        return [status, res]
-      })
-      .catch((err) => {
-        if (err.response) {
-          const status = err.response.status
-          return [status, err]
-        } else {
-          return [0, err]
-        }
-      })
-  }
+  const params = {
+    project: project,
+    page: page,
+    page_size: 10,
+    start_date: startDateTime,
+    end_date: endDateTime,
+    site: HierarchyProgress.dtr_name,
+    meter: HierarchyProgress.meter_serial_number,
+  };
 
-  useEffect(async () => {
-    // if (!BillingDeterminantHistory || BillingDeterminantHistory.length <= 0) {
-    // Fetch Billing Determinant History
-    setLoader(true)
-    const params = {
-      project: HierarchyProgress.project_name,
-      // sc_no: HierarchyProgress.user_name,
-      page: 1,
-      page_size: 10,
-      start_date: startDateTime,
-      end_date: endDateTime,
-      site: HierarchyProgress.dtr_name,
-      meter: HierarchyProgress.meter_serial_number
-    }
-    const [statusCode, response] = await fetchData(params)
-    if (statusCode === 200) {
-      try {
-        const billingDataResponse = []
-        const results = response.data.data.result.results // Assuming this is an array of objects
+  const { data, isFetching, status, isError, refetch } = useGetBillingDataQuery(
+    params,
+    { skip }
+  );
+
+  useEffect(() => {
+    if (status === 'fulfilled') {
+      let statusCode = data.responseCode;
+      if (statusCode === 200) {
+        const billingDataResponse = [];
+        const results = data.data.result.results; // Assuming this is an array of objects
 
         const command_sequence = {
-          billing_datetime: "Billing_Date",
-          systemPF: "Average_Power_Factor_For_Billing_Period",
-          kwhSnap: "Cum._Active_Imp._Energy_(kWh)",
-          import_Wh_TOD_1: "Cum._Active_Imp._Energy_(kWh)_T1",
-          import_Wh_TOD_2: "Cum._Active_Imp._Energy_(kWh)_T2",
-          import_Wh_TOD_3: "Cum._Active_Imp._Energy_(kWh)_T3",
-          import_Wh_TOD_4: "Cum._Active_Imp._Energy_(kWh)_T4",
-          kvahSnap: "Cum._Apparent_Imp._Energy_(kVAh)",
-          import_VAh_TOD_1: "Cum._Apparent_Imp._Energy_(kVAh)_T1",
-          import_VAh_TOD_2: "Cum._Apparent_Imp._Energy_(kVAh)_T2",
-          import_VAh_TOD_3: "Cum._Apparent_Imp._Energy_(kVAh)_T3",
-          import_VAh_TOD_4: "Cum._Apparent_Imp._Energy_(kVAh)_T4",
-          MDKwh: "MD_kW",
-          MDKwhTS: "MD_kW_with_Date/Time",
-          MDKvah: "MD_kVA",
-          MDKvahTS: "MD_kVA_with_Date/Time",
-          billingDuration: "Billing_Power_ON_Duration_(Minutes)",
-          kwhSnapExport: "Cum._Active_Exp._Energy_(kWh)",
-          kvahSnapExport: "Cum._Apparent_Exp._Energy_(kVAh)",
-          date_timestamp: "data_timestamp",
-          reporting_timestamp: "report_timestamp"
-        }
+          billing_datetime: 'Billing_Date',
+          systemPF: 'Average_Power_Factor_For_Billing_Period',
+          kwhSnap: 'Cum._Active_Imp._Energy_(kWh)',
+          import_Wh_TOD_1: 'Cum._Active_Imp._Energy_(kWh)_T1',
+          import_Wh_TOD_2: 'Cum._Active_Imp._Energy_(kWh)_T2',
+          import_Wh_TOD_3: 'Cum._Active_Imp._Energy_(kWh)_T3',
+          import_Wh_TOD_4: 'Cum._Active_Imp._Energy_(kWh)_T4',
+          kvahSnap: 'Cum._Apparent_Imp._Energy_(kVAh)',
+          import_VAh_TOD_1: 'Cum._Apparent_Imp._Energy_(kVAh)_T1',
+          import_VAh_TOD_2: 'Cum._Apparent_Imp._Energy_(kVAh)_T2',
+          import_VAh_TOD_3: 'Cum._Apparent_Imp._Energy_(kVAh)_T3',
+          import_VAh_TOD_4: 'Cum._Apparent_Imp._Energy_(kVAh)_T4',
+          MDKwh: 'MD_kW',
+          MDKwhTS: 'MD_kW_with_Date/Time',
+          MDKvah: 'MD_kVA',
+          MDKvahTS: 'MD_kVA_with_Date/Time',
+          billingDuration: 'Billing_Power_ON_Duration_(Minutes)',
+          kwhSnapExport: 'Cum._Active_Exp._Energy_(kWh)',
+          kvahSnapExport: 'Cum._Apparent_Exp._Energy_(kVAh)',
+          date_timestamp: 'data_timestamp',
+          reporting_timestamp: 'report_timestamp',
+        };
         const keysToConvertWh = [
-          "MD_kW",
-          "Average_Power_Factor_For_Billing_Period",
-          "Cum._Active_Imp._Energy_(kWh)",
-          "Cum._Active_Imp._Energy_(kWh)_T1",
-          "Cum._Active_Imp._Energy_(kWh)_T2",
-          "Cum._Active_Imp._Energy_(kWh)_T3",
-          "Cum._Active_Imp._Energy_(kWh)_T4",
-          "Cum._Active_Exp._Energy_(kWh)"
-        ]
+          'MD_kW',
+          'Average_Power_Factor_For_Billing_Period',
+          'Cum._Active_Imp._Energy_(kWh)',
+          'Cum._Active_Imp._Energy_(kWh)_T1',
+          'Cum._Active_Imp._Energy_(kWh)_T2',
+          'Cum._Active_Imp._Energy_(kWh)_T3',
+          'Cum._Active_Imp._Energy_(kWh)_T4',
+          'Cum._Active_Exp._Energy_(kWh)',
+        ];
         const keysToConvertVAh = [
-          "MD_kVA",
-          "Cum._Apparent_Imp._Energy_(kVAh)",
-          "Cum._Apparent_Imp._Energy_(kVAh)_T1",
-          "Cum._Apparent_Imp._Energy_(kVAh)_T2",
-          "Cum._Apparent_Imp._Energy_(kVAh)_T3",
-          "Cum._Apparent_Imp._Energy_(kVAh)_T4",
-          "Cum._Apparent_Exp._Energy_(kVAh)"
-        ]
+          'MD_kVA',
+          'Cum._Apparent_Imp._Energy_(kVAh)',
+          'Cum._Apparent_Imp._Energy_(kVAh)_T1',
+          'Cum._Apparent_Imp._Energy_(kVAh)_T2',
+          'Cum._Apparent_Imp._Energy_(kVAh)_T3',
+          'Cum._Apparent_Imp._Energy_(kVAh)_T4',
+          'Cum._Apparent_Exp._Energy_(kVAh)',
+        ];
 
         for (let i = 0; i < results.length; i++) {
-          const item = results[i].data
-          item.reporting_timestamp = results[i].report_timestamp
+          const item = results[i].data;
+          item.reporting_timestamp = results[i].report_timestamp;
           // Check if item is an object (not an array)
-          if (typeof item === "object" && item !== null) {
-            if (item.hasOwnProperty("total_poweron_duraion_min")) {
-              item["Total power on duration"] = item["total_poweron_duraion_min"]
-              delete item["total_poweron_duraion_min"]
+          if (typeof item === 'object' && item !== null) {
+            if (item.hasOwnProperty('total_poweron_duraion_min')) {
+              item['Total power on duration'] =
+                item['total_poweron_duraion_min'];
+              delete item['total_poweron_duraion_min'];
             }
             for (const key in item) {
               if (command_sequence.hasOwnProperty(key)) {
-                const commandSequence = command_sequence[key]
+                const commandSequence = command_sequence[key];
 
-                if (keysToConvertWh && keysToConvertWh.includes(commandSequence)) {
+                if (
+                  keysToConvertWh &&
+                  keysToConvertWh.includes(commandSequence)
+                ) {
                   // Convert from Wh to kWh
-                  item[commandSequence] = item[key] / 1000
+                  item[commandSequence] = item[key] / 1000;
                   if (item[key] !== 0) {
-                    item[commandSequence] = item[commandSequence]?.toFixed(4)
+                    item[commandSequence] = item[commandSequence]?.toFixed(4);
                   }
-                } else if (keysToConvertVAh && keysToConvertVAh.includes(commandSequence)) {
+                } else if (
+                  keysToConvertVAh &&
+                  keysToConvertVAh.includes(commandSequence)
+                ) {
                   // Convert from VAh to kVAh
-                  item[commandSequence] = item[key] / 1000
+                  item[commandSequence] = item[key] / 1000;
                   if (item[key] !== 0) {
-                    item[commandSequence] = item[commandSequence]?.toFixed(4)
+                    item[commandSequence] = item[commandSequence]?.toFixed(4);
                   }
                 } else {
-                  item[commandSequence] = item[key]
+                  item[commandSequence] = item[key];
                 }
                 // If the key is different from the mapped key, delete it
                 if (commandSequence !== key) {
-                  delete item[key]
+                  delete item[key];
                 }
               }
-              if (item[key] === "65535-00-00 00:00:00") {
-                item[key] = "--"
+              if (item[key] === '65535-00-00 00:00:00') {
+                item[key] = '--';
               }
             }
-            billingDataResponse.push(item)
+            billingDataResponse.push(item);
           }
         }
-        setBillingDeterminantHistory(billingDataResponse)
-        setFetchingData(false)
-        setRetry(false)
-      } catch (error) {
-        setRetry(false)
-        setError(true)
-        setErrorMessage("Something went wrong, please retry")
+        setBillingDeterminantHistory(billingDataResponse);
       }
-      // setFetchDailyData(false)
-    } else if (statusCode === 401 || statusCode === 403) {
-      setLogout(true)
-    } else {
-      setRetry(false)
-      setError(true)
-      setErrorMessage("Network Error, please retry")
+    } else if (isError) {
+      setErrorMessage('Something went wrong, please retry.');
     }
-    setLoader(false)
-    // }
-  }, [retry, fetchingData])
+  }, [data, isError, status]);
 
   const tblColumn = () => {
-    const column = []
+    const column = [];
     const custom_width = [
-      "BD_GENERATED_TIME",
-      "from_datetime",
-      "to_datetime",
-      "MR_SCHEDULE_DATE",
-      "READ_DATE",
-      "actual_read_date",
-      "MRU"
-    ]
+      'BD_GENERATED_TIME',
+      'from_datetime',
+      'to_datetime',
+      'MR_SCHEDULE_DATE',
+      'READ_DATE',
+      'actual_read_date',
+      'MRU',
+    ];
 
     if (BillingDeterminantHistory && BillingDeterminantHistory.length > 0) {
       for (const i in BillingDeterminantHistory[0]) {
-        const col_config = {}
-        if (i !== "id" && i !== "METER_NUMBER" && i !== "meter_number") {
-          col_config.name = `${i.charAt(0).toUpperCase()}${i.slice(1)}`.replaceAll("_", " ")
-          col_config.serch = i
-          col_config.sortable = true
-          col_config.wrap = true
-          col_config.selector = (row) => row[i]
-          col_config.sortFunction = (rowA, rowB) => caseInsensitiveSort(rowA, rowB, i)
-          // col_config.selector = i
+        const col_config = {};
+        if (i !== 'id' && i !== 'METER_NUMBER' && i !== 'meter_number') {
+          col_config.name = `${i.charAt(0).toUpperCase()}${i.slice(
+            1
+          )}`.replaceAll('_', ' ');
+          col_config.serch = i;
+          col_config.sortable = true;
+          col_config.wrap = true;
+          col_config.selector = (row) => row[i];
+          col_config.sortFunction = (rowA, rowB) =>
+            caseInsensitiveSort(rowA, rowB, i);
           col_config.style = {
-            minHeight: "40px",
-            maxHeight: "40px"
-          }
-          // col_config.width = "100px"
+            minHeight: '40px',
+            maxHeight: '40px',
+          };
 
-          // if (custom_width.includes(i)) {
-          //   col_config.width = "250px"
-          // }
-
-          col_config.width = "160px"
+          col_config.width = '160px';
 
           col_config.cell = (row) => {
             return (
-              <div className='d-flex'>
-                <span className='d-block font-weight-bold '>
-                  {row[i]}
-                  {/* title={row[i] ? (row[i] !== '' ? (row[i].toString().length > 10 ? row[i] : '') : '-') : '-'}>
-                {row[i] && row[i] !== '' ? row[i].toString().substring(0, 10) : '-'}
-                {row[i] && row[i] !== '' ? (row[i].toString().length > 10 ? '...' : '') : '-'} */}
-                </span>
+              <div className="d-flex">
+                <span className="d-block font-weight-bold ">{row[i]}</span>
               </div>
-            )
-          }
-          column.push(col_config)
+            );
+          };
+          column.push(col_config);
         }
       }
 
       const showData = async (row) => {
-        setEventHistoryStartTime(row["from_datetime"])
-        setEventHistoryEndTime(row["to_datetime"])
+        setEventHistoryStartTime(row['from_datetime']);
+        setEventHistoryEndTime(row['to_datetime']);
 
-        setCenteredModal(true)
-      }
+        setCenteredModal(true);
+      };
 
-      // column.push({
-      //   name: "View",
-      //   maxWidth: "100px",
-      //   style: {
-      //     minHeight: "40px",
-      //     maxHeight: "40px"
-      //   },
-      //   cell: (row) => {
-      //     return (
-      //       <Eye
-      //         size='20'
-      //         className='ml_8 cursor-pointer text-primary'
-      //         onClick={() => showData(row)}
-      //       />
-      //     )
-      //   }
-      // })
       column.unshift({
-        name: "Sr",
-        width: "90px",
+        name: 'Sr',
+        width: '90px',
         cell: (row, i) => {
-          return <div className='d-flex  justify-content-center'>{page * rowCount + 1 + i}</div>
-        }
-      })
-      return column
+          return (
+            <div className="d-flex  justify-content-center">{page + i}</div>
+          );
+        },
+      });
+      return column;
     }
-  }
+  };
 
   const retryAgain = () => {
-    setError(false)
-    setRetry(true)
-  }
+    refetch();
+  };
 
   const onDateRangeSelectedButtonPressed = () => {
     if (startDateTime && endDateTime) {
-      setFetchingData(true)
+      setSkip(false);
+      setPage(1);
     } else {
-      toast.error(<Toast msg='Invalid DateTime Range' type='danger' />, {
-        hideProgressBar: true
-      })
+      toast('Please select Date and time.', {
+        hideProgressBar: true,
+        type: 'warning',
+      });
     }
-  }
-  const reloadData = () => {
-    setFetchingData(true)
-  }
+  };
 
   //
 
   const onDateRangeSelected = (dateRange) => {
     if (dateRange.length === 1) {
-      setStartDateTime(moment(dateRange[0]).format("YYYY-MM-DD HH:mm:ss"))
-      setEndDateTime(undefined)
+      setStartDateTime(moment(dateRange[0]).format('YYYY-MM-DD HH:mm:ss'));
+      setEndDateTime(undefined);
+      setSkip(true);
     } else if (dateRange.length === 2) {
-      setStartDateTime(moment(dateRange[0]).format("YYYY-MM-DD HH:mm:ss"))
-      setEndDateTime(moment(dateRange[1]).format("YYYY-MM-DD HH:mm:ss"))
+      setStartDateTime(moment(dateRange[0]).format('YYYY-MM-DD HH:mm:ss'));
+      setEndDateTime(moment(dateRange[1]).format('YYYY-MM-DD HH:mm:ss'));
+      setSkip(true);
     }
-  }
-
-  const onSubmitButtonClicked = () => {
-    // console.log("On Submit Button Clicked ...")
-    if (startDateTimeAsPerFormat && !endDateTimeAsPerFormat) {
-      // Set End Time Error
-      toast.error(<Toast msg='Please Select End Time' type='danger' />, {
-        hideProgressBar: true
-      })
-    } else if (!startDateTimeAsPerFormat && endDateTimeAsPerFormat) {
-      // Set Start Time Error
-      toast.error(<Toast msg='Please Select Start Time' type='danger' />, {
-        hideProgressBar: true
-      })
-    } else if (startDateTimeAsPerFormat && endDateTimeAsPerFormat) {
-      // Both Time are set Compare
-      if (startDateTimeAsPerFormat > endDateTimeAsPerFormat) {
-        toast.error(
-          <Toast msg='Start Date Time should be smaller than End Date Time' type='danger' />,
-          { hideProgressBar: true }
-        )
-      } else {
-        setBillingDeterminantHistory([])
-        reloadData()
-      }
-      // toast.error(<Toast msg='Please enter meter serial.' type='danger' />, { hideProgressBar: true })
-    } else {
-      // Both the time are not set look for only data position value
-      // toast.error(<Toast msg='Please enter meter serial.' type='danger' />, { hideProgressBar: true })
-      reloadData()
-    }
-  }
+  };
 
   return (
     <div>
-      {loader ? (
-        <Loader hight='min-height-484' />
-      ) : hasError ? (
+      {isFetching ? (
+        <Loader hight="min-height-484" />
+      ) : isError ? (
         <CardInfo
-          props={{ message: { errorMessage }, retryFun: { retryAgain }, retry: { retry } }}
+          props={{
+            message: { errorMessage },
+            retryFun: { retryAgain },
+            retry: { isFetching },
+          }}
         />
       ) : (
-        !retry && (
+        !isFetching && (
           <>
-            <Row className='justify-content-end mb-1'>
-              <Col md='5'>
+            <Row className="justify-content-end mb-1">
+              <Col md="5">
                 <InputGroup>
                   <Flatpickr
-                    placeholder='Select date ...'
+                    placeholder="Select date ..."
                     onChange={onDateRangeSelected}
-                    className='form-control'
+                    className="form-control"
                     value={[startDateTime, endDateTime]}
-                    options={{ mode: "range", enableTime: true, time_24hr: true }}
+                    options={{
+                      mode: 'range',
+                      enableTime: true,
+                      time_24hr: true,
+                    }}
                   />
-                  <Button color='primary' outline onClick={onDateRangeSelectedButtonPressed}>
-                    Go
+                  <Button
+                    color="primary"
+                    outline
+                    onClick={onDateRangeSelectedButtonPressed}
+                  >
+                    Submit
                   </Button>
                 </InputGroup>
               </Col>
             </Row>
 
-            <SimpleDataTable
+            <DataTableV1
               columns={tblColumn()}
-              tblData={BillingDeterminantHistory}
+              data={BillingDeterminantHistory}
               rowCount={rowCount}
-              currentpage={page}
-              ispagination
-              selectedPage={setPage}
-              additional_columns={["METER_NUMBER"]}
-              tableName={"Billing Data Table".concat("(", meter_serial, ")")}
-              defaultSortFieldId='datetime'
-              height={true}
-              retry={""}
+              currentPage={page}
+              onPageChange={setPage}
+              tableName={`Billing Data Table (${meter_serial})`}
+              showDownloadButton={true}
+              showRefreshButton={true}
+              refreshFn={retryAgain}
             />
           </>
         )
@@ -419,7 +334,7 @@ const BillDetermine = (props) => {
         />
       )}
     </div>
-  )
-}
+  );
+};
 
-export default BillDetermine
+export default BillDetermine;

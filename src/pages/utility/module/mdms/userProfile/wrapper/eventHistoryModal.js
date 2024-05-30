@@ -377,7 +377,8 @@ const EventHistoryModal = (props) => {
                 currentPage={page2}
                 onPageChange={onNextPageClicked2}
                 totalRowsCount={response.pull_data.length}
-                tableName={`Pull data ${meter_serial}`}
+                tableName={`Pull data (${meter_serial})`}
+                showDownloadButton={true}
               />
               <DataTableV1
                 columns={tblColumn1()}
@@ -388,7 +389,8 @@ const EventHistoryModal = (props) => {
                 rowCount={10}
                 currentPage={page1}
                 onPageChange={onNextPageClicked1}
-                tableName={`Push data ${meter_serial}`}
+                tableName={`Push data (${meter_serial})`}
+                showDownloadButton={true}
               />
             </>
           )}
@@ -412,6 +414,7 @@ const EventHistoryModal = (props) => {
             onPageChange={onNextPageClicked3}
             totalRowsCount={histyData.length}
             tableName="Event History data"
+            showDownloadButton={true}
           />
         </ModalBody>
       </Modal>

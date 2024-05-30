@@ -361,7 +361,7 @@ const MeterCommand = (props) => {
 
     if (selectedProtocol.value === 'dlms') {
       // Post requst with payload
-      executeDlmsCommand(selectedMetersList);
+      executeDlmsCommand({ data: selectedMetersList });
     } else {
       // Post requst with payload
       // ;[statusCode, response] = await postCommandExecutionRequestTAP({ data: selectedMetersList })

@@ -10,7 +10,10 @@ import { useGetAssetHierarchyWiseSystemAlertsQuery } from '../../../../api/mdms/
 
 const SystemGeneratedAlert = (props) => {
   const location = useLocation();
-  const project = location.pathname.split('/')[2];
+  const project =
+    location.pathname.split('/')[2] === 'sbpdcl'
+      ? 'ipcl'
+      : location.pathname.split('/')[2];
 
   // Error Handling
   const [errorMessage, setErrorMessage] = useState('');

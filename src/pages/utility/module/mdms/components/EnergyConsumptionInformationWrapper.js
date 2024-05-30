@@ -24,7 +24,10 @@ const EnergyConsumptionWrapper = (props) => {
   const [response, setResponse] = useState([]);
   const [pageSize, setPageSize] = useState(10);
 
-  const project = location.pathname.split('/')[2];
+  const project =
+    location.pathname.split('/')[2] === 'sbpdcl'
+      ? 'ipcl'
+      : location.pathname.split('/')[2];
 
   const currentMonth = moment().format('MM'); // Month number, e.g., "05"
   const currentYear = moment().format('YYYY');

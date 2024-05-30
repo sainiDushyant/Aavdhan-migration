@@ -246,7 +246,7 @@ const MeterConfigDataModal = (props) => {
 
   const onUpdateMeterConfigurationButtonClicked = (params, command_id) => {
     // console.log('api to be called ...')
-    executeDLMSCommand(params);
+    executeDLMSCommand({ data: params });
     if (command_id === 2) {
       setExecutingBlockLoadInterval(false);
     } else if (command_id === 3) {

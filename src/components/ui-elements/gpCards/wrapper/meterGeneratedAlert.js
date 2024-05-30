@@ -15,7 +15,10 @@ import { useGetAssetHierarchyWiseMeterAlertsQuery } from '../../../../api/mdms/u
 
 const MeterGeneratedAlert = (props) => {
   const location = useLocation();
-  const project = location.pathname.split('/')[2];
+  const project =
+    location.pathname.split('/')[2] === 'sbpdcl'
+      ? 'ipcl'
+      : location.pathname.split('/')[2];
 
   const [response, setResponse] = useState([]);
   const [explore, setExplore] = useState(false);

@@ -22,7 +22,10 @@ import DataTableV1 from '../../../../../../components/dtTable/DataTableV1';
 
 const BlobkLoadModal = (props) => {
   const location = useLocation();
-  const project = location.pathname.split('/')[2];
+  const project =
+    location.pathname.split('/')[2] === 'sbpdcl'
+      ? 'ipcl'
+      : location.pathname.split('/')[2];
   const [errorMessage, setErrorMessage] = useState('');
 
   const [response, setResponse] = useState([]);
