@@ -118,7 +118,12 @@ const MdmsUserConsumptionModule = (props) => {
               </Col>
               <Col md="6">
                 {/* <TotalConsumptionWrapper hierarchy={"userProfile"} dvClas='py_10' /> */}
-                <GeneratedBillsWrapper dvClas="py_10" />
+                <GeneratedBillsWrapper
+                  className={
+                    'd-flex align-items-center justify-content-center gap-1 flex-column'
+                  }
+                  dvClas="py_10"
+                />
               </Col>
               {/* <Col lg='6' xs='6'>
                 <PeriodicWrapper />

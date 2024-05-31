@@ -236,14 +236,14 @@ const MeterGeneratedAlert = (props) => {
                 style={{ height: '150px', width: '150px' }}
               />
               <p className="mt-1 ml-3">No data found</p>
-              <Button
+              {/* <Button
                 size="sm"
                 color="flat-primary"
                 className="ml-3"
                 onClick={() => setExplore(true)}
               >
                 Explore more
-              </Button>
+              </Button> */}
               {explore && (
                 <EventHistoryModal
                   title={'Event history table'}
