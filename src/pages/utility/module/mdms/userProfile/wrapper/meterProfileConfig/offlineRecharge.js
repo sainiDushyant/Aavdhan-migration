@@ -11,7 +11,10 @@ import { useLocation } from 'react-router-dom';
 
 const OfflineRecharge = (props) => {
   const location = useLocation();
-  const project = location.pathname.split('/')[2];
+  const project =
+    location.pathname.split('/')[2] === 'sbpdcl'
+      ? 'ipcl'
+      : location.pathname.split('/')[2];
 
   const [rechargeValue, setRechargeValue] = useState(0);
   const [rechargeMeter, setRechargeMeter] = useState(false);
@@ -142,84 +145,84 @@ const OfflineRecharge = (props) => {
           recharge_amount: rechargeValue,
           receipt_number: ms,
         };
+        try {
+          const [response] = await offlineRecharge(params);
+          const offlineRechargeResponse = response;
 
-        const [response] = await offlineRecharge(params);
-        const offlineRechargeResponse = response;
-        // console.log('Offline Recharge API Response...')
-        // console.log(statusCode)
-        // console.log(response.data.data.result.relay_on_flag)
-        // console.log("Response ....")
-        // console.log(response)
-        // console.log(offlineRechargeResponse)
-        // console.log("Status Code ...")
-        // console.log(statusCode)
+          if (offlineRechargeResponse.data.responseCode === 200) {
+            // 1.Store Update Wallet Balance
+            const updated_wallet_balance =
+              offlineRechargeResponse.data.data.result.wallet_balance;
 
-        if (offlineRechargeResponse.data.responseCode === 200) {
-          // 1.Store Update Wallet Balance
-          const updated_wallet_balance =
-            offlineRechargeResponse.data.data.result.wallet_balance;
-
-          // 2.Execute command on meter to recharge
-          const request_body_1 = command_params_request_body(
-            'US_SET_LAST_TOKEN_RECHARGE_AMOUNT',
-            rechargeValue,
-            'number',
-            ''
-          );
-          // console.log("Request Body")
-          // console.log(request_body_1)
-
-          const [dlmsResponse1] = await executeDlmsCommand(request_body_1);
-
-          if (dlmsResponse1.data.responseCode === 201) {
-            // 3.Execute command on meter to set current timestamp
-            const x = new Date();
-            const current_time_stamp = dateTimeFormat(x);
-            const request_body_2 = command_params_request_body(
-              'US_SET_LAST_TOKEN_RECHARGE_TIME',
-              current_time_stamp,
-              'date',
+            // 2.Execute command on meter to recharge
+            const request_body_1 = command_params_request_body(
+              'US_SET_LAST_TOKEN_RECHARGE_AMOUNT',
+              rechargeValue,
+              'number',
               ''
             );
-            const [dlmsResponse2] = await executeDlmsCommand(request_body_2);
+            // console.log("Request Body")
+            // console.log(request_body_1)
 
-            if (dlmsResponse2.data.responseCode === 201) {
-              // 4.Execute command on meter to set aggregate value of recharge on meter
-              const request_body_3 = command_params_request_body(
-                'US_SET_LAST_RECHARGE_TOTAL_AMOUNT',
-                updated_wallet_balance,
-                'number',
+            const [dlmsResponse1] = await executeDlmsCommand(request_body_1);
+
+            if (dlmsResponse1.data.responseCode === 201) {
+              // 3.Execute command on meter to set current timestamp
+              const x = new Date();
+              const current_time_stamp = dateTimeFormat(x);
+              const request_body_2 = command_params_request_body(
+                'US_SET_LAST_TOKEN_RECHARGE_TIME',
+                current_time_stamp,
+                'date',
                 ''
               );
-              const [dlmsResponse3] = await executeDlmsCommand(request_body_3);
+              const [dlmsResponse2] = await executeDlmsCommand(request_body_2);
 
-              if (dlmsResponse3.data.responseCode === 201) {
-                if (
-                  offlineRechargeResponse.data.data.result.relay_on_flag === 1
-                ) {
-                  setRechargeMeter(false);
-                  setTurnRelayOnCommand(true);
-                  toast('Meter successfully recharged', {
-                    hideProgressBar: true,
-                    type: 'success',
-                  });
+              if (dlmsResponse2.data.responseCode === 201) {
+                // 4.Execute command on meter to set aggregate value of recharge on meter
+                const request_body_3 = command_params_request_body(
+                  'US_SET_LAST_RECHARGE_TOTAL_AMOUNT',
+                  updated_wallet_balance,
+                  'number',
+                  ''
+                );
+                const [dlmsResponse3] = await executeDlmsCommand(
+                  request_body_3
+                );
+
+                if (dlmsResponse3.data.responseCode === 201) {
+                  if (
+                    offlineRechargeResponse.data.data.result.relay_on_flag === 1
+                  ) {
+                    setRechargeMeter(false);
+                    setTurnRelayOnCommand(true);
+                    toast('Meter successfully recharged', {
+                      hideProgressBar: true,
+                      type: 'success',
+                    });
+                  } else {
+                    setRechargeMeter(false);
+                    toast('Meter successfully recharged', {
+                      hideProgressBar: true,
+                      type: 'success',
+                    });
+                    props.setIsOpen(!props.isOpen);
+                  }
                 } else {
-                  setRechargeMeter(false);
-                  toast('Meter successfully recharged', {
+                  // Something went wrong
+                  toast('Something went wrong please retry', {
                     hideProgressBar: true,
-                    type: 'success',
+                    type: 'error',
                   });
-                  props.setIsOpen(!props.isOpen);
                 }
-              } else {
-                // Something went wrong
-                toast('Something went wrong please retry', {
-                  hideProgressBar: true,
-                  type: 'error',
-                });
               }
             }
           }
+        } catch (err) {
+          toast('Something went wrong, please retry.', {
+            hideProgressBar: true,
+            type: 'error',
+          });
         }
       }
     }

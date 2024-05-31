@@ -76,6 +76,16 @@ export const userConsumptionApi = createApi({
         body: data,
       }),
     }),
+
+    // Change Meter mode
+
+    updateMeterMode: builder.query({
+      query: (params) => ({
+        url: `${url}/api/v1/change/connection/type`,
+        params: params,
+      }),
+      keepUnusedDataFor: 2,
+    }),
   }),
 });
 
@@ -90,4 +100,5 @@ export const {
   useGetUserBillingHistoryQuery,
   useGetMDMSUserDailyLoadDataQuery,
   usePutOfflineRechargeMutation,
+  useLazyUpdateMeterModeQuery,
 } = userConsumptionApi;

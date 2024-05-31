@@ -13,9 +13,9 @@ import {
 } from 'reactstrap';
 
 import OfflineRecharge from './meterProfileConfig/offlineRecharge';
-// import OtherMiscConfig from "@src/views/project/utility/module/mdms/userProfile/wrapper/meterProfileConfig/otherMiscConfig"
-// import RelaySetting from "./meterProfileConfig/relaysetting"
-// import SwitchMeterMode from "./meterProfileConfig/switchMeterMode"
+import OtherMiscConfig from './meterProfileConfig/otherMiscConfig';
+import RelaySetting from './meterProfileConfig/relaysetting';
+import SwitchMeterMode from './meterProfileConfig/switchMeterMode';
 
 const MeterProfileConfig = (props) => {
   let data = [];
@@ -24,27 +24,27 @@ const MeterProfileConfig = (props) => {
     data = [
       {
         title: 'Other MISC. configuration',
-        content: '',
-        // <OtherMiscConfig />
+        content: <OtherMiscConfig />,
       },
       {
         title: 'Switch Meter Mode',
-        content:
-          '',
-          // <SwitchMeterMode
-          //   updateMdmsState={props.updateMdmsState}
-          //   consumerType={props.consumerType}
-          //   setIsOpen={props.setIsOpen}
-          //   isOpen={props.isOpen}
-          // />
+        content: (
+          <SwitchMeterMode
+            updateMdmsState={props.updateMdmsState}
+            consumerType={props.consumerType}
+            setIsOpen={props.setIsOpen}
+            isOpen={props.isOpen}
+          />
+        ),
       },
     ];
   } else {
     data = [
       {
         title: 'Relay Disconnection Condition',
-        content: '',
-        // <RelaySetting setIsOpen={props.setIsOpen} isOpen={props.isOpen} />
+        content: (
+          <RelaySetting setIsOpen={props.setIsOpen} isOpen={props.isOpen} />
+        ),
       },
       {
         title: 'Offline recharge',
@@ -54,19 +54,18 @@ const MeterProfileConfig = (props) => {
       },
       {
         title: 'Other MISC. configuration',
-        content: '',
-        // <OtherMiscConfig />
+        content: <OtherMiscConfig />,
       },
       {
         title: 'Switch Meter Mode',
-        content:
-          '',
-          // <SwitchMeterMode
-          //   updateMdmsState={props.updateMdmsState}
-          //   consumerType={props.consumerType}
-          //   setIsOpen={props.setIsOpen}
-          //   isOpen={props.isOpen}
-          // />
+        content: (
+          <SwitchMeterMode
+            updateMdmsState={props.updateMdmsState}
+            consumerType={props.consumerType}
+            setIsOpen={props.setIsOpen}
+            isOpen={props.isOpen}
+          />
+        ),
       },
     ];
   }

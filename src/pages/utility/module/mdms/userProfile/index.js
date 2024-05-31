@@ -13,6 +13,7 @@ import CommandInfoTableWrapper from './wrapper/commandInfoTableWrapper';
 
 import UserDetailWrapper from './wrapper/userDetailWrapper';
 import GeneratedBillsWrapper from './wrapper/generatedBillsWrapper';
+import PeriodicWrapper from './wrapper/periodicData';
 
 import { useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
@@ -21,7 +22,10 @@ import { useGetMDMSMeterConnectionStatusQuery } from '../../../../../api/mdms/us
 
 const MdmsUserConsumptionModule = (props) => {
   const location = useLocation();
-  const project = location.pathname.split('/')[2];
+  const project =
+    location.pathname.split('/')[2] === 'sbpdcl'
+      ? 'ipcl'
+      : location.pathname.split('/')[2];
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -277,23 +281,25 @@ const MdmsUserConsumptionModule = (props) => {
 
         <Row>
           <Col md="3" className="pr-0">
-            {/* <PeriodicWrapper /> */}
+            <PeriodicWrapper />
           </Col>
           <Col md="3" className="pr-0">
-            {/* <BlockLoad /> */}
+            <BlockLoad />
           </Col>
-          <Col md="3">{/* <DailyLoad /> */}</Col>
+          <Col md="3">
+            <DailyLoad />
+          </Col>
           <Col md="3" className="pl-0">
-            {/* <MonthlyBillDetermine /> */}
+            <MonthlyBillDetermine />
           </Col>
         </Row>
-        {/* <CommandInfoTableWrapper
+        <CommandInfoTableWrapper
           HierarchyProgress={props.HierarchyProgress}
-          tableName={"Command info"}
-          hierarchy={"user"}
+          tableName={'Command info'}
+          hierarchy={'user'}
           txtLen={12}
-          length={"12"}
-        /> */}
+          length={'12'}
+        />
 
         {isOpen && (
           <MeterProfileConfig

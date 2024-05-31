@@ -1,31 +1,32 @@
-import StatsHorizontal from '@components/widgets/stats/StatsHorizontal'
-import { Col } from 'reactstrap'
-import { useState } from 'react'
-import { ChevronRight } from 'react-feather'
+import StatsHorizontal from '../../../../../../@core/components/widgets/stats/StatsHorizontal';
+import { useState } from 'react';
+import { ChevronRight } from 'react-feather';
 
-import PeriodicDataModal from '@src/views/project/utility/module/mdms/userProfile/wrapper/periodicDataModal'
+import PeriodicDataModal from './periodicDataModal';
 
-const PeriodicWrapper = parms => {
-  const [centeredModal, setCenteredModal] = useState(false)
-
-  const handleCenterModalState = state => {
-    setCenteredModal(state)
-  }
+const PeriodicWrapper = () => {
+  const [centeredModal, setCenteredModal] = useState(false);
 
   return (
     <div>
       <StatsHorizontal
         icon={<ChevronRight size={21} />}
-        color='primary'
-        stats='Periodic data'
-        statTitle=''
+        color="primary"
+        stats="Periodic data"
+        statTitle=""
         click={() => setCenteredModal(true)}
-        clas='h6'
+        clas="h6"
         avatar={true}
       />
-      {centeredModal && <PeriodicDataModal title={'Periodic data table'} isOpen={centeredModal} handleModalState={setCenteredModal} />}
+      {centeredModal && (
+        <PeriodicDataModal
+          title={'Periodic data table'}
+          isOpen={centeredModal}
+          handleModalState={setCenteredModal}
+        />
+      )}
     </div>
-  )
-}
+  );
+};
 
-export default PeriodicWrapper
+export default PeriodicWrapper;

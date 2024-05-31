@@ -22,6 +22,13 @@ export const pushDataApi = createApi({
         params: params,
       }),
     }),
+    getPeriodPush: builder.query({
+      query: (params) => ({
+        url: `${MDASUrl}/api/hes/mdm/periodic-push/`,
+        params: params,
+      }),
+    }),
+
     getBillingData: builder.query({
       query: (params) => ({
         url: `${MDASUrl}/api/hes/mdm/get-billing-data/`,
@@ -61,4 +68,5 @@ export const {
   useLazyDownloadFilteredPushDataQuery,
   useGetPushBasedEventQuery,
   useGetBillingDataQuery,
+  useGetPeriodPushQuery,
 } = pushDataApi;

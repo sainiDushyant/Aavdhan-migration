@@ -70,7 +70,7 @@ export const commandHistoryApi = createApi({
       query: (params) => ({
         url: `${MDASUrl}/api/hes/dlms/execute-command/`,
         method: 'POST',
-        body: { data: params },
+        body: params,
       }),
       invalidatesTags: ['DlmsCommandHistory'],
     }),
