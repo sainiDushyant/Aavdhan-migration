@@ -23,7 +23,7 @@ import { updateMDMSHierarchyProgress } from '../../../app/redux/mdmsHeirarchySli
 import { toast } from 'react-toastify';
 import { useLazyGISMeterSearchQuery } from '../../../api/hes/command-historySlice';
 
-const NavbarSearch = () => {
+const NavbarSearch = ({ setOpenSearchBar }) => {
   const location = useLocation();
   const dispatch = useDispatch();
   const project =
@@ -31,10 +31,6 @@ const NavbarSearch = () => {
       ? 'ipcl'
       : location.pathname.split('/')[2];
 
-  // console.log('Hierarchy Progress ....')
-  // console.log(HierarchyProgress)
-
-  const [navbarSearch, setNavbarSearch] = useState(false);
   const [userInputParameter, setUserInputParameter] = useState('');
 
   const [selectedOption, setSelectedOption] = useState('meter');
@@ -165,7 +161,7 @@ const NavbarSearch = () => {
         type: 'error',
       });
     }
-  }, []);
+  }, [response]);
 
   const userInputFun = (val) => {
     setUserInputParameter(val);
@@ -176,16 +172,13 @@ const NavbarSearch = () => {
     if (e.keyCode === 27 || e.keyCode === 13) {
       // console.log(e.keyCode)
       setTimeout(() => {
-        setNavbarSearch(false);
+        // setNavbarSearch(false);
         if (
           userInputParameter === undefined ||
           userInputParameter.length <= 0
         ) {
           // Do Nothing
         } else {
-          // console.log('Make an API Call .....')
-          // console.log('Meter Serial number .....')
-          // console.log(userInputParameter)
           searchMeter();
         }
       }, 1);
@@ -193,105 +186,189 @@ const NavbarSearch = () => {
   };
 
   return (
-    <NavItem className="nav-search" onClick={() => setNavbarSearch(true)}>
-      <NavLink className="nav-link-search">
-        <Icon.Search className="ficon" />
-      </NavLink>
-      <div
-        className={classnames('search-input', {
-          open: navbarSearch === true,
-        })}
-      >
-        <Row>
-          <Col lg="6" md="12" sm="12">
-            <div className="search-input-icon ">
-              <Icon.Search />
-            </div>
-            {navbarSearch ? (
-              <>
-                <Autocomplete
-                  className="form-control"
-                  filterKey="title"
-                  filterHeaderKey="groupTitle"
-                  grouped={true}
-                  placeholder="Search for Substation,Feeder,Site,Meter"
-                  autoFocus={true}
-                  onKeyDown={onKeyDown}
-                  userInputFun={userInputFun}
-                />
-              </>
-            ) : null}
-          </Col>
-          <Col lg="6" className="mt_20 px-2 mb-1">
-            <h6 className="float-left">Select Asset :- &nbsp;&nbsp;&nbsp; </h6>
-            <div className="float-left">
-              <FormGroup check inline className="">
-                <Input
-                  type="radio"
-                  id="pss"
-                  name="ex1"
-                  value="PSS"
-                  // defaultChecked
-                  checked={selectedOption === 'pss'}
-                  onChange={() => setSelectedOption('pss')}
-                />
-                <Label check for="pss">
-                  PSS
-                </Label>
-              </FormGroup>
-              <FormGroup check inline>
-                <Input
-                  type="radio"
-                  id="feeder"
-                  name="ex1"
-                  value="FEEDER"
-                  checked={selectedOption === 'feeder'}
-                  onChange={() => setSelectedOption('feeder')}
-                />
-                <Label check for="feeder">
-                  FEEDER
-                </Label>
-              </FormGroup>
-              <FormGroup check inline>
-                <Input
-                  type="radio"
-                  id="DTR"
-                  name="ex1"
-                  value="DTR"
-                  checked={selectedOption === 'dtr'}
-                  onChange={() => setSelectedOption('dtr')}
-                />
-                <Label check for="DTR">
-                  DTR
-                </Label>
-              </FormGroup>
-              <FormGroup check inline>
-                <Input
-                  type="radio"
-                  id="METER"
-                  name="ex1"
-                  value="METER"
-                  checked={selectedOption === 'meter'}
-                  onChange={() => setSelectedOption('meter')}
-                />
-                <Label check for="METER">
-                  METER
-                </Label>
-              </FormGroup>
-            </div>
-          </Col>
-        </Row>
-        <div className="search-input-close">
-          <Icon.X
-            className="ficon"
-            onClick={(e) => {
-              e.stopPropagation();
-              setNavbarSearch(false);
-            }}
-          />
-        </div>
-      </div>
+    <NavItem className="d-flex align-items-center w-100 ">
+      <Icon.Search className="me-1 ms-1" />
+      <Autocomplete
+        className="form-control border-0 me-2"
+        filterHeaderKey="groupTitle"
+        grouped={true}
+        placeholder="Search for Substation,Feeder,Site,Meter"
+        autoFocus={true}
+        onKeyDown={onKeyDown}
+        userInputFun={userInputFun}
+      />
+      <h6 className="mb-0 me-2 ms-auto">Select Asset:</h6>
+      <FormGroup check inline className="me-1">
+        <Input
+          type="radio"
+          id="pss"
+          name="ex1"
+          value="PSS"
+          checked={selectedOption === 'pss'}
+          onChange={() => setSelectedOption('pss')}
+        />
+        <Label check for="pss" className="mb-0">
+          PSS
+        </Label>
+      </FormGroup>
+      <FormGroup check inline className="me-1">
+        <Input
+          type="radio"
+          id="feeder"
+          name="ex1"
+          value="FEEDER"
+          checked={selectedOption === 'feeder'}
+          onChange={() => setSelectedOption('feeder')}
+        />
+        <Label check for="feeder" className="mb-0">
+          FEEDER
+        </Label>
+      </FormGroup>
+      <FormGroup check inline className="me-1">
+        <Input
+          type="radio"
+          id="DTR"
+          name="ex1"
+          value="DTR"
+          checked={selectedOption === 'dtr'}
+          onChange={() => setSelectedOption('dtr')}
+        />
+        <Label check for="DTR" className="mb-0">
+          DTR
+        </Label>
+      </FormGroup>
+      <FormGroup check inline className="me-1">
+        <Input
+          type="radio"
+          id="METER"
+          name="ex1"
+          value="METER"
+          checked={selectedOption === 'meter'}
+          onChange={() => setSelectedOption('meter')}
+        />
+        <Label check for="METER" className="mb-0">
+          METER
+        </Label>
+      </FormGroup>
+      <Icon.X
+        className="ms-auto me-1"
+        onClick={(e) => {
+          e.stopPropagation();
+          setOpenSearchBar(false);
+        }}
+      />
     </NavItem>
+
+    // <NavItem
+    //   // className="navbar border d-flex gap-1"
+    //   className="d-flex"
+    //   style={{ width: '100%' }}
+    //   //  onClick={() => setNavbarSearch(true)}
+    // >
+    //   {/* <NavLink className="nav-link-search">
+    //     <Icon.Search className="ficon" />
+    //   </NavLink> */}
+    //   {/* <div
+    //     className={classnames('search-input', {
+    //       open: navbarSearch === true,
+    //     })}
+    //   > */}
+    //   <Row>
+    //     <Col lg="6" md="12" sm="12">
+    //       {/* <div
+    //       // className="search-input-icon "
+    //       >
+
+    //       </div> */}
+    //       {/* {navbarSearch ? (*/}
+
+    //       <>
+    //         <Icon.Search />
+    //         <Autocomplete
+    //           className="form-control"
+    //           filterKey="title"
+    //           filterHeaderKey="groupTitle"
+    //           grouped={true}
+    //           placeholder="Search for Substation,Feeder,Site,Meter"
+    //           autoFocus={true}
+    //           onKeyDown={onKeyDown}
+    //           userInputFun={userInputFun}
+    //         />
+    //       </>
+    //       {/* ) : null}  */}
+    //     </Col>
+    //     <Col lg="6" className="mt_20 px-2 mb-1">
+    //       <h6 className="float-start">Select Asset :- &nbsp;&nbsp;&nbsp; </h6>
+    //       <div className="float-end">
+    //         <FormGroup check inline className="">
+    //           <Input
+    //             type="radio"
+    //             id="pss"
+    //             name="ex1"
+    //             value="PSS"
+    //             // defaultChecked
+    //             checked={selectedOption === 'pss'}
+    //             onChange={() => setSelectedOption('pss')}
+    //           />
+    //           <Label check for="pss">
+    //             PSS
+    //           </Label>
+    //         </FormGroup>
+    //         <FormGroup check inline>
+    //           <Input
+    //             type="radio"
+    //             id="feeder"
+    //             name="ex1"
+    //             value="FEEDER"
+    //             checked={selectedOption === 'feeder'}
+    //             onChange={() => setSelectedOption('feeder')}
+    //           />
+    //           <Label check for="feeder">
+    //             FEEDER
+    //           </Label>
+    //         </FormGroup>
+    //         <FormGroup check inline>
+    //           <Input
+    //             type="radio"
+    //             id="DTR"
+    //             name="ex1"
+    //             value="DTR"
+    //             checked={selectedOption === 'dtr'}
+    //             onChange={() => setSelectedOption('dtr')}
+    //           />
+    //           <Label check for="DTR">
+    //             DTR
+    //           </Label>
+    //         </FormGroup>
+    //         <FormGroup check inline>
+    //           <Input
+    //             type="radio"
+    //             id="METER"
+    //             name="ex1"
+    //             value="METER"
+    //             checked={selectedOption === 'meter'}
+    //             onChange={() => setSelectedOption('meter')}
+    //           />
+    //           <Label check for="METER">
+    //             METER
+    //           </Label>
+    //         </FormGroup>
+    //       </div>
+    //     </Col>
+    //   </Row>
+    //   <div className="search-input-close">
+    //     <Icon.X
+    //       className="float-end"
+    //       //className="ficon"
+    //       onClick={(e) => {
+    //         e.stopPropagation();
+    //         //setNavbarSearch(false);
+    //         setOpenSearchBar(false);
+    //       }}
+    //     />
+    //   </div>
+    //   {/* </div> */}
+    // </NavItem>
   );
 };
 
