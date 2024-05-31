@@ -16,6 +16,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { useLogoutMutation } from '../../../api/logoutSlice';
 import UserProfileTab from './userProfileWrapper';
+import NavbarSearch from './NavbarSearch';
 function Navbar() {
   const navigate = useNavigate();
   const [openDropDown, setOpenDropDown] = useState(false);
@@ -140,6 +141,7 @@ function Navbar() {
                 Avdhaan
               </h1>
             </div>
+            <div className="position-absolute">{<NavbarSearch />}</div>
           </div>
           <ul className="navbar-nav d-flex flex-row align-items-center gap-1">
             {role === 'superadmin' ? (

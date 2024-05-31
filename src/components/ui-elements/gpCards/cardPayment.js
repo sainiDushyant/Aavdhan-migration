@@ -26,7 +26,7 @@ const CardPayment = (props) => {
           {props.data.consumer}
         </Badge>
         <h6 className="text-muted font-weight-bolder">
-          {props.data.date}, &nbsp; {props.data.time}
+          {props.data.date} &nbsp; {props.data.time}
         </h6>
         <hr className="mb-2" />
         <div>
