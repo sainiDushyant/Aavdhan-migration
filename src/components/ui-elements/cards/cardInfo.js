@@ -4,7 +4,7 @@ import Avatar from '../../../@core/components/avatar/index';
 
 const CardInfo = (props) => {
   return (
-    <Card style={{ marginBottom: '490px' }}>
+    <Card>
       <CardBody className="super-center">
         <Avatar color="light-danger" size="xl" icon={<AlertTriangle />} />
         <h4 className="mb-1">Network Error Occured 🕵🏻‍♀️</h4>

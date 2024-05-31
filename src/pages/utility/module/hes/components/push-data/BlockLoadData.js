@@ -31,6 +31,7 @@ const BlockLoadData = (props) => {
 
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(120);
+  const [pageSize, setPageSize] = useState(10);
   const [response, setResponse] = useState([]);
   const [filterParams, setFilterParams] = useState({
     start_date: defaultStartDate,
@@ -46,29 +47,11 @@ const BlockLoadData = (props) => {
   } else {
     project = location.pathname.split('/')[2];
   }
+  let params = {};
+  params = { project, ...filterParams, page: currentPage, page_size: pageSize };
 
-  const [params, setParams] = useState({
-    project,
-    ...filterParams,
-    page: currentPage,
-    page_size: 10,
-  });
-
-  const [disabledRowCounts, setDisabledRowCounts] = useState([]);
-
-  useEffect(() => {
-    let disabledCounts = [];
-    if (Math.ceil(totalCount / 20) < currentPage) {
-      disabledCounts = [10, 20, 25, 50];
-    } else if (Math.ceil(totalCount / 25) < currentPage) {
-      disabledCounts = [25, 50];
-    } else if (Math.ceil(totalCount / 50) < currentPage) {
-      disabledCounts = [50];
-    }
-    setDisabledRowCounts(disabledCounts);
-  }, [currentPage]);
   const setRowCount = (rowCount) => {
-    setParams((prevParams) => ({ ...prevParams, page_size: rowCount }));
+    setPageSize(rowCount);
   };
   // if (!filterParams.hasOwnProperty('site')) {
   // If No Site Selected, add all sites access available
@@ -198,7 +181,7 @@ const BlockLoadData = (props) => {
         cell: (row, i) => {
           return (
             <div className="d-flex w-100 justify-content-center">
-              {i + 1 + params.page_size * (currentPage - 1)}
+              {i + 1 + pageSize * (currentPage - 1)}
             </div>
           );
         },
@@ -212,7 +195,6 @@ const BlockLoadData = (props) => {
   };
 
   const onNextPageClicked = (number) => {
-    setParams({ ...params, page: number + 1 });
     setCurrentPage(number + 1);
   };
 
@@ -265,9 +247,8 @@ const BlockLoadData = (props) => {
               <DataTableV1
                 columns={createColumns()}
                 data={response}
-                rowCount={params.page_size}
+                rowCount={pageSize}
                 setRowCount={setRowCount}
-                disabledCounts={disabledRowCounts}
                 tableName={'Block Load Table'}
                 showDownloadButton={true}
                 showRefreshButton={true}

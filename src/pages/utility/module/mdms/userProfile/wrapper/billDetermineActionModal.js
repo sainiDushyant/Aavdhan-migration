@@ -6,7 +6,7 @@ import { toast } from 'react-toastify';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { useLocation } from 'react-router-dom';
-
+import DataTableV1 from '../../../../../../components/dtTable/DataTableV1';
 import { caseInsensitiveSort } from '../../../../../../utils';
 import { useGetPullBasedTamperEventQuery } from '../../../../../../api/mdms/userConsumptionSlice';
 

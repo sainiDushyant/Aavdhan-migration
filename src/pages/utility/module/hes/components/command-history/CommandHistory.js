@@ -45,6 +45,7 @@ const CommandHistory = (props) => {
   const [tapViewModal, setTapViewModal] = useState(false);
   const [centeredSchedulerModal, setCenteredSchedulerModal] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
   const [filterModal, setFilterModal] = useState(false);
   const [filterAppliedParams, setFilterAppliedParams] = useState(undefined);
 
@@ -67,28 +68,12 @@ const CommandHistory = (props) => {
   const [commandName, setCommandName] = useState('');
 
   const currentTime = moment().tz('Asia/Kolkata');
-  const [params, setParams] = useState({
-    page: currentPage,
-    page_size: 10,
-    project: projectName,
-    ...filterAppliedParams,
-  });
 
-  const setRowCount = (newRowCount) => {
-    const oldRowCount = params.page_size;
-    const newPage =
-      newRowCount > oldRowCount
-        ? Math.min(currentPage, Math.ceil(totalCount / newRowCount))
-        : Math.ceil(totalCount / newRowCount);
-
-    setParams((prevParams) => ({
-      ...prevParams,
-      page_size: newRowCount,
-      page: newPage,
-    }));
-
-    setCurrentPage(newPage);
-  };
+  // useEffect(() => {
+  //   if (filterAppliedParams) {
+  //     setParams({ ...params, ...filterAppliedParams });
+  //   }
+  // }, [filterAppliedParams]);
 
   // const setRowCount = (rowCount) => {
   //   setParams((prevParams) => ({...prevParams, page_size:rowCount}))
@@ -99,7 +84,7 @@ const CommandHistory = (props) => {
       if ('site_id' in filterAppliedParams) {
         params = {
           page: currentPage,
-          page_size: 10,
+          page_size: pageSize,
           project: projectName,
           ...filterAppliedParams, // Add Filter params
         };
@@ -110,7 +95,7 @@ const CommandHistory = (props) => {
         // }
         params = {
           page: currentPage,
-          page_size: 10,
+          page_size: pageSize,
           project: projectName,
           site_id: dtr_list,
           ...filterAppliedParams, // Add Filter params
@@ -123,7 +108,7 @@ const CommandHistory = (props) => {
       // }
       params = {
         page: currentPage,
-        page_size: 10,
+        page_size: pageSize,
         project: projectName,
         site_id: dtr_list,
         asset_type: 'dtr',
@@ -135,25 +120,39 @@ const CommandHistory = (props) => {
       // Add Command Name for TAP Protocol
       params['command'] =
         'turn_relay_on,turn_relay_off,relay_manual_control,relay_auto_control';
-
       return params;
     }
+  };
+  const setRowCount = (newRowCount) => {
+    const oldRowCount = pageSize;
+    const newPage =
+      newRowCount > oldRowCount
+        ? Math.min(currentPage, Math.ceil(totalCount / newRowCount))
+        : Math.ceil(totalCount / newRowCount);
+
+    // setParams((prevParams) => ({
+    //   ...prevParams,
+    //   page_size: newRowCount,
+    //   page: newPage,
+    // }));
+    setPageSize(newRowCount);
+    setCurrentPage(newPage);
   };
   // const getParams = () => {
   //   let updatedParams = { ...params };
 
-  //   if (props.filterAppliedParams) {
-  //     if ('site_id' in props.filterAppliedParams) {
+  //   if (filterAppliedParams) {
+  //     if ('site_id' in filterAppliedParams) {
   //       updatedParams = {
   //         ...updatedParams,
-  //         ...props.filterAppliedParams,
+  //         ...filterAppliedParams,
   //       };
   //     } else {
   //       const dtr_list = ''; // Define dtr_list as needed
   //       updatedParams = {
   //         ...updatedParams,
   //         site_id: dtr_list,
-  //         ...props.filterAppliedParams,
+  //         ...filterAppliedParams,
   //       };
   //     }
   //   } else {
@@ -173,12 +172,13 @@ const CommandHistory = (props) => {
   //     return updatedParams;
   //   }
   // };
+
   const {
     data: dlmsCommandHistoryResponse,
     isFetching: dlmsCommandHistoryLoading,
     isError: dlmsCommandHistoryError,
     refetch: fetchCommandHistory,
-  } = useGetMdasDlmsCommandHistoryQuery(params);
+  } = useGetMdasDlmsCommandHistoryQuery(getParams());
 
   const loading = dlmsCommandHistoryLoading;
   const hasError = dlmsCommandHistoryError; // Logout User
@@ -541,7 +541,7 @@ const CommandHistory = (props) => {
       cell: (row, i) => {
         return (
           <div className="d-flex w-100 justify-content-center">
-            {i + 1 + params.page_size * (currentPage - 1)}
+            {i + 1 + pageSize * (currentPage - 1)}
           </div>
         );
       },
@@ -827,7 +827,6 @@ const CommandHistory = (props) => {
   };
 
   const onNextPageClicked = (page) => {
-    setParams({ ...params, page: page + 1 });
     setCurrentPage(page + 1);
   };
 
@@ -900,7 +899,7 @@ const CommandHistory = (props) => {
               <DataTableV1
                 columns={createColumns()}
                 data={response}
-                rowCount={params.page_size}
+                rowCount={pageSize}
                 setRowCount={setRowCount}
                 tableName={tableName}
                 showDownloadButton={true}

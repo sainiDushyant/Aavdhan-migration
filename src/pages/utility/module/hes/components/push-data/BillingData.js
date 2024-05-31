@@ -25,6 +25,7 @@ const BillingData = () => {
 
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(120);
+  const [pageSize, setPageSize] = useState(10);
 
   const [response, setResponse] = useState([]);
   const [filterParams, setFilterParams] = useState({
@@ -41,47 +42,26 @@ const BillingData = () => {
   } else {
     project = location.pathname.split('/')[2];
   }
-  const [params, setParams] = useState({
-    project,
-    ...filterParams,
-    page: currentPage,
-    page_size: 10,
-  });
-  const [disabledRowCounts, setDisabledRowCounts] = useState([]);
+  let params = {};
 
-  useEffect(() => {
-    let disabledCounts = [];
-    if (Math.ceil(totalCount / 20) < currentPage) {
-      disabledCounts = [10, 20, 25, 50];
-    } else if (Math.ceil(totalCount / 25) < currentPage) {
-      disabledCounts = [25, 50];
-    } else if (Math.ceil(totalCount / 50) < currentPage) {
-      disabledCounts = [50];
-    }
-    setDisabledRowCounts(disabledCounts);
-  }, [currentPage]);
+  if (!filterParams.hasOwnProperty('site')) {
+    params = {
+      project,
+      ...filterParams,
+      page: currentPage,
+      page_size: pageSize,
+    };
+  } else {
+    params = {
+      project,
+      ...filterParams,
+      page: currentPage,
+      page_size: pageSize,
+    };
+  }
   const setRowCount = (rowCount) => {
-    setParams((prevParams) => ({ ...prevParams, page_size: rowCount }));
+    setPageSize(rowCount);
   };
-  //let params = {};
-
-  // if (!filterParams.hasOwnProperty('site')) {
-  //   params = {
-  //     project,
-  //     ...filterParams,
-  //     page: currentPage,
-  //     page_size: 10,
-  //   };
-  //   // params['site'] = dtr_list
-  // } else {
-  //   params = {
-  //     project,
-  //     ...filterParams,
-  //     page: currentPage,
-  //     page_size: 10,
-  //   };
-  //}
-
   const { data, isFetching, isError, refetch } = useGetBillingDataQuery(params);
 
   useEffect(() => {
@@ -225,7 +205,7 @@ const BillingData = () => {
       cell: (row, i) => {
         return (
           <div className="d-flex justify-content-center">
-            {i + 1 + params.page_size * (currentPage - 1)}
+            {i + 1 + pageSize * (currentPage - 1)}
           </div>
         );
       },
@@ -235,7 +215,6 @@ const BillingData = () => {
   };
 
   const onNextPageClicked = (number) => {
-    setParams({ ...params, page: number + 1 });
     setCurrentPage(number + 1);
   };
   const reloadData = () => {
@@ -292,9 +271,8 @@ const BillingData = () => {
               <DataTableV1
                 columns={tblColumn()}
                 data={response}
-                rowCount={params.page_size}
+                rowCount={pageSize}
                 setRowCount={setRowCount}
-                disabledCounts={disabledRowCounts}
                 tableName={'Billing Data'}
                 showDownloadButton={true}
                 showRefreshButton={true}

@@ -34,7 +34,8 @@ const PrepaidLedgerWrapper = (props) => {
 
   const [startDateTime, setStartDateTime] = useState(undefined);
   const [endDateTime, setEndDateTime] = useState(undefined);
-  const [page, setPage] = useState(0);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useEffect(10);
 
   const HierarchyProgress = useSelector(
     (state) => state.MDMSHierarchyProgress.data
@@ -47,7 +48,11 @@ const PrepaidLedgerWrapper = (props) => {
   }
 
   const onPageChange = (page) => {
-    setPage(page);
+    setPage(page + 1);
+  };
+  const setRowCount = (rowCount) => {
+    setPageSize(rowCount);
+    refetch();
   };
 
   const getParams = () => {
@@ -182,7 +187,7 @@ const PrepaidLedgerWrapper = (props) => {
       cell: (row, i) => {
         return (
           <div className="d-flex  justify-content-center">
-            {page * 10 + 1 + i}
+            {i + 1 + pageSize * (page - 1)}
           </div>
         );
       },
@@ -351,7 +356,8 @@ const PrepaidLedgerWrapper = (props) => {
                     data={ledgerData}
                     currentPage={page}
                     onPageChange={onPageChange}
-                    rowCount={10}
+                    rowCount={pageSize}
+                    setRowCount={setRowCount}
                     totalRowsCount={ledgerData?.length}
                     tableName={`Consumer Prepaid ledger (${meter_serial})`}
                     showRefreshButton={true}

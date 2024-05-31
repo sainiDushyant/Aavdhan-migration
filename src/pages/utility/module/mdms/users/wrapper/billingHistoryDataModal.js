@@ -31,6 +31,7 @@ const BillingHistoryDataModal = (props) => {
 
   const [response, setResponse] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   const hierarchy = useSelector((state) => state.MDMSHierarchyProgress.data);
 
@@ -58,6 +59,10 @@ const BillingHistoryDataModal = (props) => {
     site_real_name = hierarchy.dtr_real_name;
   }
 
+  const setRowCount = (rowCount) => {
+    setPageSize(rowCount);
+  };
+
   const getParams = () => {
     let params;
     if (startDateTimeAsPerFormat && endDateTimeAsPerFormat) {
@@ -65,7 +70,7 @@ const BillingHistoryDataModal = (props) => {
         project,
         site,
         page: currentPage,
-        page_size: 10,
+        page_size: pageSize,
         data_state: selectDataPosition,
         start_date: startDateTimeAsPerFormat,
         end_date: endDateTimeAsPerFormat,
@@ -75,7 +80,7 @@ const BillingHistoryDataModal = (props) => {
         project,
         site,
         page: currentPage,
-        page_size: 10,
+        page_size: pageSize,
         data_state: selectDataPosition,
       };
     }
@@ -87,7 +92,7 @@ const BillingHistoryDataModal = (props) => {
 
   useEffect(() => {
     fetchBillingHistory(getParams(), { preferCacheValue: true });
-  }, []);
+  }, [pageSize]);
 
   useEffect(() => {
     if (data.status === 'fulfilled') {
@@ -333,14 +338,16 @@ const BillingHistoryDataModal = (props) => {
       cell: (row, i) => {
         return (
           <div className="d-flex  justify-content-center">
-            {currentPage + i}
+            {i + 1 + pageSize * (currentPage - 1)}
           </div>
         );
       },
     });
     return column;
   };
-
+  const onNextPageClicked = (number) => {
+    setCurrentPage(number + 1);
+  };
   const showData = () => {
     if (Object.keys(response).length > 0) {
       return (
@@ -348,9 +355,12 @@ const BillingHistoryDataModal = (props) => {
           <DataTableV1
             columns={tblColumn(response)}
             data={response}
-            rowCount={8}
+            rowCount={pageSize}
+            setRowCount={setRowCount}
             tableName={'Billing History Data'}
             currentPage={currentPage}
+            totalRowsCount={response?.length}
+            onPageChange={onNextPageClicked}
             showDownloadButton={true}
             showRefreshButton={true}
             refreshFn={reloadData}

@@ -50,7 +50,8 @@ const CommandInfoTableWrapper = (props) => {
 
   // TotalCount,response Local State
   const [response, setResponse] = useState([]);
-  const [totalCount, setTotalCount] = useState(0);
+  const [totalCount, setTotalCount] = useState(120);
+  const [pageSize, setPageSize] = useState(10);
 
   const [protocol, setProtocol] = useState('dlms');
 
@@ -61,7 +62,6 @@ const CommandInfoTableWrapper = (props) => {
   ) {
     setProtocol(HierarchyProgress.meter_protocol_type);
   }
-
   let params = {};
 
   if (protocol === 'tap') {
@@ -70,7 +70,7 @@ const CommandInfoTableWrapper = (props) => {
       meter: HierarchyProgress.meter_address,
       page: currentPage,
       asset_type: 'meter',
-      page_size: 8,
+      page_size: pageSize,
     };
   } else {
     params = {
@@ -78,9 +78,12 @@ const CommandInfoTableWrapper = (props) => {
       meter: HierarchyProgress.meter_serial_number,
       page: currentPage,
       asset_type: 'meter',
-      page_size: 8,
+      page_size: pageSize,
     };
   }
+  const setRowCount = (rowCount) => {
+    setPageSize(rowCount);
+  };
 
   const {
     data: dlmsCommandHistoryResponse,
@@ -303,7 +306,7 @@ const CommandInfoTableWrapper = (props) => {
       cell: (row, i) => {
         return (
           <div className="d-flex justify-content-center">
-            {i + 1 + 8 * (currentPage - 1)}
+            {i + 1 + pageSize * (currentPage - 1)}
           </div>
         );
       },
@@ -311,8 +314,6 @@ const CommandInfoTableWrapper = (props) => {
 
     return column;
   };
-
-  console.log(histyData, ' this is histy darta');
 
   const isArray = (a) => {
     return !!a && a.constructor === Array;
@@ -431,7 +432,8 @@ const CommandInfoTableWrapper = (props) => {
               <DataTableV1
                 columns={tblColumn()}
                 data={response}
-                rowCount={10}
+                rowCount={pageSize}
+                setRowCount={setRowCount}
                 tableName={`Command History Table ${meter_serial}`}
                 refreshFn={fetchCommandHistory}
                 status={loading}

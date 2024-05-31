@@ -32,6 +32,7 @@ const MeterConfigData = () => {
 
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(120);
+  const [pageSize, setPageSize] = useState(10);
 
   const [response, setResponse] = useState([]);
   const [filterParams, setFilterParams] = useState({});
@@ -75,28 +76,16 @@ const MeterConfigData = () => {
   } else {
     project = location.pathname.split('/')[2];
   }
-
-  const [params, setParams] = useState({
+  let params = {};
+  params = {
     project,
     ...filterParams,
     page: currentPage,
-    page_size: 10,
-  });
-  const [disabledRowCounts, setDisabledRowCounts] = useState([]);
+    page_size: pageSize,
+  };
 
-  useEffect(() => {
-    let disabledCounts = [];
-    if (Math.ceil(totalCount / 20) < currentPage) {
-      disabledCounts = [10, 20, 25, 50];
-    } else if (Math.ceil(totalCount / 25) < currentPage) {
-      disabledCounts = [25, 50];
-    } else if (Math.ceil(totalCount / 50) < currentPage) {
-      disabledCounts = [50];
-    }
-    setDisabledRowCounts(disabledCounts);
-  }, [currentPage]);
   const setRowCount = (rowCount) => {
-    setParams((prevParams) => ({ ...prevParams, page_size: rowCount }));
+    setPageSize(rowCount);
   };
 
   // useEffect(async () => {
@@ -269,7 +258,7 @@ const MeterConfigData = () => {
         cell: (row, i) => {
           return (
             <div className="d-flex w-100 justify-content-center">
-              {i + 1 + params.page_size * (currentPage - 1)}
+              {i + 1 + pageSize * (currentPage - 1)}
             </div>
           );
         },
@@ -279,11 +268,7 @@ const MeterConfigData = () => {
   }
 
   const onNextPageClicked = (page) => {
-    //setCurrentPage(number + 1);
-    setParams({ ...params, page: page + 1 });
     setCurrentPage(page + 1);
-    // setFetchingData(true)
-    //isFetching();
   };
   // const reloadData = () => {
   //   setCurrentPage(1)
@@ -360,9 +345,8 @@ const MeterConfigData = () => {
               <DataTableV1
                 columns={createColumns()}
                 data={response}
-                rowCount={params.page_size}
+                rowCount={pageSize}
                 setRowCount={setRowCount}
-                disabledCounts={disabledRowCounts}
                 tableName={'Meter Configuration Table'}
                 showDownloadButton={true}
                 showRefreshButton={true}
@@ -372,7 +356,6 @@ const MeterConfigData = () => {
                 totalRowsCount={totalCount}
                 onPageChange={onNextPageClicked}
                 isLoading={isFetching}
-                //setShowForm={setShowForm}
                 pointerOnHover={true}
                 extraTextToShow={
                   <div

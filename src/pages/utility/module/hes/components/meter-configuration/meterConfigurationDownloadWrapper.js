@@ -28,10 +28,9 @@ const MeterConfigurationDownloadWrapper = (props) => {
   } else {
     project = location.pathname.split('/')[2];
   }
-
-  const [pageSize, setPageSize] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(120);
+  const [pageSize, setPageSize] = useState(10);
   const [errorMessage, setErrorMessage] = useState('');
   const [response, setResponse] = useState([]);
   const [requestReport, reportData] =
@@ -72,12 +71,11 @@ const MeterConfigurationDownloadWrapper = (props) => {
   //       }
   //     })
   // }
-
-  const params = {};
-  params['page'] = currentPage;
-  params['page_size'] = pageSize;
-  params['project'] = project;
-  // params['report_name'] = props.report_name
+  let params = {};
+  params = { page: currentPage, page_size: pageSize, project };
+  const setRowCount = (rowCount) => {
+    setPageSize(rowCount);
+  };
 
   const {
     data: requestReportResponse,
@@ -359,7 +357,8 @@ const MeterConfigurationDownloadWrapper = (props) => {
             <DataTableV1
               columns={tblColumn()}
               data={response}
-              rowCount={10}
+              rowCount={pageSize}
+              setRowCount={setRowCount}
               tableName={'Meter Configuration Data Download Request'}
               showDownloadButton={true}
               showRefreshButton={true}

@@ -71,9 +71,8 @@ const AllUsers = (props) => {
               <BillingHistoryWrapper />
             </Col>
             <OperationalInformationWrapper
-              height="height-367"
+              // height="height-367"
               hierarchy={'user'}
-              // cols={{ xs: "3" }}
             />
           </Row>
         </Col>

@@ -46,7 +46,7 @@ const PushEventData = () => {
   });
 
   const [currentPage, setCurrentPage] = useState(1);
-
+  const [pageSize, setPageSize] = useState(10);
   const [hasError, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [retry, setRetry] = useState(false);
@@ -85,40 +85,17 @@ const PushEventData = () => {
     }
   }, [dtr]);
 
-  // let params = undefined;
+  let params = {};
 
-  // params = {
-  //   project,
-  //   ...filterParams,
-  //   page: currentPage,
-  //   page_size: 10,
-  // };
-  const [params, setParams] = useState({
+  params = {
     project,
     ...filterParams,
     page: currentPage,
-    page_size: 10,
-  });
-
-  const [disabledRowCounts, setDisabledRowCounts] = useState([]);
-
-  useEffect(() => {
-    let disabledCounts = [];
-    if (Math.ceil(totalCount / 20) < currentPage) {
-      disabledCounts = [10, 20, 25, 50];
-    } else if (Math.ceil(totalCount / 25) < currentPage) {
-      disabledCounts = [25, 50];
-    } else if (Math.ceil(totalCount / 50) < currentPage) {
-      disabledCounts = [50];
-    }
-    setDisabledRowCounts(disabledCounts);
-  }, [currentPage]);
+    page_size: pageSize,
+  };
 
   const setRowCount = (rowCount) => {
-    setParams((prevParams) => ({
-      ...prevParams,
-      page_size: rowCount,
-    }));
+    setPageSize(rowCount);
   };
   const { data, isFetching, isError, refetch } =
     useGetPushBasedEventQuery(params);
@@ -220,7 +197,7 @@ const PushEventData = () => {
       cell: (row, i) => {
         return (
           <div className="d-flex justify-content-center">
-            {i + 1 + params.page_size * (currentPage - 1)}
+            {i + 1 + pageSize * (currentPage - 1)}
           </div>
         );
       },
@@ -254,7 +231,6 @@ const PushEventData = () => {
   };
 
   const onNextPageClicked = (number) => {
-    setParams({ ...params, page: number + 1 });
     setCurrentPage(number + 1);
   };
 
@@ -317,9 +293,8 @@ const PushEventData = () => {
               <DataTableV1
                 columns={tblColumn()}
                 data={response}
-                rowCount={params.page_size}
+                rowCount={pageSize}
                 setRowCount={setRowCount}
-                disabledCounts={disabledRowCounts}
                 tableName={'Push Event Data'}
                 showDownloadButton={true}
                 showRefreshButton={true}

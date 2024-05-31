@@ -32,6 +32,7 @@ const DailyLoadDataModal = (props) => {
 
   const [response, setResponse] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   const [startDateTime, setStartDateTime] = useState(undefined);
   const [startDateTimeAsPerFormat, setStartDateTimeAsPerFormat] =
@@ -56,7 +57,9 @@ const DailyLoadDataModal = (props) => {
   if (hierarchy && hierarchy.dtr_real_name) {
     site_real_name = hierarchy.dtr_real_name;
   }
-
+  const setRowCount = (rowCount) => {
+    setPageSize(rowCount);
+  };
   const getParams = () => {
     let params;
     if (startDateTimeAsPerFormat && endDateTimeAsPerFormat) {
@@ -64,7 +67,7 @@ const DailyLoadDataModal = (props) => {
         project,
         site,
         page: currentPage,
-        page_size: 10,
+        page_size: pageSize,
         data_state: selectDataPosition,
         start_date: startDateTimeAsPerFormat,
         end_date: endDateTimeAsPerFormat,
@@ -74,7 +77,7 @@ const DailyLoadDataModal = (props) => {
         project,
         site,
         page: currentPage,
-        page_size: 10,
+        page_size: pageSize,
         data_state: selectDataPosition,
       };
     }
@@ -85,7 +88,7 @@ const DailyLoadDataModal = (props) => {
 
   useEffect(() => {
     fetchDailyLoad(getParams(), { preferCacheValue: true });
-  }, []);
+  }, [pageSize]);
 
   useEffect(() => {
     if (data.status === 'fulfilled') {
@@ -224,14 +227,16 @@ const DailyLoadDataModal = (props) => {
       cell: (row, i) => {
         return (
           <div className="d-flex  justify-content-center">
-            {currentPage + i}
+            {i + 1 + pageSize * (currentPage - 1)}
           </div>
         );
       },
     });
     return column;
   };
-
+  const onNextPageClicked = (number) => {
+    setCurrentPage(number + 1);
+  };
   const showData = () => {
     if (Object.keys(response).length > 0) {
       return Object.keys(response).map((key, index) => {
@@ -257,9 +262,12 @@ const DailyLoadDataModal = (props) => {
             <DataTableV1
               columns={tblColumn(response[key])}
               data={response[key]}
-              rowCount={8}
+              rowCount={pageSize}
+              setRowCount={setRowCount}
               tableName={'Daily Load Data'}
               currentPage={currentPage}
+              totalRowsCount={response?.length}
+              onPageChange={onNextPageClicked}
               showDownloadButton={true}
               showRefreshButton={true}
               refreshFn={refresh}

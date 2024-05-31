@@ -46,19 +46,19 @@ const CommandRetryConfig = () => {
     project,
   };
   const [pageSize, setPageSize] = useState(10);
-  const [disabledRowCounts, setDisabledRowCounts] = useState([]);
+  // const [disabledRowCounts, setDisabledRowCounts] = useState([]);
 
-  useEffect(() => {
-    let disabledCounts = [];
-    if (Math.ceil(totalCount / 20) < currentPage) {
-      disabledCounts = [10, 20, 25, 50];
-    } else if (Math.ceil(totalCount / 25) < currentPage) {
-      disabledCounts = [25, 50];
-    } else if (Math.ceil(totalCount / 50) < currentPage) {
-      disabledCounts = [50];
-    }
-    setDisabledRowCounts(disabledCounts);
-  }, [currentPage]);
+  // useEffect(() => {
+  //   let disabledCounts = [];
+  //   if (Math.ceil(totalCount / 20) < currentPage) {
+  //     disabledCounts = [10, 20, 25, 50];
+  //   } else if (Math.ceil(totalCount / 25) < currentPage) {
+  //     disabledCounts = [25, 50];
+  //   } else if (Math.ceil(totalCount / 50) < currentPage) {
+  //     disabledCounts = [50];
+  //   }
+  //   setDisabledRowCounts(disabledCounts);
+  // }, [currentPage]);
 
   const setRowCount = (rowCount) => {
     setPageSize(rowCount);
@@ -233,7 +233,7 @@ const CommandRetryConfig = () => {
             data={commandRetryResponse}
             rowCount={pageSize}
             setRowCount={setRowCount}
-            disabledCounts={disabledRowCounts}
+            // disabledCounts={disabledRowCounts}
             tableName={'Command Retry Configuration'}
             showDownloadButton={true}
             showRefreshButton={true}

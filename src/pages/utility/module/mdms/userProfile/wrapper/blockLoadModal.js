@@ -47,7 +47,9 @@ const BlobkLoadModal = (props) => {
     user_name = HierarchyProgress.user_name;
     meter_serial = HierarchyProgress.meter_serial_number;
   }
-
+  const setRowCounts = (pageSize) => {
+    setRowCount(pageSize);
+  };
   const getParams = () => {
     let params;
     if (endDateTime) {
@@ -264,6 +266,7 @@ const BlobkLoadModal = (props) => {
                 columns={tblColumn()}
                 data={response}
                 rowCount={rowCount}
+                setRowCount={setRowCounts}
                 tableName={`Block Load Table (${meter_serial})`}
                 refresh={reloadData}
                 currentPage={currentPage}

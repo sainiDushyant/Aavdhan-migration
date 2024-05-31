@@ -50,7 +50,9 @@ const DailyLoadModal = (props) => {
     user_name = HierarchyProgress.user_name;
     meter_serial = HierarchyProgress.meter_serial_number;
   }
-
+  const setRowCounts = (pageSize) => {
+    setRowCount(pageSize);
+  };
   const getParams = () => {
     let params;
     if (endDateTime) {
@@ -274,6 +276,7 @@ const DailyLoadModal = (props) => {
                 columns={tblColumn()}
                 data={response}
                 rowCount={rowCount}
+                setRowCount={setRowCounts}
                 tableName={`Daily Load Data (${meter_serial})`}
                 refreshFn={reloadData}
                 showRefreshButton={true}

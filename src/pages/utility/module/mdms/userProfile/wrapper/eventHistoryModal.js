@@ -24,6 +24,8 @@ const EventHistoryModal = (props) => {
   const [page1, setPage1] = useState(1);
   const [page2, setPage2] = useState(1);
   const [page3, setPage3] = useState(1);
+  const [pageSize1, setPageSize1] = useState(10);
+  const [pageSize2, setPageSize2] = useState(10);
 
   const [currentPage] = useState(0);
 
@@ -42,6 +44,14 @@ const EventHistoryModal = (props) => {
     meter_serial = HierarchyProgress.meter_serial_number;
   }
 
+  const setRowCount1 = (rowCount) => {
+    setPageSize1(rowCount);
+    refetch();
+  };
+  const setRowCount2 = (rowCount) => {
+    setPageSize2(rowCount);
+    refetch();
+  };
   const params = {
     page: currentPage,
     meter: HierarchyProgress.meter_serial_number,
@@ -164,7 +174,9 @@ const EventHistoryModal = (props) => {
       width: '90px',
       cell: (row, i) => {
         return (
-          <div className="d-flex  justify-content-center">{page1 + i}</div>
+          <div className="d-flex  justify-content-center">
+            {i + 1 + pageSize1 * (page1 - 1)}
+          </div>
         );
       },
     });
@@ -273,7 +285,9 @@ const EventHistoryModal = (props) => {
       width: '90px',
       cell: (row, i) => {
         return (
-          <div className="d-flex  justify-content-center">{page2 + i}</div>
+          <div className="d-flex  justify-content-center">
+            {i + 1 + pageSize2 * (page2 - 1)}
+          </div>
         );
       },
     });
@@ -373,7 +387,8 @@ const EventHistoryModal = (props) => {
                 data={response.pull_data}
                 showRefreshButton={true}
                 refreshFn={refetch}
-                rowCount={10}
+                rowCount={pageSize2}
+                setRowCount={setRowCount2}
                 currentPage={page2}
                 onPageChange={onNextPageClicked2}
                 totalRowsCount={response.pull_data.length}
@@ -386,7 +401,8 @@ const EventHistoryModal = (props) => {
                 refreshFn={refetch}
                 showRefreshButton={true}
                 totalRowsCount={response.push_data.length}
-                rowCount={10}
+                rowCount={pageSize1}
+                setRowCount={setRowCount1}
                 currentPage={page1}
                 onPageChange={onNextPageClicked1}
                 tableName={`Push data (${meter_serial})`}

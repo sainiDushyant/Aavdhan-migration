@@ -28,7 +28,6 @@ import CardInfo from '../../components/ui-elements/cards/NoDataCardInfo';
 import PaginationDropDown from '../layout/components/paginationDropDown/paginationDropDown';
 
 const DataTableV1 = (props) => {
-  console.log(props.data);
   const [data, setData] = useState(props.data);
   const totalRowsCount = props.totalRowsCount;
   const [currentPageData, setCurrentPageData] = useState([]);
@@ -41,7 +40,9 @@ const DataTableV1 = (props) => {
         <PaginationDropDown
           rowCount={props.rowCount}
           setRowCount={props.setRowCount}
-          disabledCounts={props.disabledCounts}
+          currentPage={props.currentPage}
+          totalCount={props.totalRowsCount}
+          //   disabledCounts={props.disabledCounts}
           disabled={props.rowCount < 10 || data.length < 10}
         />
       )}
@@ -190,10 +191,11 @@ const DataTableV1 = (props) => {
                 ) : (
                   props.showDownloadButton && (
                     <>
-                      <UncontrolledButtonDropdown>
-                        <DropdownToggle color="flat ">
+                      <UncontrolledButtonDropdown disabled={data?.length === 0}>
+                        <DropdownToggle color="flat">
                           <Download
                             id="Download"
+                            className={data?.length === 0 ? 'isDisabled' : ''}
                             // onClick={() => {
                             //   if (props?.onDownload) {
                             //     props.onDownload();

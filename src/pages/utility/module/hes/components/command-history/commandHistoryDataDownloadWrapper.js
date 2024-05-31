@@ -67,26 +67,11 @@ const CommandHistoryDataDownloadWrapper = () => {
     }
   }, []);
 
-  const [params, setParams] = useState({
-    page: currentPage,
-    page_size: 10,
-    projectName,
-  });
-  const [disabledRowCounts, setDisabledRowCounts] = useState([]);
+  let params = {};
+  params = { page: currentPage, page_size: pageSize, projectName };
 
-  useEffect(() => {
-    let disabledCounts = [];
-    if (Math.ceil(totalCount / 20) < currentPage) {
-      disabledCounts = [10, 20, 25, 50];
-    } else if (Math.ceil(totalCount / 25) < currentPage) {
-      disabledCounts = [25, 50];
-    } else if (Math.ceil(totalCount / 50) < currentPage) {
-      disabledCounts = [50];
-    }
-    setDisabledRowCounts(disabledCounts);
-  }, [currentPage]);
   const setRowCount = (rowCount) => {
-    setParams((prevParams) => ({ ...prevParams, page_size: rowCount }));
+    setPageSize(rowCount);
   };
 
   //RTK Query hooks for data fetching
@@ -347,7 +332,6 @@ const CommandHistoryDataDownloadWrapper = () => {
   };
 
   const onNextPageClicked = (number) => {
-    setParams({ ...params, page: number + 1 });
     setCurrentPage(number + 1);
   };
   const reloadData = () => {
@@ -504,9 +488,8 @@ const CommandHistoryDataDownloadWrapper = () => {
           <DataTableV1
             columns={createColumns()}
             data={response}
-            rowCount={params.page_size}
+            rowCount={pageSize}
             setRowCount={setRowCount}
-            disabledCounts={disabledRowCounts}
             tableName={'Command History Download Request'}
             showDownloadButton={true}
             showRefreshButton={true}

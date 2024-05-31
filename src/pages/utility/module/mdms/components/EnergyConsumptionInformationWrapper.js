@@ -59,22 +59,6 @@ const EnergyConsumptionWrapper = (props) => {
   // } else {
   //   responseData = []
   // }
-  const [disabledRowCounts, setDisabledRowCounts] = useState([]);
-
-  useEffect(() => {
-    let disabledCounts = [];
-    if (currentPage !== 1) {
-      if (Math.ceil(response?.length / 20) < currentPage) {
-        disabledCounts = [10, 20, 25, 50];
-      } else if (Math.ceil(response?.length / 25) < currentPage) {
-        disabledCounts = [25, 50];
-      } else if (Math.ceil(response?.length / 50) < currentPage) {
-        disabledCounts = [50];
-      }
-    }
-    setDisabledRowCounts(disabledCounts);
-  }, [currentPage, pageSize]);
-  // console.log(pageSize, 'pageSize');
   const setRowCount = (rowCount) => {
     setPageSize(rowCount);
     refetch();
@@ -124,12 +108,11 @@ const EnergyConsumptionWrapper = (props) => {
         setResponse(data.data.result.stat);
       }
     }
-  }, [data]);
+  }, [data, setRowCount]);
 
   const onPageChange = (page) => {
     setCurrentPage(page + 1);
   };
-
   // Check the column length
   // const handle_row_element_length = (props) => {
   //   for (const i of responseData) {
@@ -299,7 +282,6 @@ const EnergyConsumptionWrapper = (props) => {
         data={response}
         rowCount={pageSize}
         setRowCount={setRowCount}
-        disabledCounts={disabledRowCounts}
         currentPage={currentPage}
         ispagination
         showRefreshButton={true}

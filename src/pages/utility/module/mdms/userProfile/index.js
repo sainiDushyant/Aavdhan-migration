@@ -279,8 +279,8 @@ const MdmsUserConsumptionModule = (props) => {
           <Col lg="5">
             {/* Change Hierarchy value to userProfile when API for user level alerts is created */}
             <AlertCard
-              height="height-250"
-              loaderHeight="height-400"
+              height="height-300"
+              loaderHeight="height-300"
               hierarchy={'userProfile'}
             />
           </Col>

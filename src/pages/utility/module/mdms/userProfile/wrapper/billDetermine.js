@@ -41,7 +41,7 @@ const BillDetermine = () => {
   const [BillingDeterminantHistory, setBillingDeterminantHistory] = useState(
     []
   );
-  const [rowCount, setRowCount] = useState(6);
+  const [rowCount, setRowCount] = useState(10);
   const [page, setPage] = useState(1);
 
   const defaultStartDate = moment()
@@ -60,11 +60,14 @@ const BillDetermine = () => {
   const params = {
     project: project,
     page: page,
-    page_size: 10,
+    page_size: rowCount,
     start_date: startDateTime,
     end_date: endDateTime,
     site: HierarchyProgress.dtr_name,
     meter: HierarchyProgress.meter_serial_number,
+  };
+  const setRowCounts = (pageSize) => {
+    setRowCount(pageSize);
   };
 
   const { data, isFetching, status, isError, refetch } = useGetBillingDataQuery(
@@ -231,14 +234,18 @@ const BillDetermine = () => {
         width: '90px',
         cell: (row, i) => {
           return (
-            <div className="d-flex  justify-content-center">{page + i}</div>
+            <div className="d-flex  justify-content-center">
+              {i + 1 + rowCount * (page - 1)}
+            </div>
           );
         },
       });
       return column;
     }
   };
-
+  const onNextPageClicked = (page) => {
+    setPage(page + 1);
+  };
   const retryAgain = () => {
     refetch();
   };
@@ -313,8 +320,10 @@ const BillDetermine = () => {
               columns={tblColumn()}
               data={BillingDeterminantHistory}
               rowCount={rowCount}
+              setRowCount={setRowCounts}
               currentPage={page}
-              onPageChange={setPage}
+              onPageChange={onNextPageClicked}
+              totalRowsCount={BillingDeterminantHistory?.length}
               tableName={`Billing Data Table (${meter_serial})`}
               showDownloadButton={true}
               showRefreshButton={true}

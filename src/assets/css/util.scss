@@ -14,6 +14,12 @@
   height: 300px;
 }
 
+//disabled button
+.isDisabled {
+  cursor: not-allowed !important;
+  opacity: 0.5;
+}
+
 // Style for min, max height
 @for $i from 1 to 1000 {
   .min-height-#{$i} {
