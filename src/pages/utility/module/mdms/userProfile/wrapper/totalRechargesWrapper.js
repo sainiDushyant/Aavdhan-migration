@@ -1,207 +1,146 @@
-import { Row, Col, Card, CardBody, Modal, ModalBody, ModalHeader, Badge, CardHeader, Spinner, Button } from 'reactstrap'
+import {
+  Row,
+  Col,
+  Card,
+  CardBody,
+  Modal,
+  ModalBody,
+  ModalHeader,
+} from 'reactstrap';
 // String to icon tag
-import IcoFun from '@src/utility/dynamicIcon'
-import RawFun from './rechargeHistoryWrapper'
-import Avatar from '@components/avatar'
-import { useContext, useState, useEffect } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
-import { handleConsumerTotalRechargesData } from '@store/actions/UtilityProject/MDMS/userprofile'
-import CardPayment from '@src/views/ui-elements/cards/gpCards/cardPayment'
-import './wrapper.css'
-import no_data from '@src/assets/images/svg/no_data.svg'
+import IcoFun from '../../../../../../components/ui-elements/dynamicIcon/dynamicIcon';
+import RawFun from './rechargeHistoryWrapper';
+import { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import CardPayment from '../../../../../../components/ui-elements/gpCards/cardPayment';
+import './wrapper.css';
 
-import Loader from '@src/views/project/misc/loader'
-import useJwt from '@src/auth/jwt/useJwt'
+import Loader from '../../../../../../components/loader/loader';
 
-import { useLocation, useHistory } from 'react-router-dom'
-import authLogout from '../../../../../../../auth/jwt/logoutlogic'
-import CardInfo from '@src/views/ui-elements/cards/actions/cardInfo'
-import { AlertTriangle, RefreshCw } from 'react-feather'
+import { useLocation } from 'react-router-dom';
+import CardInfo from '../../../../../../components/ui-elements/cards/cardInfo';
+import moment from 'moment';
+import {
+  useGetUserWalletInfoQuery,
+  useLazyGetUserRechargeHistoryQuery,
+} from '../../../../../../api/mdms/userConsumptionSlice';
 
-const TotalRechargesWrapper = props => {
-  const dispatch = useDispatch()
-  const history = useHistory()
+const TotalRechargesWrapper = () => {
+  const location = useLocation();
 
-  // Error Handling
-  const [errorMessage, setErrorMessage] = useState('')
-  const [hasError, setError] = useState(false)
-  const [retry, setRetry] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('');
 
-  // Logout User
-  const [logout, setLogout] = useState(false)
-  useEffect(() => {
-    if (logout) {
-      authLogout(history, dispatch)
-    }
-  }, [logout])
-
-  const [centeredModal, setCenteredModal] = useState(false)
-  const [fetchRechargeHistory, setFetchRechargeHistory] = useState(false)
-  const [rechargeHistory, setRechargeHistory] = useState([])
-  const [rechargeReceipt, setRechargeReceipt] = useState({})
+  const [centeredModal, setCenteredModal] = useState(false);
+  const [rechargeHistory, setRechargeHistory] = useState([]);
+  const [rechargeReceipt, setRechargeReceipt] = useState({});
+  const [userWalletInfo, setUserWalletInfo] = useState([]);
 
   // const dispatch = useDispatch()
-  const response = useSelector(state => state.UtilityMdmsConsumerTotalRechargeReducer)
-  const HierarchyProgress = useSelector(state => state.UtilityMDMSHierarchyProgressReducer.responseData)
-  const selected_month = useSelector(state => state.calendarReducer.month)
+  const HierarchyProgress = useSelector(
+    (state) => state.MDMSHierarchyProgress.data
+  );
 
-  let responseData
-  if (response && response.responseData) {
-    responseData = response.responseData
-  } else {
-    responseData = []
-  }
+  const currentMonth = moment().format('MM'); // Month number, e.g., "05"
+  const currentYear = moment().format('YYYY');
 
-  const fetchData = async params => {
-    return await useJwt
-      .getUserWalletInformationMDMSModule(params)
-      .then(res => {
-        const status = res.status
-        return [status, res]
-      })
-      .catch(err => {
-        if (err.response) {
-          const status = err.response.status
-          return [status, err]
-        } else {
-          return [0, err]
-        }
-      })
-  }
+  const [fetchRechargeHistory, rechargeHistoryResonse] =
+    useLazyGetUserRechargeHistoryQuery();
 
-  const fetchRechargeHistoryData = async params => {
-    return await useJwt
-      .getUserRechargeHistoryMDMSModule(params)
-      .then(res => {
-        const status = res.status
-        return [status, res]
-      })
-      .catch(err => {
-        if (err.response) {
-          const status = err.response.status
-          return [status, err]
-        } else {
-          return [0, err]
-        }
-      })
-  }
+  const project =
+    location.pathname.split('/')[2] === 'sbpdcl'
+      ? 'ipcl'
+      : location.pathname.split('/')[2];
 
-  useEffect(async () => {
-    if (!response || response.callAPI || retry) {
-      const params = {
-        project: HierarchyProgress.project_name,
-        substation: HierarchyProgress.pss_name,
-        feeder: HierarchyProgress.feeder_name,
-        dtr: HierarchyProgress.dtr_name,
-        sc_no: HierarchyProgress.user_name,
-        year: selected_month.year,
-        month: selected_month.month
-      }
+  const params = {
+    project: project,
+    substation: HierarchyProgress.pss_name,
+    feeder: HierarchyProgress.feeder_name,
+    dtr: HierarchyProgress.dtr_name,
+    sc_no: HierarchyProgress.user_name,
+    year: currentYear,
+    month: currentMonth,
+  };
 
-      const [statusCode, response] = await fetchData(params)
+  const { isFetching, status, isError, data, refetch } =
+    useGetUserWalletInfoQuery(params);
+
+  useEffect(() => {
+    if (status === 'fulfilled') {
+      let statusCode = data.responseCode;
       if (statusCode) {
         if (statusCode === 200) {
-          dispatch(handleConsumerTotalRechargesData(response.data.data.result.stat))
-          setRetry(false)
-        } else if (statusCode === 401 || statusCode === 403) {
-          setLogout(true)
-        } else {
-          setRetry(false)
-          setError(true)
-          setErrorMessage('Network Error, please retry')
+          setUserWalletInfo(data.data.result.stat);
         }
       }
+    } else if (isError) {
+      setErrorMessage('Something went wrong, please try again.');
     }
-  }, [response, retry])
-
-  useEffect(async () => {
-    if (fetchRechargeHistory || retry) {
-      const params = {
-        project: HierarchyProgress.project_name,
-        substation: HierarchyProgress.pss_name,
-        feeder: HierarchyProgress.feeder_name,
-        dtr: HierarchyProgress.dtr_name,
-        sc_no: HierarchyProgress.user_name,
-        year: selected_month.year,
-        month: selected_month.month
-      }
-
-      const [statusCode, response] = await fetchRechargeHistoryData(params)
-
-      if (statusCode === 200) {
-        try {
-          setRechargeHistory(response.data.data.result.stat)
-          setRechargeReceipt(response.data.data.result.stat[0])
-          setFetchRechargeHistory(false)
-          setRetry(false)
-        } catch (error) {
-          setRetry(false)
-          setError(true)
-          setErrorMessage('Something went wrong, please retry')
-        }
-      } else if (statusCode === 401 || statusCode === 403) {
-        setLogout(true)
-      } else {
-        setRetry(false)
-        setError(true)
-        setErrorMessage('Network Error, please retry')
-      }
-    }
-  }, [fetchRechargeHistory, retry])
+  }, [data, isError, status]);
 
   useEffect(() => {
     if (centeredModal) {
-      //Make API call to fetch Data
-      setFetchRechargeHistory(true)
-      //setRechargeHistory(paymentData)
-      //setRechargeReceipt(paymentData[0])
+      fetchRechargeHistory(params, { preferCacheValue: true });
     }
-  }, [centeredModal])
+  }, [centeredModal]);
 
-  const handleRechargeItemClicked = position => {
-    setRechargeReceipt(rechargeHistory[position])
-  }
+  useEffect(() => {
+    if (rechargeHistoryResonse.status === 'fulfilled') {
+      let statusCode = rechargeHistoryResonse.currentData.responseCode;
+      if (statusCode === 200) {
+        setRechargeHistory(rechargeHistoryResonse.currentData.data.result.stat);
+        setRechargeReceipt(
+          rechargeHistoryResonse.currentData.data.result.stat[0]
+        );
+      }
+    } else if (rechargeHistoryResonse.isError) {
+      setErrorMessage('Something went wrong, please retry.');
+    }
+  }, [rechargeHistoryResonse]);
+
+  const handleRechargeItemClicked = (position) => {
+    setRechargeReceipt(rechargeHistory[position]);
+  };
   const retryAgain = () => {
-    setError(false)
-    setRetry(true)
-  }
+    refetch();
+  };
 
   return (
     <>
       {/* <StatsHorizontal icon={IcoFun('FileText', 21)} color='warning' stats={rawData.statistics} statTitle={rawData.title} /> */}
       <Card>
-        {hasError ? (
+        {isError ? (
           <div>
-            {/* <CardInfo props={{ message: { errorMessage }, retryFun: { retryAgain }, retry: { retry } }} /> */}
-
-            <CardBody className='super-center  py_5'>
-              <Avatar color='light-danger' size='xl' icon={<AlertTriangle />} />
-
-              <p className='mb-0'>{errorMessage}</p>
-              {retry ? (
-                <Spinner color='dark' size='md' />
-              ) : (
-                <Button.Ripple to='/' color='btn btn-outline-danger' className='mt-1 mb_3' onClick={retryAgain}>
-                  Retry
-                  <RefreshCw size='15' className='cursor-pointer mx_5 ' />
-                </Button.Ripple>
-              )}
-            </CardBody>
+            <CardInfo
+              props={{
+                message: { errorMessage },
+                retryFun: { retryAgain },
+                retry: { isFetching },
+              }}
+            />
           </div>
         ) : (
           <>
-            {(!response || response.callAPI) && <Loader hight='min-height-128' />}
-            {response && !response.callAPI && (
-              <CardBody className='cursor-pointer' onClick={() => setCenteredModal(!centeredModal)}>
-                <div className='d-flex justify-content-between align-items-center'>
+            {isFetching && <Loader hight="min-height-128" />}
+            {!isFetching && (
+              <CardBody
+                className="cursor-pointer"
+                onClick={() => setCenteredModal(!centeredModal)}
+              >
+                <div className="d-flex justify-content-between align-items-center">
                   <div>
-                    <h2 className='font-weight-bolder mb-0'>{responseData[0].value}</h2>
-                    <p className='card-text mb-2'>{responseData[0].title}</p>
-                    <h2 className='font-weight-bolder mb-0'>{responseData[1].value}</h2>
-                    <p className='card-text'>{responseData[1].title}</p>
+                    <h2 className="font-weight-bolder mb-0">
+                      {userWalletInfo[0]?.value}
+                    </h2>
+                    <p className="card-text mb-2">{userWalletInfo[0]?.title}</p>
+                    <h2 className="font-weight-bolder mb-0">
+                      {userWalletInfo[1]?.value}
+                    </h2>
+                    <p className="card-text">{userWalletInfo[1]?.title}</p>
                   </div>
                   <div className={`avatar avatar-stats p-50 m-0`}>
-                    <div className='avatar-content'>{IcoFun('FileText', 21)}</div>
+                    <div className="avatar-content">
+                      {IcoFun('FileText', 21)}
+                    </div>
                   </div>
                 </div>
               </CardBody>
@@ -210,34 +149,53 @@ const TotalRechargesWrapper = props => {
         )}
       </Card>
 
-      <Modal isOpen={centeredModal} toggle={() => setCenteredModal(!centeredModal)} scrollable className='modal_size h-100'>
-        <ModalHeader toggle={() => setCenteredModal(!centeredModal)}>Recharge History</ModalHeader>
-        {hasError ? (
-          <div className='p-2'>
-            <CardInfo props={{ message: { errorMessage }, retryFun: { retryAgain }, retry: { retry } }} />
+      <Modal
+        isOpen={centeredModal}
+        toggle={() => setCenteredModal(!centeredModal)}
+        scrollable
+        className="modal_size h-100"
+      >
+        <ModalHeader toggle={() => setCenteredModal(!centeredModal)}>
+          Recharge History
+        </ModalHeader>
+        {rechargeHistoryResonse.isError ? (
+          <div className="p-2">
+            <CardInfo
+              props={{
+                message: { errorMessage },
+                retryFun: { retryAgain },
+                retry: { retry: rechargeHistoryResonse.isFetching },
+              }}
+            />
           </div>
         ) : (
           <>
-            {!fetchRechargeHistory && (
+            {!rechargeHistoryResonse.isFetching && (
               <ModalBody>
                 {rechargeHistory.length > 0 ? (
                   <Row>
-                    <Col lg='4' xs='6' className='recharge-col-height'>
-                      <RawFun data={rechargeHistory} handleRechargeItemClicked={handleRechargeItemClicked} />
+                    <Col lg="4" xs="6" className="recharge-col-height">
+                      <RawFun
+                        data={rechargeHistory}
+                        handleRechargeItemClicked={handleRechargeItemClicked}
+                      />
                     </Col>
-                    <Col lg='8' xs='6'>
-                      <Row className='justify-content-center'>
-                        <Col lg='6' xs='12'>
+                    <Col lg="8" xs="6">
+                      <Row className="justify-content-center">
+                        <Col lg="6" xs="12">
                           <CardPayment data={rechargeReceipt} />
                         </Col>
                       </Row>
                     </Col>
                   </Row>
                 ) : (
-                  <div className='super-center h-100'>
-                    <div>
-                      <img src={no_data} style={{ height: '150px', width: '150px' }} />
-                      <p className='mt-1 ml-3'>No data found</p>
+                  <div className="super-center h-100">
+                    <div className="d-flex flex-column align-items-center justify-content-center">
+                      <img
+                        src={'no_data.svg'}
+                        style={{ height: '150px', width: '150px' }}
+                      />
+                      <p className="mt-1 ml-3">No data found</p>
                     </div>
                   </div>
                 )}
@@ -247,7 +205,7 @@ const TotalRechargesWrapper = props => {
         )}
       </Modal>
     </>
-  )
-}
+  );
+};
 
-export default TotalRechargesWrapper
+export default TotalRechargesWrapper;

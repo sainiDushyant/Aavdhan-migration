@@ -86,6 +86,33 @@ export const userConsumptionApi = createApi({
       }),
       keepUnusedDataFor: 2,
     }),
+
+    // Prepaid Ledger
+    getPrepaidLedger: builder.query({
+      query: (params) => ({
+        url: `${url}/api/v1/ledger/consumer/prepaid`,
+        params: params,
+      }),
+      keepUnusedDataFor: 300,
+    }),
+
+    //User Wallet
+    getUserWalletInfo: builder.query({
+      query: (params) => ({
+        url: `${url}/api/v1/get/wallet/details`,
+        params: params,
+      }),
+      keepUnusedDataFor: 300,
+    }),
+
+    // User Recharge data
+    getUserRechargeHistory: builder.query({
+      query: (params) => ({
+        url: `${url}/api/v1/consumer/get/recharge/history`,
+        params: params,
+      }),
+      keepUnusedDataFor: 300,
+    }),
   }),
 });
 
@@ -101,4 +128,7 @@ export const {
   useGetMDMSUserDailyLoadDataQuery,
   usePutOfflineRechargeMutation,
   useLazyUpdateMeterModeQuery,
+  useGetPrepaidLedgerQuery,
+  useGetUserWalletInfoQuery,
+  useLazyGetUserRechargeHistoryQuery,
 } = userConsumptionApi;

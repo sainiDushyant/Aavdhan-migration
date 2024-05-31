@@ -17,40 +17,27 @@ import { useSelector } from 'react-redux';
 import Loader from '../../../../../../components/loader/loader';
 import { toast } from 'react-toastify';
 
-import { useLocation } from 'react-router-dom';
+import { useGetPrepaidLedgerQuery } from '../../../../../../api/mdms/userConsumptionSlice';
+import DataTableV1 from '../../../../../../components/dtTable/DataTableV1';
+import CardInfo from '../../../../../../components/ui-elements/cards/cardInfo';
 
 const PrepaidLedgerWrapper = (props) => {
-  const dispatch = useDispatch();
-  const history = useHistory();
-
   // Error Handling
   const [errorMessage, setErrorMessage] = useState('');
-  const [hasError, setError] = useState(false);
-  const [retry, setRetry] = useState(false);
-
-  // Logout User
-  const [logout, setLogout] = useState(false);
-  useEffect(() => {
-    if (logout) {
-      authLogout(history, dispatch);
-    }
-  }, [logout]);
 
   const [centeredModal, setCenteredModal] = useState(false);
   // const [picker, setPicker] = useState(new Date())
   const [ledgerData, setLedgerData] = useState(undefined);
   const [message1, setMessage1] = useState(undefined);
   const [message2, setMessage2] = useState(undefined);
-
-  const [fetchLedgerData, setFetchLedgerData] = useState(true);
+  const [skip, setSkip] = useState(false);
 
   const [startDateTime, setStartDateTime] = useState(undefined);
   const [endDateTime, setEndDateTime] = useState(undefined);
-  const [page, setpage] = useState(0);
-  // const dispatch = useDispatch()
+  const [page, setPage] = useState(0);
 
   const HierarchyProgress = useSelector(
-    (state) => state.UtilityMDMSHierarchyProgressReducer.responseData
+    (state) => state.MDMSHierarchyProgress.data
   );
   let user_name = '';
   let meter_serial = '';
@@ -59,82 +46,55 @@ const PrepaidLedgerWrapper = (props) => {
     meter_serial = HierarchyProgress.meter_serial_number;
   }
 
-  const fetchData = async (params) => {
-    return await useJwt
-      .getConsumerPrepaidLedgerMdmsModule(params)
-      .then((res) => {
-        const status = res.status;
-        return [status, res];
-      })
-      .catch((err) => {
-        if (err.response) {
-          const status = err.response.status;
-          return [status, err];
-        } else {
-          return [0, err];
-        }
-      });
+  const onPageChange = (page) => {
+    setPage(page);
   };
 
-  useEffect(async () => {
-    if (fetchLedgerData || retry) {
-      // console.log('Fetching Data through API ....')
+  const getParams = () => {
+    let params = {};
 
-      let params = undefined;
-
-      if (endDateTime) {
-        params = {
-          project: props.project,
-          start_datetime: startDateTime,
-          end_datetime: endDateTime,
-          sc_no: HierarchyProgress.user_name,
-        };
-      } else {
-        params = {
-          project: props.project,
-          sc_no: HierarchyProgress.user_name,
-        };
-      }
-      const [statusCode, response] = await fetchData(params);
-
-      if (statusCode === 200) {
-        try {
-          setFetchLedgerData(false);
-          // dispatch(handlePrepaidLedger(response.data.data.result.stat))
-
-          // console.log('Ledger Data ............')
-          // console.log(ledgerData)
-
-          setLedgerData(response.data.data.result.stat);
-
-          if (
-            'message1' in response.data.data.result &&
-            response.data.data.result.message1.length > 0
-          ) {
-            setMessage1(response.data.data.result.message1);
-          }
-
-          if (
-            'message2' in response.data.data.result &&
-            response.data.data.result.message2.length > 0
-          ) {
-            setMessage2(response.data.data.result.message2);
-          }
-          setRetry(false);
-        } catch (error) {
-          setRetry(false);
-          setError(true);
-          setErrorMessage('Something went wrong, please retry');
-        }
-      } else if (statusCode === 401 || statusCode === 403) {
-        setLogout(true);
-      } else {
-        setRetry(false);
-        setError(true);
-        setErrorMessage('Network Error, please retry');
-      }
+    if (endDateTime) {
+      params = {
+        project: props.project,
+        start_datetime: startDateTime,
+        end_datetime: endDateTime,
+        sc_no: HierarchyProgress.user_name,
+      };
+    } else {
+      params = {
+        project: props.project,
+        sc_no: HierarchyProgress.user_name,
+      };
     }
-  }, [fetchLedgerData, retry]);
+    return params;
+  };
+
+  const { isFetching, data, isError, status, refetch } =
+    useGetPrepaidLedgerQuery(getParams(), { skip });
+
+  useEffect(() => {
+    if (status === 'fulfilled') {
+      let statusCode = data.responseCode;
+      if (statusCode === 200) {
+        setLedgerData(data.data.result.stat);
+        if (
+          'message1' in data.data.result &&
+          data.data.result.message1.length > 0
+        ) {
+          setMessage1(data.data.result.message1);
+        }
+
+        if (
+          'message2' in data.data.result &&
+          data.data.result.message2.length > 0
+        ) {
+          setMessage2(data.data.result.message2);
+        }
+      }
+    } else if (isError) {
+      setErrorMessage('Something went wrong, please retry.');
+    }
+  }, [data, isError, status]);
 
   const dateTimeFormat = (inputDate) => {
     return ''.concat(
@@ -152,7 +112,7 @@ const PrepaidLedgerWrapper = (props) => {
     );
   };
 
-  const tblColumn = (statehandler) => {
+  const tblColumn = () => {
     const column = [];
 
     if (ledgerData) {
@@ -234,7 +194,7 @@ const PrepaidLedgerWrapper = (props) => {
   const closeModal = () => {
     setStartDateTime(undefined);
     setEndDateTime(undefined);
-    setFetchLedgerData(true);
+    refetch();
     setCenteredModal(!centeredModal);
   };
 
@@ -242,26 +202,28 @@ const PrepaidLedgerWrapper = (props) => {
     if (dateRange.length === 1) {
       setStartDateTime(dateTimeFormat(dateRange[0]));
       setEndDateTime(undefined);
+      setSkip(true);
     } else if (dateRange.length === 2) {
       setStartDateTime(dateTimeFormat(dateRange[0]));
       setEndDateTime(dateTimeFormat(dateRange[1]));
+      setSkip(true);
     }
   };
 
   const onDateRangeSelectedButtonPressed = () => {
     if (startDateTime && endDateTime) {
-      setFetchLedgerData(true);
+      setSkip(false);
       setLedgerData(undefined);
     } else {
-      toast.error(<Toast msg="Invalid DateTime Range" type="danger" />, {
+      toast('Please select date and time', {
         hideProgressBar: true,
+        type: 'warning',
       });
     }
   };
 
   const retryAgain = () => {
-    setError(false);
-    setRetry(true);
+    refetch();
   };
   return (
     <>
@@ -354,7 +316,7 @@ const PrepaidLedgerWrapper = (props) => {
                       outline
                       onClick={onDateRangeSelectedButtonPressed}
                     >
-                      Go
+                      Submit
                     </Button>
                   </InputGroup>
                 </Col>
@@ -373,33 +335,31 @@ const PrepaidLedgerWrapper = (props) => {
           )}
 
           <>
-            {hasError ? (
+            {isError ? (
               <CardInfo
                 props={{
                   message: { errorMessage },
                   retryFun: { retryAgain },
-                  retry: { retry },
+                  retry: { isFetching },
                 }}
               />
             ) : (
               <>
-                {ledgerData && (
-                  <SimpleDataTable
-                    columns={tblColumn('as')}
-                    tblData={ledgerData}
-                    currentpage={page}
-                    ispagination
-                    selectedPage={setpage}
+                {!isFetching && (
+                  <DataTableV1
+                    columns={tblColumn()}
+                    data={ledgerData}
+                    currentPage={page}
+                    onPageChange={onPageChange}
                     rowCount={10}
-                    tableName={'Consumer Prepaid ledger'.concat(
-                      '(',
-                      meter_serial,
-                      ')'
-                    )}
-                    defaultSortFieldId={'Billing_start_datetime'}
+                    totalRowsCount={ledgerData?.length}
+                    tableName={`Consumer Prepaid ledger (${meter_serial})`}
+                    showRefreshButton={true}
+                    refreshFn={refetch}
+                    showDownloadButton={true}
                   />
                 )}
-                {!ledgerData && <Loader hight="min-height-475" />}
+                {isFetching && <Loader hight="min-height-475" />}
               </>
             )}
           </>

@@ -14,6 +14,8 @@ import CommandInfoTableWrapper from './wrapper/commandInfoTableWrapper';
 import UserDetailWrapper from './wrapper/userDetailWrapper';
 import GeneratedBillsWrapper from './wrapper/generatedBillsWrapper';
 import PeriodicWrapper from './wrapper/periodicData';
+import PrepaidLedgerWrapper from './wrapper/prepaidLedgerWrapper';
+import TotalRechargesWrapper from './wrapper/totalRechargesWrapper';
 
 import { useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
@@ -257,12 +259,12 @@ const MdmsUserConsumptionModule = (props) => {
               </Col>
               <Col>
                 {/* <TotalConsumptionWrapper hierarchy={"userProfile"} /> */}
-                {/* <TotalRechargesWrapper hierarchy={"userProfile"} /> need to uncomment */}
+                <TotalRechargesWrapper hierarchy={'userProfile'} />
               </Col>
             </Row>
             <Row className="px-1">
               <Col>
-                {/* <PrepaidLedgerWrapper project={hierarchy.project_name} /> uncomment */}
+                <PrepaidLedgerWrapper project={project} />
               </Col>
               <Col>
                 <GeneratedBillsWrapper />
@@ -273,7 +275,7 @@ const MdmsUserConsumptionModule = (props) => {
             {/* Change Hierarchy value to userProfile when API for user level alerts is created */}
             <AlertCard
               height="height-250"
-              loaderHeight="height-250"
+              loaderHeight="height-400"
               hierarchy={'userProfile'}
             />
           </Col>

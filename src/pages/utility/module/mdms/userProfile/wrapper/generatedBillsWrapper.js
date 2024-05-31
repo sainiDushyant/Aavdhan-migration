@@ -88,13 +88,11 @@ const GeneratedBillsWrapper = (props) => {
 
   return (
     <>
-      <StatsVertical
+      <StatsHorizontal
         icon={<FileText size={21} />}
         stats="Generated Bills"
         statTitle=""
-        className={
-          'd-flex justify-content-center align-items-center flex-column'
-        }
+        className={props.className}
         click={() => setCenteredModal(!centeredModal)}
         clas="h4"
         dvClas={props.dvClas ? props.dvClas : ''}
