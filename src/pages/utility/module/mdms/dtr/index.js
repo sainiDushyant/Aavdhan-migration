@@ -50,6 +50,7 @@ const MdmsDtrModule = (props) => {
         <Col>
           <EnergyConsumptionWrapper
             statehandler={onDtrTableRowClickHandler}
+            changeState={props.statehandler}
             txtLen={27}
             tableName={'DTR Level'}
             hierarchy={'dtr'}

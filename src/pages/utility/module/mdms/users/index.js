@@ -52,6 +52,7 @@ const AllUsers = (props) => {
         <Col md="12">
           <EnergyConsumptionWrapper
             statehandler={onUserTableRowClickHandler}
+            changeState={props.updateMdmsState}
             txtLen={12}
             tableName={`User Level (${hierarchy.dtr_real_name})`}
             height={true}

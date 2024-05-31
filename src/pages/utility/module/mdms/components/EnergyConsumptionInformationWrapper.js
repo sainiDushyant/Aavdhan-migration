@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 
 import Loader from '../../../../../components/loader/loader';
@@ -11,12 +11,14 @@ import moment from 'moment';
 import DataTableV1 from '../../../../../components/dtTable/DataTableV1';
 
 import { useGetAssetsenergyConsumptionQuery } from '../../../../../api/mdms/energy-consumptionSlice';
+import { updateMDMSHierarchyProgress } from '../../../../../app/redux/mdmsHeirarchySlice';
 
 //let tbData = []
 
 const EnergyConsumptionWrapper = (props) => {
   // Error Handling
   const [errorMessage, setErrorMessage] = useState('');
+  const dispatch = useDispatch();
 
   const location = useLocation();
 
@@ -33,6 +35,18 @@ const EnergyConsumptionWrapper = (props) => {
   const currentYear = moment().format('YYYY');
 
   const hierarchy = useSelector((state) => state.MDMSHierarchyProgress.data);
+
+  if (hierarchy.project_name !== project) {
+    dispatch(
+      updateMDMSHierarchyProgress({
+        pss_name: '',
+        pss_real_name: '',
+        project_name: project,
+        mdms_state: 'pss',
+      })
+    );
+    props.changeState('pss');
+  }
 
   // if (response) {
   //   if (response.length > 0 &&response[0].hasOwnProperty('wallet_balance')) {

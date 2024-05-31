@@ -30,6 +30,12 @@ const CommonMeterDropdown = (props) => {
     project: projectName,
     vertical: verticalName,
   });
+  useEffect(() => {
+    setSelectedDTR('');
+    setSelectedMeter('');
+    setMeter('');
+    setParams({});
+  }, [location.pathname]);
 
   const [dtr, setDtr] = useState([]);
 

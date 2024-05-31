@@ -48,6 +48,7 @@ const MdmsFeederModule = (props) => {
         <Col>
           <EnergyConsumptionWrapper
             statehandler={onFeederTableRowClickHandler}
+            changeState={props.statehandler}
             txtLen={17}
             tableName={'Feeder Level'}
             hierarchy={'feeder'}

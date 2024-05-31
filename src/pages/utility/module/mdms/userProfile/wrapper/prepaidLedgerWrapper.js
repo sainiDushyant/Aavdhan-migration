@@ -35,11 +35,12 @@ const PrepaidLedgerWrapper = (props) => {
   const [startDateTime, setStartDateTime] = useState(undefined);
   const [endDateTime, setEndDateTime] = useState(undefined);
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useEffect(10);
+  const [pageSize, setPageSize] = useState(10);
 
   const HierarchyProgress = useSelector(
     (state) => state.MDMSHierarchyProgress.data
   );
+  console.log(HierarchyProgress, 'heirarchy');
   let user_name = '';
   let meter_serial = '';
   if (HierarchyProgress && HierarchyProgress.user_name) {

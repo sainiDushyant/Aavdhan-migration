@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Col, Row, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { Eye } from 'react-feather';
 import { useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 import { toast } from 'react-toastify';
 
@@ -10,6 +11,7 @@ import CardInfo from '../../../../../../components/ui-elements/cards/cardInfo';
 import Loader from '../../../../../../components/loader/loader';
 import { caseInsensitiveSort } from '../../../../../../utils';
 import moment from 'moment';
+import { updateMDMSHierarchyProgress } from '../../../../../../app/redux/mdmsHeirarchySlice';
 import {
   useGetMdasDlmsCommandHistoryQuery,
   useLazyGetMdasDlmsHistoryDataQuery,
@@ -18,6 +20,7 @@ import SimpleTableForDLMSCommandResponse from '../../../../../../components/dtTa
 import DataTableV1 from '../../../../../../components/dtTable/DataTableV1';
 
 const CommandInfoTableWrapper = (props) => {
+  const dispatch = useDispatch();
   const [getDlmsHistoryData, dlmsHistoryDataResponse] =
     useLazyGetMdasDlmsHistoryDataQuery();
 
@@ -36,6 +39,18 @@ const CommandInfoTableWrapper = (props) => {
   const HierarchyProgress = useSelector(
     (state) => state.MDMSHierarchyProgress.data
   );
+
+  if (HierarchyProgress.project_name !== projectName) {
+    dispatch(
+      updateMDMSHierarchyProgress({
+        pss_name: '',
+        pss_real_name: '',
+        project_name: projectName,
+        mdms_state: 'pss',
+      })
+    );
+    props.changeState('pss');
+  }
 
   let user_name = '';
   let meter_serial = '';

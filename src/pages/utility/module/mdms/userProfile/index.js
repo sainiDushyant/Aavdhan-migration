@@ -170,6 +170,7 @@ const MdmsUserConsumptionModule = (props) => {
           <Col>
             <CommandInfoTableWrapper
               HierarchyProgress={props.HierarchyProgress}
+              changeState={props.updateMdmsState}
               tableName={'Command info'}
               hierarchy={'user'}
               txtLen={20}
@@ -302,6 +303,7 @@ const MdmsUserConsumptionModule = (props) => {
         </Row>
         <CommandInfoTableWrapper
           HierarchyProgress={props.HierarchyProgress}
+          changeState={props.updateMdmsState}
           tableName={'Command info'}
           hierarchy={'user'}
           txtLen={12}

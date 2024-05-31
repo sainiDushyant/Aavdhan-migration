@@ -7,6 +7,7 @@ import '../../../../../@core/scss/base/pages/dashboard-ecommerce.scss';
 //Wrapper Functions
 import EnergyConsumptionWrapper from '../components/EnergyConsumptionInformationWrapper';
 import { useDispatch } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 
 import { updateMDMSHierarchyProgress } from '../../../../../app/redux/mdmsHeirarchySlice';
 import OperationalInformationWrapper from '../components/OperationalInformationWrapper';
@@ -14,8 +15,11 @@ import OperationalInformationWrapper from '../components/OperationalInformationW
 // import { Spinner, Card } from 'reactstrap'
 
 const MdmsPssModule = (props) => {
-  // console.log("Hierarchy Progress in redux Store ....")
-  // console.log(responseData)
+  const location = useLocation();
+  const project =
+    location.pathname.split('/')[2] === 'sbpdcl'
+      ? 'ipcl'
+      : location.pathname.split('/')[2];
 
   const dispatch = useDispatch();
 
@@ -24,6 +28,7 @@ const MdmsPssModule = (props) => {
       updateMDMSHierarchyProgress({
         pss_name: substation,
         pss_real_name: row.substation,
+        project_name: project,
         mdms_state: 'feeder',
       })
     );
@@ -42,6 +47,7 @@ const MdmsPssModule = (props) => {
         <Col>
           <EnergyConsumptionWrapper
             statehandler={onSubstationTableRowClickHandler}
+            changeState={props.statehandler}
             txtLen={16}
             tableName={'Substation Level'}
             hierarchy={'pss'}
