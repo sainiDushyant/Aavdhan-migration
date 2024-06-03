@@ -76,8 +76,12 @@ const HesUtility = () => {
             </React.Fragment>
           )}
         </TabPane>
-        <TabPane tabId="2">{active === '2' && <PushData />}</TabPane>
-        <TabPane tabId="3">{active === '3' && <MeterConfigData />}</TabPane>
+        <TabPane tabId="2">
+          {active === '2' && <PushData setActive={setActive} />}
+        </TabPane>
+        <TabPane tabId="3">
+          {active === '3' && <MeterConfigData setActive={setActive} />}
+        </TabPane>
       </TabContent>
     </div>
   );

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 
-import { useFetcher, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import moment from 'moment-timezone';
 import { CardBody, Card, Modal, ModalHeader, ModalBody } from 'reactstrap';
 
@@ -17,26 +18,17 @@ import DataTableV1 from '../../../../../../components/dtTable/DataTableV1';
 import { X } from 'react-feather';
 import { useGetPushBasedEventQuery } from '../../../../../../api/hes/push-dataSlice';
 
-const PushEventData = () => {
+const PushEventData = (props) => {
+  const currentSelectedModule = useSelector(
+    (state) => state.currentSelectedModule
+  );
   const location = useLocation();
   const defaultStartDate = moment()
     .subtract(1, 'days')
     .startOf('day')
     .format('YYYY-MM-DD 00:00:00'); // Yesterday, start of day
   const defaultEndDate = moment().format('YYYY-MM-DD HH:00:00');
-  // const defaultEndDate = '2024-05-17 00:00:00';
 
-  // Logout User
-  // const [logout, setLogout] = useState(false);
-  // useEffect(() => {
-  //   if (logout) {
-  //     authLogout(history, dispatch);
-  //   }
-  // }, [logout]);
-
-  // const responseData = useSelector(state => state.UtilityMdmsFlowReducer)
-
-  const [fetchingData, setFetchingData] = useState(true);
   const [response, setResponse] = useState([]);
   const [totalCount, setTotalCount] = useState(120);
   const [dtr, setDtr] = useState('');
@@ -47,30 +39,9 @@ const PushEventData = () => {
 
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const [hasError, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const [retry, setRetry] = useState(false);
-
-  const [loader, setLoader] = useState(false);
 
   const [showReportDownloadModal, setShowReportDownloadModal] = useState(false);
-
-  // const fetchData = async (params) => {
-  //   return await useJwt
-  //     .getPushBasedEvent(params)
-  //     .then((res) => {
-  //       const status = res.status;
-  //       return [status, res];
-  //     })
-  //     .catch((err) => {
-  //       if (err.response) {
-  //         const status = err.response.status;
-  //         return [status, err];
-  //       } else {
-  //         return [0, err];
-  //       }
-  //     });
-  // };
 
   let project = '';
   if (location.pathname.split('/')[2] === 'sbpdcl') {
@@ -78,12 +49,6 @@ const PushEventData = () => {
   } else {
     project = location.pathname.split('/')[2];
   }
-
-  useEffect(() => {
-    if (dtr.length > 1) {
-      setFilterParams({ ...filterParams, site: dtr });
-    }
-  }, [dtr]);
 
   let params = {};
 
@@ -93,6 +58,27 @@ const PushEventData = () => {
     page: currentPage,
     page_size: pageSize,
   };
+
+  if (
+    project !== currentSelectedModule &&
+    filterParams.hasOwnProperty('site') &&
+    filterParams.hasOwnProperty('meter')
+  ) {
+    params = {
+      project,
+      start_data: defaultStartDate,
+      end_date: defaultEndDate,
+      page: currentPage,
+      page_size: pageSize,
+    };
+    props.setActive('1');
+  }
+
+  useEffect(() => {
+    if (dtr.length > 1) {
+      setFilterParams({ ...filterParams, site: dtr });
+    }
+  }, [dtr]);
 
   const setRowCount = (rowCount) => {
     setPageSize(rowCount);
@@ -244,9 +230,6 @@ const PushEventData = () => {
     // console.log(dummy)
     setFilterParams(filterParams);
     setCurrentPage(1);
-    setFetchingData(true);
-    setError(false);
-    setRetry(true);
   };
   const retryAgain = () => {
     refetch();

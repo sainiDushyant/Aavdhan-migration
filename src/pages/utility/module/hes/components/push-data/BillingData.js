@@ -2,6 +2,7 @@ import { CardBody, Card, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { useState, useEffect } from 'react';
 
 import { useLocation } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import CommonMeterDropdown from '../commonMeterDropdown';
 
 import CardInfo from '../../../../../../components/ui-elements/cards/cardInfo';
@@ -18,8 +19,11 @@ import { getDefaultDateTimeRange } from '../../../../../../utils';
 import { useGetBillingDataQuery } from '../../../../../../api/hes/push-dataSlice';
 import DataTableV1 from '../../../../../../components/dtTable/DataTableV1';
 
-const BillingData = () => {
+const BillingData = (props) => {
   const location = useLocation();
+  const currentSelectedModule = useSelector(
+    (state) => state.currentSelectedModule
+  );
 
   const defaultDateTime = getDefaultDateTimeRange();
 
@@ -44,21 +48,28 @@ const BillingData = () => {
   }
   let params = {};
 
-  if (!filterParams.hasOwnProperty('site')) {
+  params = {
+    project,
+    ...filterParams,
+    page: currentPage,
+    page_size: pageSize,
+  };
+
+  if (
+    project !== currentSelectedModule &&
+    filterParams.hasOwnProperty('site') &&
+    filterParams.hasOwnProperty('meter')
+  ) {
     params = {
       project,
-      ...filterParams,
+      start_data: defaultDateTime.startDateTime,
+      end_date: defaultDateTime.endDateTime,
       page: currentPage,
       page_size: pageSize,
     };
-  } else {
-    params = {
-      project,
-      ...filterParams,
-      page: currentPage,
-      page_size: pageSize,
-    };
+    props.setActive('1');
   }
+
   const setRowCount = (rowCount) => {
     setPageSize(rowCount);
   };
@@ -114,15 +125,17 @@ const BillingData = () => {
 
       for (let i = 0; i < results.length; i++) {
         const item = results[i].data;
-        item.reporting_timestamp = results[i].report_timestamp;
+        const newItem = { ...item };
+        newItem.reporting_timestamp = results[i].report_timestamp;
 
-        // Check if item is an object (not an array)
-        if (typeof item === 'object' && item !== null) {
-          if (item.hasOwnProperty('total_poweron_duraion_min')) {
-            item['Total power on duration'] = item['total_poweron_duraion_min'];
-            delete item['total_poweron_duraion_min'];
+        // Check if newItem is an object (not an array)
+        if (typeof newItem === 'object' && newItem !== null) {
+          if (newItem.hasOwnProperty('total_poweron_duraion_min')) {
+            newItem['Total power on duration'] =
+              newItem['total_poweron_duraion_min'];
+            delete newItem['total_poweron_duraion_min'];
           }
-          for (const key in item) {
+          for (const key in newItem) {
             if (command_sequence.hasOwnProperty(key)) {
               const commandSequence = command_sequence[key];
 
@@ -131,32 +144,34 @@ const BillingData = () => {
                 keysToConvertWh.includes(commandSequence)
               ) {
                 // Convert from Wh to kWh
-                item[commandSequence] = item[key] / 1000;
-                if (item[key] !== 0) {
-                  item[commandSequence] = item[commandSequence]?.toFixed(4);
+                newItem[commandSequence] = newItem[key] / 1000;
+                if (newItem[key] !== 0) {
+                  newItem[commandSequence] =
+                    newItem[commandSequence]?.toFixed(4);
                 }
               } else if (
                 keysToConvertVAh &&
                 keysToConvertVAh.includes(commandSequence)
               ) {
                 // Convert from VAh to kVAh
-                item[commandSequence] = item[key] / 1000;
-                if (item[key] !== 0) {
-                  item[commandSequence] = item[commandSequence]?.toFixed(4);
+                newItem[commandSequence] = newItem[key] / 1000;
+                if (newItem[key] !== 0) {
+                  newItem[commandSequence] =
+                    newItem[commandSequence]?.toFixed(4);
                 }
               } else {
-                item[commandSequence] = item[key];
+                newItem[commandSequence] = newItem[key];
               }
               // If the key is different from the mapped key, delete it
               if (commandSequence !== key) {
-                delete item[key];
+                delete newItem[key];
               }
             }
-            if (item[key] === '65535-00-00 00:00:00') {
-              item[key] = '--';
+            if (newItem[key] === '65535-00-00 00:00:00') {
+              newItem[key] = '--';
             }
           }
-          billingDataResponse.push(item);
+          billingDataResponse.push(newItem);
         }
       }
 

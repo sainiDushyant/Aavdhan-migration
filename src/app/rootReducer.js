@@ -7,6 +7,7 @@ import logoutApi from '../api/logoutSlice';
 import {
   utilityMDASAssetListReducer,
   utilityMDASDlmsCommandReducer,
+  currentSelectedModuleReducer,
 } from '../app/redux/commandExecutionSlice';
 import { MDMSHierarchyProgressReducer } from './redux/mdmsHeirarchySlice';
 import { pushDataApi } from '../api/hes/push-dataSlice';
@@ -32,6 +33,7 @@ const rootReducer = combineReducers({
   [dropdownsApi.reducerPath]: dropdownsApi.reducer,
   utilityMDASAssetList: utilityMDASAssetListReducer,
   utilityMDASDlmsCommand: utilityMDASDlmsCommandReducer,
+  currentSelectedModule: currentSelectedModuleReducer,
   MDMSHierarchyProgress: MDMSHierarchyProgressReducer,
 });
 

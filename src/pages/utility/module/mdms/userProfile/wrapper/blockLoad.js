@@ -2,7 +2,7 @@ import StatsHorizontal from '../../../../../../@core/components/widgets/stats/St
 import { useState } from 'react';
 import { ChevronRight } from 'react-feather';
 
-import BlockLoadModal from './blockLoadModal';
+// import BlockLoadModal from './blockLoadModal';
 
 const BlockLoad = () => {
   const [centeredModal, setCenteredModal] = useState(false);
@@ -18,13 +18,14 @@ const BlockLoad = () => {
         clas="h6"
         avatar={true}
       />
-      {centeredModal && (
-        <BlockLoadModal
-          title={'Block load table'}
-          isOpen={centeredModal}
-          handleModalState={setCenteredModal}
-        />
-      )}
+      {
+        centeredModal && ''
+        // <BlockLoadModal
+        //   title={'Block load table'}
+        //   isOpen={centeredModal}
+        //   handleModalState={setCenteredModal}
+        // />
+      }
     </div>
   );
 };

@@ -3,9 +3,10 @@ import Select from 'react-select';
 
 import moment from 'moment';
 import Flatpickr from 'react-flatpickr';
+import { setCurrentSelectedModule } from '../../../../../app/redux/commandExecutionSlice';
 // import { useSelector } from 'react-redux'
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useLayoutEffect } from 'react';
 
 import { useLocation } from 'react-router-dom';
 import {
@@ -13,7 +14,10 @@ import {
   useLazyGISMetersListQuery,
 } from '../../../../../api/hes/drop-downSlice';
 
+import { useSelector, useDispatch } from 'react-redux';
+
 const CommonMeterDropdown = (props) => {
+  const dispatch = useDispatch();
   const location = useLocation();
 
   const projectName =
@@ -22,7 +26,10 @@ const CommonMeterDropdown = (props) => {
       : location.pathname.split('/')[2];
   const verticalName = location.pathname.split('/')[1];
 
-  // const responseData = useSelector(state => state.UtilityMdmsFlowReducer)
+  const currentSelectedModule = useSelector(
+    (state) => state.currentSelectedModule
+  );
+
   const {
     data: commandInfoAssetsResponse,
     isFetching: commandInfoAssetsLoading,
@@ -30,12 +37,6 @@ const CommonMeterDropdown = (props) => {
     project: projectName,
     vertical: verticalName,
   });
-  useEffect(() => {
-    setSelectedDTR('');
-    setSelectedMeter('');
-    setMeter('');
-    setParams({});
-  }, [location.pathname]);
 
   const [dtr, setDtr] = useState([]);
 
@@ -69,6 +70,15 @@ const CommonMeterDropdown = (props) => {
   const [disableMeterSearch, setDisableMeterSearch] = useState(false);
 
   const [fetchGisMeters, data] = useLazyGISMetersListQuery(params);
+
+  useEffect(() => {
+    if (projectName !== currentSelectedModule) {
+      setSelectedDTR('');
+      setSelectedMeter('');
+      setMeterSearch('');
+    }
+    dispatch(setCurrentSelectedModule(projectName));
+  }, [projectName]);
 
   useEffect(() => {
     const statusCode = commandInfoAssetsResponse?.responseCode;

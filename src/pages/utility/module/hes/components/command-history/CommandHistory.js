@@ -12,7 +12,7 @@ import { useLocation } from 'react-router-dom';
 import { Eye, X, Layers, Download } from 'react-feather';
 import SimpleTableForDLMSCommandResponse from '../../../../../../components/dtTable/simpleTableForDLMSCommandResponse';
 import DataTableV1 from '../../../../../../components/dtTable/DataTableV1';
-
+import { useDispatch } from 'react-redux';
 import CardInfo from '../../../../../../components/ui-elements/cards/cardInfo';
 
 import Loader from '../../../../../../components/loader/loader';
@@ -26,9 +26,13 @@ import {
   useGetMdasTapCommandHistoryQuery,
   useLazyGetMdasDlmsHistoryDataQuery,
 } from '../../../../../../api/hes/command-historySlice';
+
+import { setCurrentSelectedModule } from '../../../../../../app/redux/commandExecutionSlice';
 import FilterForm from './filterForm';
 import '../../../../../../assets/css/util.scss';
 const CommandHistory = (props) => {
+  const dispatch = useDispatch();
+
   // const [getTapCommandHistory, tapCommandHistoryResponse] =
   //   useLazyGetMdasTapCommandHistoryQuery();
 
@@ -68,6 +72,8 @@ const CommandHistory = (props) => {
   const [commandName, setCommandName] = useState('');
 
   const currentTime = moment().tz('Asia/Kolkata');
+
+  dispatch(setCurrentSelectedModule(projectName));
 
   // useEffect(() => {
   //   if (filterAppliedParams) {
@@ -332,7 +338,7 @@ const CommandHistory = (props) => {
     const params = {
       id: row.id,
     };
-    let response = await getDlmsHistoryData(params);
+    let response = await getDlmsHistoryData(params, { preferCacheValue: true });
     setCenteredModal(true);
     let statusCode = response?.data?.responseCode;
     if (statusCode === 200 || statusCode === 202) {

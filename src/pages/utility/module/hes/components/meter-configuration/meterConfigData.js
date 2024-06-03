@@ -14,8 +14,9 @@ import {
   Label,
   Input,
 } from 'reactstrap';
-import { useState, useEffect } from 'react';
 
+import { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 
 import CardInfo from '../../../../../../components/ui-elements/cards/cardInfo';
@@ -27,9 +28,11 @@ import CommonMeterDropdown from '../commonMeterDropdown';
 import MeterConfigurationDownloadWrapper from './meterConfigurationDownloadWrapper';
 import MeterConfigDataModal from './meterConfigDataModal';
 
-const MeterConfigData = () => {
+const MeterConfigData = (props) => {
   const location = useLocation();
-
+  const currentSelectedModule = useSelector(
+    (state) => state.currentSelectedModule
+  );
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(120);
   const [pageSize, setPageSize] = useState(10);
@@ -51,24 +54,6 @@ const MeterConfigData = () => {
     { value: 'RF', label: 'RF' },
     { value: 'TCP', label: 'TCP' },
   ];
-
-  // const fetchData = async params => {
-  //   return await useJwt
-  //     .getMDasMeterConfigurationList(params)
-  //     .then(res => {
-  //       const status = res.status
-
-  //       return [status, res]
-  //     })
-  //     .catch(err => {
-  //       if (err.response) {
-  //         const status = err.response.status
-  //         return [status, err]
-  //       } else {
-  //         return [0, err]
-  //       }
-  //     })
-  // }
 
   let project = '';
   if (location.pathname.split('/')[2] === 'sbpdcl') {
@@ -99,6 +84,20 @@ const MeterConfigData = () => {
   // }
 
   // const [statusCode, response] = await fetchData(params)
+
+  if (
+    project !== currentSelectedModule &&
+    filterParams.hasOwnProperty('site') &&
+    filterParams.hasOwnProperty('meter')
+  ) {
+    params = {
+      project,
+      page: currentPage,
+      page_size: pageSize,
+    };
+    props.setActive('1');
+  }
+
   const { data, isError, isFetching, refetch } =
     useGetMeterConfigurationListQuery(params);
   useEffect(() => {

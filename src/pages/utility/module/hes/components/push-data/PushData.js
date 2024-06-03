@@ -4,7 +4,7 @@ import Blockloaddata from './BlockLoadData';
 import PushEventData from './PushEventData';
 import BillingData from './BillingData';
 
-const PushData = () => {
+const PushData = (props) => {
   const [active, setActive] = useState('1');
 
   const toggle = (tab) => {
@@ -48,10 +48,14 @@ const PushData = () => {
         </Nav>
         <TabContent className="py-50" activeTab={active}>
           <TabPane tabId="1">
-            {active === '1' && <Blockloaddata setActive={setActive} />}
+            {active === '1' && <Blockloaddata setActive={props.setActive} />}
           </TabPane>
-          <TabPane tabId="2">{active === '2' && <PushEventData />}</TabPane>
-          <TabPane tabId="3">{active === '3' && <BillingData />}</TabPane>
+          <TabPane tabId="2">
+            {active === '2' && <PushEventData setActive={props.setActive} />}
+          </TabPane>
+          <TabPane tabId="3">
+            {active === '3' && <BillingData setActive={props.setActive} />}
+          </TabPane>
         </TabContent>
       </Card>
     </React.Fragment>

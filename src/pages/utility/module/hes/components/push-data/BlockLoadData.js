@@ -1,5 +1,5 @@
 import { CardBody, Card, Modal, ModalHeader, ModalBody } from 'reactstrap';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useLayoutEffect } from 'react';
 
 import { useLocation } from 'react-router-dom';
 
@@ -12,22 +12,26 @@ import CardInfo from '../../../../../../components/ui-elements/cards/cardInfo';
 import Loader from '../../../../../../components/loader/loader';
 
 import PushDataDownloadWrapper from './PushDataDownloadWrapper';
+import { useSelector, useDispatch } from 'react-redux';
 
 import { X } from 'react-feather';
 
 import moment from 'moment';
 import { useGetBlockLoadDataQuery } from '../../../../../../api/hes/push-dataSlice';
+import { setCurrentSelectedModule } from '../../../../../../app/redux/commandExecutionSlice';
 
 const BlockLoadData = (props) => {
+  const dispatch = useDispatch();
   const defaultStartDate = moment()
     .subtract(1, 'days')
     .startOf('day')
     .format('YYYY-MM-DD 00:00:00'); // Yesterday, start of day
   const defaultEndDate = moment().format('YYYY-MM-DD HH:00:00');
 
-  // const defaultEndDate = '2024-05-16 00:00:00';
-
   const location = useLocation();
+  const currentSelectedModule = useSelector(
+    (state) => state.currentSelectedModule
+  );
 
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(120);
@@ -47,52 +51,80 @@ const BlockLoadData = (props) => {
   } else {
     project = location.pathname.split('/')[2];
   }
+
   let params = {};
-  params = { project, ...filterParams, page: currentPage, page_size: pageSize };
+  params = {
+    project,
+    ...filterParams,
+    page: currentPage,
+    page_size: pageSize,
+  };
 
   const setRowCount = (rowCount) => {
     setPageSize(rowCount);
   };
+
+  if (
+    project !== currentSelectedModule &&
+    filterParams.hasOwnProperty('site') &&
+    filterParams.hasOwnProperty('meter')
+  ) {
+    params = {
+      project,
+      start_data: defaultStartDate,
+      end_date: defaultEndDate,
+      page: currentPage,
+      page_size: pageSize,
+    };
+    props.setActive('1');
+  }
+
   // if (!filterParams.hasOwnProperty('site')) {
   // If No Site Selected, add all sites access available
   // let dtr_list = ' '
-  // for (let i = 0; i < responseData.responseData.dtr_list.length; i++) {
+  // for (let i = 0; i < responseresponseData.dtr_list.length; i++) {
   //   dtr_list += `${responseData.responseData.dtr_list[i]['dtr_id']},`
   // }
-  const { data, isFetching, isError, refetch } =
+  // const { data, isFetching, isError, refetch } = useLazyGetBlockLoadDataQuery(
+  //   params,
+  //   { skip }
+  // );
+
+  const { status, data, isFetching, isError, refetch } =
     useGetBlockLoadDataQuery(params);
 
   useEffect(() => {
-    let statusCode = data?.responseCode;
-    if (statusCode === 200) {
-      const blockLoadResponse = data.data.result.results.map((e) => {
-        const temp_blockload = { ...e.data };
-        if (temp_blockload.meter_number === 'not') {
-          temp_blockload.meter_number = '--';
-        }
+    if (status === 'fulfilled') {
+      let statusCode = data?.responseCode;
+      if (statusCode === 200) {
+        const blockLoadResponse = data.data.result.results.map((e) => {
+          const temp_blockload = { ...e.data };
+          if (temp_blockload.meter_number === 'not') {
+            temp_blockload.meter_number = '--';
+          }
 
-        if (temp_blockload.hasOwnProperty('avg_voltage')) {
-          temp_blockload['avg_voltage'] = Number(
-            temp_blockload['avg_voltage']
-          ).toFixed(2);
-        }
+          if (temp_blockload.hasOwnProperty('avg_voltage')) {
+            temp_blockload['avg_voltage'] = Number(
+              temp_blockload['avg_voltage']
+            ).toFixed(2);
+          }
 
-        if (temp_blockload.hasOwnProperty('avg_current')) {
-          temp_blockload['avg_current'] = Number(
-            temp_blockload['avg_current']
-          ).toFixed(2);
-        }
+          if (temp_blockload.hasOwnProperty('avg_current')) {
+            temp_blockload['avg_current'] = Number(
+              temp_blockload['avg_current']
+            ).toFixed(2);
+          }
 
-        if (temp_blockload.hasOwnProperty('temperature')) {
+          if (temp_blockload.hasOwnProperty('temperature')) {
+            return temp_blockload;
+          }
           return temp_blockload;
-        }
-        return temp_blockload;
-      });
-      console.log(blockLoadResponse, 'blockLoadResponse');
-      setResponse(blockLoadResponse);
-      setTotalCount(data?.data.result.count);
-    } else {
-      setErrorMessage('Network Error, please retry');
+        });
+        setResponse(blockLoadResponse);
+        setTotalCount(data?.data.result.count);
+      } else {
+        setErrorMessage('Network Error, please retry');
+      }
     }
   }, [data]);
 
@@ -228,6 +260,7 @@ const BlockLoadData = (props) => {
           <CommonMeterDropdown
             tab="block_load"
             set_resp={setResponse}
+            setActive={props.setActive}
             onSubmitButtonClicked={onSubmitButtonClicked}
           />
         </CardBody>
@@ -238,7 +271,7 @@ const BlockLoadData = (props) => {
             props={{
               message: { errorMessage },
               retryFun: { retryAgain },
-              retry: { isFetching },
+              retry: { retry: isFetching },
             }}
           />
         ) : (
