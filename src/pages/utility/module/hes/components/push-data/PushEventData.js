@@ -56,7 +56,7 @@ const PushEventData = (props) => {
     project,
     ...filterParams,
     page: currentPage,
-    page_size: pageSize,
+    page_size: 10,
   };
 
   if (
@@ -80,9 +80,9 @@ const PushEventData = (props) => {
     }
   }, [dtr]);
 
-  const setRowCount = (rowCount) => {
-    setPageSize(rowCount);
-  };
+  // const setRowCount = (rowCount) => {
+  //   setPageSize(rowCount);
+  // };
   const { data, isFetching, isError, refetch } =
     useGetPushBasedEventQuery(params);
 
@@ -90,6 +90,7 @@ const PushEventData = (props) => {
     let statusCode = data?.responseCode;
     if (statusCode === 200) {
       const response_temp = [];
+      let totolEventIndex = 0;
       for (let i = 0; i < data?.data?.result?.results?.length; i++) {
         const event_message = data?.data?.result?.results[i]['event_message'];
         const meter_time = data?.data?.result?.results[i]['meter_time'];
@@ -108,9 +109,12 @@ const PushEventData = (props) => {
 
           response_temp.push(temp);
         }
-        setResponse(response_temp);
-        setTotalCount(data?.data.result.count);
+        totolEventIndex += event_message.length;
       }
+      console.log(totolEventIndex);
+      setResponse(response_temp);
+      setTotalCount(data?.data.result.count);
+      setPageSize(totolEventIndex);
     } else if (statusCode === 401 || statusCode === 403) {
       // setLogout(true);
     } else {
@@ -277,7 +281,7 @@ const PushEventData = (props) => {
                 columns={tblColumn()}
                 data={response}
                 rowCount={pageSize}
-                setRowCount={setRowCount}
+                // setRowCount={setRowCount}
                 tableName={'Push Event Data'}
                 showDownloadButton={true}
                 showRefreshButton={true}

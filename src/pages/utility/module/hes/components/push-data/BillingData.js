@@ -204,11 +204,15 @@ const BillingData = (props) => {
         }
 
         col_config.cell = (row) => {
-          return (
-            <div className="d-flex">
-              <span className="d-block font-weight-bold ">{row[i]}</span>
-            </div>
-          );
+          if (row[i]) {
+            return (
+              <div className="d-flex">
+                <span className="d-block font-weight-bold ">{row[i]}</span>
+              </div>
+            );
+          } else {
+            return '-';
+          }
         };
         column.push(col_config);
       }

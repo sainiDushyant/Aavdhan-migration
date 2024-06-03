@@ -266,7 +266,7 @@ const DailyLoadDataModal = (props) => {
               setRowCount={setRowCount}
               tableName={'Daily Load Data'}
               currentPage={currentPage}
-              totalRowsCount={response?.length}
+              totalRowsCount={response[key]?.length}
               onPageChange={onNextPageClicked}
               showDownloadButton={true}
               showRefreshButton={true}

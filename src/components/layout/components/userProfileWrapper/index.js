@@ -38,7 +38,7 @@ const UserProfileTab = () => {
           </NavLink>
         </NavItem>
       </Nav>
-      <TabContent className="py-50" activeTab={active}>
+      <TabContent className="" activeTab={active}>
         <TabPane tabId="1">
           <UserProfile />
         </TabPane>

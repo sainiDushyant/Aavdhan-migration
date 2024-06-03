@@ -32,8 +32,6 @@ function Navbar() {
   let role = '';
 
   const project = location.pathname.split('/')[3];
-  console.log(project, 'project');
-
   try {
     if (token) {
       const userDetails = jwtDecode(token);

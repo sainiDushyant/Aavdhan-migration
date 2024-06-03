@@ -32,7 +32,9 @@ const PaginationDropDown = ({
         <DropdownToggle caret color="primary" size="sm">
           {rowCount}
         </DropdownToggle>
-        <DropdownMenu className="px-3">
+        <DropdownMenu
+          className={`${disabled || disabledCounts ? 'isDisabled' : ''} px-3`}
+        >
           {items.map((item) => (
             <DropdownItem
               key={item.label}

@@ -56,6 +56,14 @@ function SideBar() {
             >
               MDMS
             </MenuItem>
+            <MenuItem
+              icon={<Circle size={12} />}
+              onClick={() => navigate('/utility/lpdd/sla-reports')}
+              active={location.pathname === '/utility/lpdd/sla-reports'}
+              data-bs-dismiss={isMobileSidebarOpen ? 'offcanvas' : ''}
+            >
+              SLA REPORTS
+            </MenuItem>
           </SubMenu>
           <SubMenu icon={<Award size={18} />} label="SBPDCL">
             <MenuItem
@@ -73,6 +81,14 @@ function SideBar() {
               data-bs-dismiss={isMobileSidebarOpen ? 'offcanvas' : ''}
             >
               MDMS
+            </MenuItem>
+            <MenuItem
+              icon={<Circle size={12} />}
+              onClick={() => navigate('/utility/sbpdcl/sla-reports')}
+              active={location.pathname === '/utility/sbpdcl/sla-reports'}
+              data-bs-dismiss={isMobileSidebarOpen ? 'offcanvas' : ''}
+            >
+              SLA REPORTS
             </MenuItem>
           </SubMenu>
         </Menu>

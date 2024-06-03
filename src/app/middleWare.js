@@ -10,6 +10,7 @@ import { energyConsumptionApi } from '../api/mdms/energy-consumptionSlice';
 import { operationalStatsApi } from '../api/mdms/operational-statisticsSlice';
 import { loadsApi } from '../api/mdms/loadSlice';
 import { userConsumptionApi } from '../api/mdms/userConsumptionSlice';
+import { slaReportsApi } from '../api/sla-reports';
 
 const middleware = new MiddlewareArray().concat(
   loginApi.middleware,
@@ -22,7 +23,8 @@ const middleware = new MiddlewareArray().concat(
   energyConsumptionApi.middleware,
   operationalStatsApi.middleware,
   loadsApi.middleware,
-  userConsumptionApi.middleware
+  userConsumptionApi.middleware,
+  slaReportsApi.middleware
 );
 
 export default middleware;
