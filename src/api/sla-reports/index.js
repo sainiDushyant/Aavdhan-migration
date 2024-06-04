@@ -20,7 +20,16 @@ export const slaReportsApi = createApi({
         params: params,
       }),
     }),
+    getBillingHistorySLA: builder.query({
+      query: (params) => ({
+        url: `${url}/sla/billing-history`,
+        params: params,
+      }),
+    }),
   }),
 });
-export const { useGetBlockLoadSLAQuery, useGetDailyLoadSLAQuery } =
-  slaReportsApi;
+export const {
+  useGetBlockLoadSLAQuery,
+  useGetDailyLoadSLAQuery,
+  useGetBillingHistorySLAQuery,
+} = slaReportsApi;

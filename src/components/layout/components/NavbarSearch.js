@@ -184,12 +184,19 @@ const NavbarSearch = ({ setOpenSearchBar }) => {
       }, 1);
     }
   };
+  const handleSearchIconClicked = () => {
+    if (userInputParameter === undefined || userInputParameter.length <= 0) {
+      //do Nothing
+    } else {
+      searchMeter();
+    }
+  };
 
   return (
-    <NavItem className="d-flex align-items-center w-100 ">
-      <Icon.Search className="me-1 ms-1" />
+    <NavItem className="nav-item-search">
+      <Icon.Search className="me-1 ms-1" onClick={handleSearchIconClicked} />
       <Autocomplete
-        className="form-control border-0 me-2"
+        className="form-control border-0 me-2 autocomplete"
         filterHeaderKey="groupTitle"
         grouped={true}
         placeholder="Search for Substation,Feeder,Site,Meter"
@@ -251,7 +258,7 @@ const NavbarSearch = ({ setOpenSearchBar }) => {
         </Label>
       </FormGroup>
       <Icon.X
-        className="ms-auto me-1"
+        className="ms-auto me-1 icon-x"
         onClick={(e) => {
           e.stopPropagation();
           setOpenSearchBar(false);

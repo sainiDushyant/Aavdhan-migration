@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { TabContent, TabPane, Nav, NavItem, NavLink } from 'reactstrap';
 import BlockloadSlaReport from './blockloadSlaReport';
-// import DailyloadSlaReport from './dailyloadSlaReport';
-// import BillingDataSLAReport from './billingDataSLAReport';
+import DailyloadSlaReport from './dailyloadSlaReport';
+import BillingDataSLAReport from './billingDataSLAReport';
 // import RCDCSLAReport from './rcdcSLAReport';
 
 const SLA_Reports = () => {
@@ -13,6 +13,7 @@ const SLA_Reports = () => {
       setActive(tab);
     }
   };
+
   return (
     <React.Fragment>
       <Nav tabs>
@@ -46,8 +47,7 @@ const SLA_Reports = () => {
             Billing SLA
           </NavLink>
         </NavItem>
-
-        <NavItem>
+        {/* <NavItem>
           <NavLink
             active={active === '4'}
             onClick={() => {
@@ -56,36 +56,20 @@ const SLA_Reports = () => {
           >
             RC/DC SLA
           </NavLink>
-        </NavItem>
+        </NavItem> */}
       </Nav>
       <TabContent className="py-50" activeTab={active}>
-        <TabPane tabId="1">
-          <BlockloadSlaReport />
-        </TabPane>
-        <TabPane tabId="2">{/* <DailyloadSlaReport /> */}</TabPane>
+        <TabPane tabId="1">{active === '1' && <BlockloadSlaReport />}</TabPane>
+        <TabPane tabId="2">{active === '2' && <DailyloadSlaReport />}</TabPane>
         <TabPane tabId="3">
-          {/* <DailyloadSlaReport /> */}
-          {/* <BillingDataSLAReport /> */}
+          {active === '3' && <BillingDataSLAReport />}
         </TabPane>
-        <TabPane tabId="4">
-          {/* <DailyloadSlaReport /> */}
-          {/* <RCDCSLAReport /> */}
-        </TabPane>
-        {/* <TabPane tabId='3'>
-          <p>
-            Croissant jelly tootsie roll candy canes. Donut sugar plum jujubes sweet roll chocolate
-            cake wafer. Tart caramels jujubes. Dragée tart oat cake. Fruitcake cheesecake danish.
-            Danish topping candy jujubes. Candy canes candy canes lemon drops caramels tiramisu
-            chocolate bar pie.
-          </p>
-          <p>
-            Gummi bears tootsie roll cake wafer. Gummies powder apple pie bear claw. Caramels bear
-            claw fruitcake topping lemon drops. Carrot cake macaroon ice cream liquorice donut
-            soufflé. Gummi bears carrot cake toffee bonbon gingerbread lemon drops chocolate cake.
-          </p>
-        </TabPane> */}
+        {/* <TabPane tabId="4"> */}
+        {/* {active === '4' && <RCDCSLAReport />} */}
+        {/* </TabPane> */}
       </TabContent>
     </React.Fragment>
   );
 };
+
 export default SLA_Reports;

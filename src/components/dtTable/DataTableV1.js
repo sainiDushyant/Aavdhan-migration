@@ -35,7 +35,7 @@ const DataTableV1 = (props) => {
   const [downloadTooltip, setDownloadTooltip] = useState(false);
   const [filterTooltip, setFilterTooltip] = useState(false);
   const CustomPagination = () => (
-    <div className="pagination react-paginate separated-pagination pagination-sm align-items-center justify-content-end mt-1 mb-1">
+    <div className="pagination react-paginate separated-pagination pagination-sm pagination-footer align-items-center justify-content-end mt-1 mb-1">
       {props.setRowCount && (
         <PaginationDropDown
           rowCount={props.rowCount}
@@ -145,7 +145,7 @@ const DataTableV1 = (props) => {
             </Col>
 
             <Col className="p-1">
-              <div className="d-flex justify-content-end align-items-center gap-1 h-100">
+              <div className="d-flex justify-content-end align-items-center gap-1 h-100 icons-navbar">
                 <Input
                   type="text"
                   placeholder="Search..."

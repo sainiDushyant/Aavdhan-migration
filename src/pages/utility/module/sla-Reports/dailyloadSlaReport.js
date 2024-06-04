@@ -20,81 +20,24 @@ const DailyloadSlaReport = () => {
     .format('YYYY-MM-DD'); // Yesterday, start of day
   const defaultEndDate = moment().startOf('day').format('YYYY-MM-DD'); // Today, start of day
   // Error Handling
-  const [page, setpage] = useState(0);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
   const [errorMessage, setErrorMessage] = useState('');
-  const [hasError, setError] = useState(false);
-  const [retry, setRetry] = useState(false);
-  const [loader, setLoader] = useState(false);
   const [response, setResponse] = useState([]);
-  const [fetchingData, setFetchingData] = useState(true);
   const [appliedParams, setAppliedParams] = useState({
     startDate: defaultStartDate,
     endDate: defaultEndDate,
   });
 
-  // Logout User
-  //   const [logout, setLogout] = useState(false)
-  //   const dispatch = useDispatch()
-  //   const history = useHistory()
-  //   useEffect(() => {
-  //     if (logout) {
-  //       authLogout(history, dispatch)
-  //     }
-  //   }, [logout])
+  const setRowCount = (rowCount) => {
+    setPageSize(rowCount);
+    refetch();
+  };
 
-  // Fetch Blockload SLAReports data
-  //   const fetchData = async (params) => {
-  //     return await useJwt
-  //       .getDailyLoadSlaReports(params)
-  //       .then((res) => {
-  //         // console.log(res)
-  //         const status = res.status
-  //         return [status, res]
-  //       })
-  //       .catch((err) => {
-  //         if (err.response) {
-  //           const status = err.response.status
-  //           return [status, err]
-  //         } else {
-  //           return [0, err]
-  //         }
-  //       })
-  //   }
-
-  //   useEffect(async () => {
-  //     if (fetchingData || retry) {
-  //       setLoader(true)
-  //       const params = { ...appliedParams }
-
-  //       const [statusCode, response] = await fetchData(params)
-  //       if (statusCode === 200) {
-  //         try {
-  //           const res = response.data
-  //           const modifiedRes = res.map(({ slaAcheived, ...rest }) => ({
-  //             ...rest,
-  //             "slaAchieved(%)": slaAcheived
-  //           }))
-  //           setResponse(modifiedRes)
-  //           setFetchingData(false)
-  //           setRetry(false)
-  //         } catch (error) {
-  //           setRetry(false)
-  //           setError(true)
-  //           setErrorMessage("Something went wrong, please retry")
-  //         }
-  //       } else if (statusCode === 401 || statusCode === 403) {
-  //         setLogout(true)
-  //       } else {
-  //         setRetry(false)
-  //         setError(true)
-  //         setErrorMessage("Network Error, please retry")
-  //       }
-  //       setLoader(false)
-  //     }
-  //   }, [fetchingData, retry])
   const params = { ...appliedParams };
   const { status, data, isError, isFetching, refetch } =
     useGetDailyLoadSLAQuery(params);
+
   useEffect(() => {
     if (status === 'fulfilled') {
       const res = data;
@@ -104,10 +47,10 @@ const DailyloadSlaReport = () => {
       }));
       setResponse(modifiedRes);
       setErrorMessage('Something went wrong, please retry');
-    } else {
+    } else if (isError) {
       setErrorMessage('Network Error, please retry');
     }
-  }, [data]);
+  }, [data, isError, status]);
 
   const tblColumn = () => {
     const column = [];
@@ -174,12 +117,15 @@ const DailyloadSlaReport = () => {
       cell: (row, i) => {
         return (
           <div className="d-flex justify-content-center">
-            {page * 10 + 1 + i}
+            {pageSize * (page - 1) + 1 + i}
           </div>
         );
       },
     });
     return column;
+  };
+  const onNextPageClicked = (page) => {
+    setPage(page + 1);
   };
 
   const retryAgain = () => {
@@ -208,24 +154,15 @@ const DailyloadSlaReport = () => {
           ) : (
             !isFetching && (
               <div className="table-wrapper">
-                {/* <DataTabled
-                  rowCount={10}
-                  currentpage={page}
-                  ispagination
-                  selectedPage={setpage}
-                  columns={tblColumn()}
-                  tblData={response}
-                  tableName={'Dailyload SLA Report'}
-                  // handleRowClick={onCellClick}
-                  // pointerOnHover
-                  refresh={refresh}
-                /> */}
                 <DataTableV1
-                  rowCount={10}
-                  currentpage={page}
+                  rowCount={pageSize}
+                  setRowCount={setRowCount}
+                  currentPage={page}
                   columns={tblColumn()}
                   data={response}
+                  totalRowsCount={data?.length}
                   tableName={' Dailyload SLA Report'}
+                  onPageChange={onNextPageClicked}
                   showDownloadButton={true}
                   showRefreshButton={true}
                   refreshFn={refetch}

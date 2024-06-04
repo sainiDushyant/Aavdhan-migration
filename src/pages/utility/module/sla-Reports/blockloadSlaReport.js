@@ -16,13 +16,19 @@ const BlockloadSlaReport = () => {
   const defaultEndDate = moment().startOf('day').format('YYYY-MM-DD'); // Today, start of day
 
   // Error Handling
-  const [page, setpage] = useState(0);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
   const [errorMessage, setErrorMessage] = useState('');
   const [response, setResponse] = useState([]);
   const [appliedParams, setAppliedParams] = useState({
     startDate: defaultStartDate,
     endDate: defaultEndDate,
   });
+
+  const setRowCount = (rowCount) => {
+    setPageSize(rowCount);
+    refetch();
+  };
 
   const params = { ...appliedParams };
   const { status, data, isError, isFetching, refetch } =
@@ -36,10 +42,10 @@ const BlockloadSlaReport = () => {
       }));
       setResponse(modifiedRes);
       setErrorMessage('Something went wrong, please retry');
-    } else {
+    } else if (isError) {
       setErrorMessage('Network Error, please retry');
     }
-  }, [data]);
+  }, [data, status, isError, pageSize]);
 
   const tblColumn = () => {
     const column = [];
@@ -106,7 +112,7 @@ const BlockloadSlaReport = () => {
       cell: (row, i) => {
         return (
           <div className="d-flex justify-content-center">
-            {page * 10 + 1 + i}
+            {pageSize * (page - 1) + 1 + i}
           </div>
         );
       },
@@ -114,12 +120,15 @@ const BlockloadSlaReport = () => {
     return column;
   };
 
+  const onNextPageClicked = (page) => {
+    setPage(page + 1);
+  };
+
   const retryAgain = () => {
     refetch();
   };
 
   const filterParams = (val) => {
-    console.log(val, 'from daily load .....');
     setAppliedParams(val);
   };
 
@@ -143,11 +152,14 @@ const BlockloadSlaReport = () => {
             !isFetching && (
               <div className="table-wrapper">
                 <DataTableV1
-                  rowCount={10}
-                  currentpage={page}
+                  rowCount={pageSize}
+                  setRowCount={setRowCount}
+                  currentPage={page}
                   columns={tblColumn()}
                   data={response}
                   tableName={' BlockLoad SLA Report'}
+                  totalRowsCount={data?.length}
+                  onPageChange={onNextPageClicked}
                   showDownloadButton={true}
                   showRefreshButton={true}
                   refreshFn={refetch}

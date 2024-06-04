@@ -407,6 +407,7 @@ body::-webkit-scrollbar-thumb:hover {
   box-shadow: 0 5px 5px -5px #ccc;
   transition: 0.3s;
 }
+//style for MDAS command floating based on sidebar collapsing
 .sidebar-collapsed {
   position: absolute;
   width: calc(100% - 85px);
@@ -838,5 +839,50 @@ body::-webkit-scrollbar-thumb:hover {
   }
   to {
     transform: rotate(360deg);
+  }
+}
+// rows per page dropdown & icons on top of datatableV1
+@media (max-width: 991.98px) {
+  .icons-navbar {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .pagination-footer {
+    display: flex;
+    flex-wrap: wrap;
+  }
+}
+// navsearch in the navbar(header)
+.nav-item-search {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  width: 100%;
+}
+
+.nav-item-search h6,
+.nav-item-search .form-group {
+  margin: 0.5rem 0;
+}
+
+@media (max-width: 991.98px) {
+  .nav-item-search {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+
+  .nav-item-search .autocomplete,
+  .nav-item-search h6 {
+    width: 100%;
+  }
+
+  .nav-item-search .form-group {
+    flex: 1 1 100%;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .nav-item .icon-x {
+    align-self: flex-end;
   }
 }
