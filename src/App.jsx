@@ -6,6 +6,7 @@ import HesUtility from './pages/utility/module/hes';
 import MdmsUtility from './pages/utility/module/mdms';
 import LayoutWrapper from './components/layout/LayoutWrapper';
 import SLA_Reports from './pages/utility/module/sla-Reports';
+import Sat from './pages/utility/module/sat';
 
 const App = () => {
   return (
@@ -35,6 +36,14 @@ const App = () => {
         <Route
           path="utility/sbpdcl/sla-reports"
           element={<LayoutWrapper children={<SLA_Reports />} />}
+        />
+         <Route
+          path="utility/lpdd/sat"
+          element={<LayoutWrapper children={<Sat />} />}
+        />
+         <Route
+          path="utility/sbpdcl/sat"
+          element={<LayoutWrapper children={<Sat />} />}
         />
 
         <Route path="forgot-password" element={<ForgotPassword />} />

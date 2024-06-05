@@ -11,6 +11,7 @@ import { operationalStatsApi } from '../api/mdms/operational-statisticsSlice';
 import { loadsApi } from '../api/mdms/loadSlice';
 import { userConsumptionApi } from '../api/mdms/userConsumptionSlice';
 import { slaReportsApi } from '../api/sla-reports';
+import { satApi } from '../api/sat';
 
 const middleware = new MiddlewareArray().concat(
   loginApi.middleware,
@@ -24,7 +25,8 @@ const middleware = new MiddlewareArray().concat(
   operationalStatsApi.middleware,
   loadsApi.middleware,
   userConsumptionApi.middleware,
-  slaReportsApi.middleware
+  slaReportsApi.middleware,
+  satApi.middleware
 );
 
 export default middleware;

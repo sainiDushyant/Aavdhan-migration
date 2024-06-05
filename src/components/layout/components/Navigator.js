@@ -6,8 +6,7 @@ import { Award, Circle } from 'react-feather';
 import { useSelector, useDispatch } from 'react-redux';
 import { setCollapsed } from '../../../app/redux/layoutSlice';
 import '../../../styles/layout.scss';
-import { Link } from 'react-router-dom';
-import { setIsMobileSidebarOpen } from '../../../app/redux/layoutSlice';
+
 function SideBar() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -64,6 +63,14 @@ function SideBar() {
             >
               SLA REPORTS
             </MenuItem>
+            <MenuItem
+              icon={<Circle size={12} />}
+              onClick={() => navigate('/utility/lpdd/sat')}
+              active={location.pathname === '/utility/lpdd/sat'}
+              data-bs-dismiss={isMobileSidebarOpen ? 'offcanvas' : ''}
+            >
+              SAT
+            </MenuItem>
           </SubMenu>
           <SubMenu icon={<Award size={18} />} label="SBPDCL">
             <MenuItem
@@ -89,6 +96,14 @@ function SideBar() {
               data-bs-dismiss={isMobileSidebarOpen ? 'offcanvas' : ''}
             >
               SLA REPORTS
+            </MenuItem>
+            <MenuItem
+              icon={<Circle size={12} />}
+              onClick={() => navigate('/utility/sbpdcl/sat')}
+              active={location.pathname === '/utility/sbpdcl/sat'}
+              data-bs-dismiss={isMobileSidebarOpen ? 'offcanvas' : ''}
+            >
+              SAT
             </MenuItem>
           </SubMenu>
         </Menu>

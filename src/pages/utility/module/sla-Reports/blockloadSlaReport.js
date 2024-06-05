@@ -59,7 +59,6 @@ const BlockloadSlaReport = () => {
         col_config.serch = i;
         col_config.sortable = true;
         col_config.reorder = true;
-        // col_config.width = '150px'
         col_config.selector = (row) => row[i];
         col_config.sortFunction = (rowA, rowB) =>
           caseInsensitiveSort(rowA, rowB, i);
@@ -130,6 +129,10 @@ const BlockloadSlaReport = () => {
 
   const filterParams = (val) => {
     setAppliedParams(val);
+  };
+
+  const onPageChange = (page) => {
+    setPage(page);
   };
 
   return (

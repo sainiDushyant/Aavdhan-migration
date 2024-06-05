@@ -26,21 +26,28 @@ export const baseQueryWithReauth = async (args, api, extraOptions) => {
     } else if (status === 401 || originalStatus === 401) {
       const refreshToken = localStorage.getItem('refreshToken');
       const accessToken = localStorage.getItem('token');
-      if (refreshToken !== 'undefined' && accessToken !== 'undefined') {
-        const decodedToken = jwtDecode(accessToken);
-        const decodedRefreshToken = jwtDecode(refreshToken);
-        if (accessToken && decodedToken.exp < Date.now() / 1000) {
-          if (refreshToken && decodedRefreshToken.exp > Date.now() / 1000) {
-            const { data, error } = await api.dispatch(
-              loginApi.endpoints.refreshToken.initiate()
-            );
-            if (data) {
-              // Set the new access token to localStorage
-              localStorage.setItem('token', data.data.result.access);
-            } else {
-              console.error(error);
+      if (
+        (refreshToken !== 'undefined' && accessToken !== 'undefined') ||
+        (refreshToken !== null && accessToken !== null)
+      ) {
+        if (accessToken && refreshToken) {
+          const decodedToken = jwtDecode(accessToken);
+          const decodedRefreshToken = jwtDecode(refreshToken);
+          if (accessToken && decodedToken.exp < Date.now() / 1000) {
+            if (refreshToken && decodedRefreshToken.exp > Date.now() / 1000) {
+              const { data, error } = await api.dispatch(
+                loginApi.endpoints.refreshToken.initiate()
+              );
+              if (data) {
+                // Set the new access token to localStorage
+                localStorage.setItem('token', data.data.result.access);
+              } else {
+                console.error(error);
+              }
             }
           }
+        } else {
+          window.location.href = '/';
         }
       } else {
         window.location.href = '/';

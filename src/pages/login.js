@@ -53,7 +53,9 @@ const Login = () => {
       );
       localStorage.setItem('uniqueId', response?.data?.data?.result?.unique_id);
       navigate('utility/lpdd/hes');
-    } else if (response.isError) {
+    } else if (response.isError && response.error.status === 'FETCH_ERROR') {
+      toast('Something went wrong.', { hideProgressBar: true, type: 'error' });
+    } else if (response.isError && response.error.status !== 'FETCH_ERROR') {
       toast('Invalid Credentials', { hideProgressBar: true, type: 'error' });
     }
   }, [response]);

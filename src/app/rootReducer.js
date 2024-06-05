@@ -18,6 +18,7 @@ import { operationalStatsApi } from '../api/mdms/operational-statisticsSlice';
 import { loadsApi } from '../api/mdms/loadSlice';
 import { userConsumptionApi } from '../api/mdms/userConsumptionSlice';
 import { slaReportsApi } from '../api/sla-reports';
+import { satApi } from '../api/sat';
 
 const rootReducer = combineReducers({
   [loginApi.reducerPath]: loginApi.reducer,
@@ -33,6 +34,7 @@ const rootReducer = combineReducers({
   [slaReportsApi.reducerPath]: slaReportsApi.reducer,
   layout: layoutReducer,
   [dropdownsApi.reducerPath]: dropdownsApi.reducer,
+  [satApi.reducerPath]: satApi.reducer,
   utilityMDASAssetList: utilityMDASAssetListReducer,
   utilityMDASDlmsCommand: utilityMDASDlmsCommandReducer,
   currentSelectedModule: currentSelectedModuleReducer,
