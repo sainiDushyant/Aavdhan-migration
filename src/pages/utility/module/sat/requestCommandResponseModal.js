@@ -1,242 +1,206 @@
-import React, { useState, useEffect } from "react"
-import { Download, Plus } from "react-feather"
-import { Col, Row, Button, Badge } from "reactstrap"
-import DataTabled from "../../../../ui-elements/dataTableUpdated"
-import { caseInsensitiveSort } from "@src/views/utils.js"
-import CardInfo from "@src/views/ui-elements/cards/actions/cardInfo"
-import Loader from "@src/views/project/misc/loader"
-import { useDispatch } from "react-redux"
-import { useHistory } from "react-router-dom"
-import useJwt from "@src/auth/jwt/useJwt"
-import { toast } from "react-toastify"
-import Toast from "@src/views/ui-elements/cards/actions/createToast"
+import React, { useState, useEffect } from 'react';
+import { Download } from 'react-feather';
+import { Col, Row, Button, Badge } from 'reactstrap';
+import { caseInsensitiveSort } from '../../../../utils';
+import CardInfo from '../../../../components/ui-elements/cards/cardInfo';
+import Loader from '../../../../components/loader/loader';
+
+import { toast } from 'react-toastify';
+import { useGetCmdResDataQuery } from '../../../../api/sat';
+import { usePostCmdResReqMutation } from '../../../../api/sat';
+import DataTableV1 from '../../../../components/dtTable/DataTableV1';
+
 const RequestCommandResponseModal = (props) => {
   // Error Handling
-  const [errorMessage, setErrorMessage] = useState("")
-  const [hasError, setError] = useState(false)
-  const [retry, setRetry] = useState(false)
-  const [loader, setLoader] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('');
+  const [postCmdRes] = usePostCmdResReqMutation();
 
-  const [logout, setLogout] = useState(false)
+  const [page, setPage] = useState(1);
+  const [response, setResponse] = useState([]);
 
-  const [page, setpage] = useState(0)
-  const [respose, setResponse] = useState([])
-  const [fetchingData, setFetchingData] = useState(true)
-
-  const dispatch = useDispatch()
-  const history = useHistory()
+  const { isError, isFetching, data, status, refetch } = useGetCmdResDataQuery({
+    id: props.rowData.id,
+  });
 
   useEffect(() => {
-    if (logout) {
-      authLogout(history, dispatch)
+    if (status === 'fulfilled') {
+      setResponse(data);
+    } else if (isError) {
+      setErrorMessage('Something went wrong, please retry.');
     }
-  }, [logout])
+  }, [isError, status, data]);
 
-  const fetchData = async (params) => {
-    return await useJwt
-      .getCmdResData(params)
-      .then((res) => {
-        const status = res.status
-        return [status, res]
-      })
-      .catch((err) => {
-        if (err.response) {
-          const status = err.response.status
-          return [status, err]
-        } else {
-          return [0, err]
-        }
-      })
-  }
-
-  useEffect(async () => {
-    if (fetchingData || retry) {
-      setLoader(true)
-      let params = {}
-      params = {}
-      if (props.rowData?.id) {
-        params.id = props.rowData.id
-      } else {
-        return
-      }
-      //   console.log(params)
-
-      const [statusCode, response] = await fetchData(params)
-      if (statusCode === 200) {
-        try {
-          setResponse(response.data)
-          setFetchingData(false)
-          setRetry(false)
-        } catch (error) {
-          setRetry(false)
-          setError(true)
-          setErrorMessage("Something went wrong, please retry")
-        }
-      } else if (statusCode === 401 || statusCode === 403) {
-        setLogout(true)
-      } else {
-        setRetry(false)
-        setError(true)
-        setErrorMessage("Network Error, please retry")
-      }
-      setLoader(false)
-    }
-  }, [fetchingData, retry])
-
-  const onRequest = async () => {
+  const onRequest = () => {
     const params = {
-      id: props.rowData?.id
-    }
+      id: props.rowData?.id,
+    };
     try {
-      const response = await useJwt.postCmdResReq(params)
-      toast.success(<Toast msg={response.data?.message} type='success' />, {
-        hideProgressBar: true
-      })
-      setRetry(true)
+      const response = postCmdRes(params);
+      toast(response.data?.message, {
+        hideProgressBar: true,
+        type: 'success',
+      });
     } catch (error) {
-      if (error?.response?.status === 401 || error?.response?.status === 403) {
-        setLogout(true)
-      } else if (error?.response?.status === 400 || error?.response?.status === 500) {
-        toast.error(<Toast msg={error.response.data.error} type='danger' />, {
-          hideProgressBar: true
-        })
+      if (error?.response?.status === 400 || error?.response?.status === 500) {
+        toast(error.response.data.error, {
+          hideProgressBar: true,
+          type: 'error',
+        });
       } else {
-        toast.error(<Toast msg={"Request Failed"} type='danger' />, {
-          hideProgressBar: true
-        })
+        toast('Request Failed', {
+          hideProgressBar: true,
+          type: 'error',
+        });
       }
     }
-  }
+  };
+
+  const onPageChange = (page) => {
+    setPage(page + 1);
+  };
 
   const tblColumn = () => {
-    const column = []
-    const custom_width = ["create_time"]
-    for (const i in respose[0]) {
-      const col_config = {}
+    const column = [];
+    const custom_width = ['create_time'];
+    for (const i in response[0]) {
+      const col_config = {};
       if (
-        i !== "id" &&
-        i !== "sampleCount" &&
-        i !== "testCycleId" &&
-        i !== "sampleMeters" &&
-        i !== "cmdArgs" &&
-        i !== "result" &&
-        i !== "resultCalculations"
+        i !== 'id' &&
+        i !== 'sampleCount' &&
+        i !== 'testCycleId' &&
+        i !== 'sampleMeters' &&
+        i !== 'cmdArgs' &&
+        i !== 'result' &&
+        i !== 'resultCalculations'
       ) {
-        col_config.name = `${i.charAt(0).toUpperCase()}${i.slice(1)}`.replaceAll("_", " ")
-        col_config.serch = i
-        col_config.sortable = true
-        col_config.reorder = true
+        col_config.name = `${i.charAt(0).toUpperCase()}${i.slice(
+          1
+        )}`.replaceAll('_', ' ');
+        col_config.serch = i;
+        col_config.sortable = true;
+        col_config.reorder = true;
         // col_config.width = '150px'
-        col_config.selector = (row) => row[i]
-        col_config.sortFunction = (rowA, rowB) => caseInsensitiveSort(rowA, rowB, i)
+        col_config.selector = (row) => row[i];
+        col_config.sortFunction = (rowA, rowB) =>
+          caseInsensitiveSort(rowA, rowB, i);
 
         col_config.cell = (row) => {
-          if (i === "status") {
-            if (row[i] === "Success") {
+          if (i === 'status') {
+            if (row[i] === 'Success') {
               return (
-                <Badge pill color='light-success' data-tag='allowRowEvents'>
+                <Badge pill color="success" data-tag="allowRowEvents">
                   {row[i]}
                 </Badge>
-              )
-            } else if (row[i] === "Processing") {
+              );
+            } else if (row[i] === 'Processing') {
               return (
-                <Badge pill color='light-warning' data-tag='allowRowEvents'>
+                <Badge pill color="warning" data-tag="allowRowEvents">
                   {row[i]}
                 </Badge>
-              )
-            } else if (row[i] === "Failed") {
+              );
+            } else if (row[i] === 'Failed') {
               return (
-                <Badge pill color='light-danger' data-tag='allowRowEvents'>
+                <Badge pill color="danger" data-tag="allowRowEvents">
                   {row[i]}
                 </Badge>
-              )
+              );
             } else {
               return (
-                <Badge pill color='light-secondary' data-tag='allowRowEvents'>
+                <Badge pill color="secondary" data-tag="allowRowEvents">
                   {row[i]}
                 </Badge>
-              )
+              );
             }
           }
-          if (i === "fileLink") {
+          if (i === 'fileLink') {
             return (
               <a href={row[i]}>
-                <Download size={20} className='mx-2' />
+                <Download size={20} className="mx-2" />
               </a>
-            )
+            );
           }
           return (
-            <div className={`d-flex font-weight-bold w-100 `} data-tag='allowRowEvents'>
+            <div
+              className={`d-flex font-weight-bold w-100 `}
+              data-tag="allowRowEvents"
+            >
               {row[i]}
             </div>
-          )
-        }
-        column.push(col_config)
+          );
+        };
+        column.push(col_config);
       }
     }
 
     column.unshift({
-      name: "Sr No.",
-      width: "90px",
+      name: 'Sr No.',
+      width: '90px',
       cell: (row, i) => {
-        return <div className='d-flex justify-content-center'>{page * 10 + 1 + i}</div>
-      }
-    })
-    return column
-  }
+        return (
+          <div className="d-flex justify-content-center">
+            {(page - 1) * 10 + 1 + i}
+          </div>
+        );
+      },
+    });
+    return column;
+  };
 
   const retryAgain = () => {
-    setError(false)
-    setRetry(true)
-  }
+    refetch();
+  };
 
   const refresh = () => {
-    setpage(0)
-    setError(false)
-    setRetry(true)
-  }
+    setPage(1);
+    refetch();
+  };
   return (
     <>
-      <h5 className='mb-1'>Request Command Response</h5>
+      <h5 className="mb-1">Request Command Response</h5>
       <Row>
         <Col>
-          <Button.Ripple color='primary' type='' onClick={onRequest} className='float-right mb-1'>
+          <Button
+            color="primary"
+            type=""
+            onClick={onRequest}
+            className="float-end mb-1"
+          >
             {/* < size={14} /> */}
-            <span className='align-middle ml-25 ' id='new_cyclw'>
+            <span className="align-middle ml-25 " id="new_cyclw">
               New Request
             </span>
-          </Button.Ripple>
+          </Button>
         </Col>
       </Row>
 
-      {loader ? (
-        <Loader hight='min-height-475' />
-      ) : hasError ? (
+      {isFetching ? (
+        <Loader hight="min-height-475" />
+      ) : isError ? (
         <CardInfo
           props={{
             message: { errorMessage },
             retryFun: { retryAgain },
-            retry: { retry }
+            retry: { isFetching },
           }}
         />
       ) : (
-        !retry && (
-          <DataTabled
+        !isFetching && (
+          <DataTableV1
             rowCount={10}
-            currentpage={page}
-            ispagination
-            selectedPage={setpage}
+            currentPage={page}
+            onPageChange={onPageChange}
             columns={tblColumn()}
-            tblData={respose}
-            tableName={"Requests"}
+            data={response}
+            tableName={'Requests'}
             pointerOnHover
-            refresh={refresh}
-            donotShowDownload={true}
+            refreshFn={refresh}
+            totalRowsCount={response.length}
+            showRefreshButton={true}
           />
         )
       )}
     </>
-  )
-}
+  );
+};
 
-export default RequestCommandResponseModal
+export default RequestCommandResponseModal;

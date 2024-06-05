@@ -50,6 +50,32 @@ export const satApi = createApi({
         url: `${sat}/tests/${params.id}`,
       }),
     }),
+    generateTestReports: builder.query({
+      query: (params) => ({
+        url: `${sat}/tests/report/${params.id}`,
+      }),
+    }),
+    getCmdResData: builder.query({
+      query: (params) => ({
+        url: `${sat}/testres/bytest/${params.id}`,
+      }),
+      providesTags: ['cmdResData'],
+    }),
+    postCmdResReq: builder.mutation({
+      query: (params) => ({
+        url: `${sat}/testres/requestcmdres/${params.id}`,
+        method: 'POST',
+      }),
+      invalidatesTags: ['cmdResData'],
+    }),
+    copyTest: builder.mutation({
+      query: (data) => ({
+        url: `${sat}/tests/copy`,
+        method: 'POST',
+        body: data,
+      }),
+      invalidatesTags: ['tests'],
+    }),
   }),
 });
 
@@ -60,4 +86,8 @@ export const {
   usePostTestsMutation,
   useUpdateExecutionIdsMutation,
   useGetTestsByIdQuery,
+  useLazyGenerateTestReportsQuery,
+  useGetCmdResDataQuery,
+  usePostCmdResReqMutation,
+  useCopyTestMutation,
 } = satApi;

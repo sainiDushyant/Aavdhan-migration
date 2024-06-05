@@ -15,20 +15,17 @@ import {
 } from 'reactstrap';
 import { toast } from 'react-toastify';
 import SimpleTableForDLMSCommandResponse from '../../../../components/dtTable/simpleTableForDLMSCommandResponse';
-// import RequestCommandResponseModal from './requestCommandResponseModal';
+import RequestCommandResponseModal from './requestCommandResponseModal';
 import moment from 'moment-timezone';
 import { useGetTestsByIdQuery } from '../../../../api/sat';
 import { useLazyGetMdasDlmsHistoryDataQuery } from '../../../../api/hes/command-historySlice';
 import DataTableV1 from '../../../../components/dtTable/DataTableV1';
+import { useLazyGenerateTestReportsQuery } from '../../../../api/sat';
 
 const SampleTestMetersModal = (props) => {
   const [response, setResponse] = useState([]);
-  const [fetchingData, setFetchingData] = useState(true);
-  // Error Handling
   const [errorMessage, setErrorMessage] = useState('');
-  const [hasError, setError] = useState(false);
-  const [retry, setRetry] = useState(false);
-  const [loader, setLoader] = useState(false);
+
   const [result, setResult] = useState('');
 
   const [isLoadingHTML, SetIsLoadingHTML] = useState(false);
@@ -46,10 +43,10 @@ const SampleTestMetersModal = (props) => {
   const [executionStatusCount, setExecutionStatusCount] = useState({});
   const [page, setpage] = useState(1);
   const [row, setRow] = useState({});
-  const [skip, setSkip] = useState(true);
-
   const [fetchDlmsHistory, dlmsHistoryResponse] =
     useLazyGetMdasDlmsHistoryDataQuery();
+  const [generateTests, testReportsResponse] =
+    useLazyGenerateTestReportsQuery();
 
   const showData = (row) => {
     setCenteredModal(true);
@@ -126,19 +123,20 @@ const SampleTestMetersModal = (props) => {
   }, [data, status, isError]);
 
   const generateReports = async (params) => {
-    // SetIsLoadingHTML(true);
-    // try {
-    //   const response = await useJwt.generateTestReports(params);
-    //   const blob = new Blob([response.data], { type: 'text/html' });
-    //   const url = URL.createObjectURL(blob);
-    //   // Open the PDF in a new tab
-    //   window.open(url, '_blank');
-    // } catch (error) {
-    //   toast.error(<Toast msg="Error fetching PDF" type="danger" />, {
-    //     hideProgressBar: true,
-    //   });
-    // }
-    // SetIsLoadingHTML(false);
+    SetIsLoadingHTML(true);
+    try {
+      const response = await generateTests(params);
+      const blob = new Blob([response.error.data], { type: 'text/html' }); // The api is throwing 201 but still the data in the rtk is coming in the error obj i guess it is due to the type of response that is coming fron the backend.
+      const url = URL.createObjectURL(blob);
+      // Open the PDF in a new tab
+      window.open(url, '_blank');
+    } catch (error) {
+      toast('Error fetching PDF', {
+        hideProgressBar: true,
+        type: 'error',
+      });
+    }
+    SetIsLoadingHTML(false);
   };
 
   // const downloadCmdResCSV = async (params) => {
@@ -580,7 +578,6 @@ const SampleTestMetersModal = (props) => {
                 type=""
                 onClick={() => {
                   setcmdResponseModal(!cmdResponseModal);
-                  // downloadCmdResCSV({ id: props.rowData.id })
                 }}
                 className="float-right mb-1"
                 disabled={isLoadingCSV}
@@ -618,7 +615,7 @@ const SampleTestMetersModal = (props) => {
           }}
         />
       ) : (
-        !retry && (
+        !isFetching && (
           <DataTableV1
             rowCount={10}
             currentPage={page}
@@ -687,7 +684,7 @@ const SampleTestMetersModal = (props) => {
           {` Test Cycle ID : ${result.testCycleId} | Test ID : ${result.id} | Command Name : ${result.cmdName}`}
         </ModalHeader>
         <ModalBody>
-          {/* <RequestCommandResponseModal rowData={props.rowData} /> */}
+          <RequestCommandResponseModal rowData={props.rowData} />
         </ModalBody>
       </Modal>
     </>

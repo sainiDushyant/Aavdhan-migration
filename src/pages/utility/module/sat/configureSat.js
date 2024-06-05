@@ -17,7 +17,7 @@ import { caseInsensitiveSort } from '../../../../utils';
 import SampleTestMetersModal from './sampleTestMetersModal';
 import CommandExecutionSat from './commandExecutionSat';
 
-// import CopyTestConfig from './copyTestConfig';
+import CopyTestConfig from './copyTestConfig';
 // import TestConfigSampleMeters from './testConfigSampleMeters';
 import { useGetTestsQuery } from '../../../../api/sat';
 import DataTableV1 from '../../../../components/dtTable/DataTableV1';
@@ -278,12 +278,11 @@ const ConfigureSat = (props) => {
           Test Configuration{' '}
         </ModalHeader>
         <ModalBody>
-          {/* <CopyTestConfig
-            setRetry={setRetry}
+          <CopyTestConfig
             rowData={props.row}
             testsRowsData={testRowData}
             updatedTestConfigModal={updatedTestConfigModal}
-          /> */}
+          />
         </ModalBody>
       </Modal>
 
