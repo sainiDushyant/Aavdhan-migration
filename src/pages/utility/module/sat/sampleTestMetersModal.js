@@ -18,7 +18,7 @@ import SimpleTableForDLMSCommandResponse from '../../../../components/dtTable/si
 // import RequestCommandResponseModal from './requestCommandResponseModal';
 import moment from 'moment-timezone';
 import { useGetTestsByIdQuery } from '../../../../api/sat';
-import { useGetMdasDlmsCommandHistoryQuery } from '../../../../api/hes/command-historySlice';
+import { useLazyGetMdasDlmsHistoryDataQuery } from '../../../../api/hes/command-historySlice';
 import DataTableV1 from '../../../../components/dtTable/DataTableV1';
 
 const SampleTestMetersModal = (props) => {
@@ -48,28 +48,24 @@ const SampleTestMetersModal = (props) => {
   const [row, setRow] = useState({});
   const [skip, setSkip] = useState(true);
 
-  const {
-    data: commandHistoryData,
-    isFetching: commandHistoryLoading,
-    isError: commandHistoryError,
-    status: commandHistoryStatus,
-  } = useGetMdasDlmsCommandHistoryQuery(
-    {
-      id: row.executionId,
-    },
-    { skip }
-  );
+  const [fetchDlmsHistory, dlmsHistoryResponse] =
+    useLazyGetMdasDlmsHistoryDataQuery();
 
-  const showData = () => {
+  const showData = (row) => {
     setCenteredModal(true);
-    setSkip(true);
+    fetchDlmsHistory(
+      {
+        id: row.executionId,
+      },
+      { preferCahceValue: true }
+    );
   };
 
   useEffect(() => {
-    if (commandHistoryStatus === 'fulfilled') {
-      let statusCode = commandHistoryData.responseCode;
+    if (dlmsHistoryResponse.status === 'fulfilled') {
+      let statusCode = dlmsHistoryResponse.data.responseCode;
       if (statusCode === 200 || statusCode === 202) {
-        let data = commandHistoryData.data.result.data;
+        let data = dlmsHistoryResponse.data.data.result.data;
 
         if (Array.isArray(data)) {
           data = data.map((item) => {
@@ -92,7 +88,7 @@ const SampleTestMetersModal = (props) => {
         setHistyData(newData);
       }
     }
-  }, [commandHistoryData, commandHistoryError, commandHistoryStatus]);
+  }, [dlmsHistoryResponse]);
 
   const { isFetching, data, isError, status, refetch } = useGetTestsByIdQuery({
     id: props.rowData.id,
@@ -544,31 +540,31 @@ const SampleTestMetersModal = (props) => {
         <Col lg="8" className="d-flex align-items-center">
           <h5>
             Success Percentage:{' '}
-            <Badge pill color="light-success">
+            <Badge pill color="success">
               {successPercentageCount}%
             </Badge>
             | Success In Exp. Res. Time:
-            <Badge pill color="light-success">
+            <Badge pill color="success">
               {SuccesInExpResTime}
             </Badge>
             | Success:
-            <Badge pill color="light-success">
+            <Badge pill color="success">
               {executionStatusCount['SUCCESS']}
             </Badge>{' '}
             | InQueue:
-            <Badge pill color="light-info">
+            <Badge pill color="info">
               {executionStatusCount['IN_QUEUE']}
             </Badge>{' '}
             | Inprogress:
-            <Badge pill color="light-warning">
+            <Badge pill color="warning">
               {executionStatusCount['IN_PROGRESS']}
             </Badge>
             | Initiate:
-            <Badge pill color="light-secondary">
+            <Badge pill color="secondary">
               {executionStatusCount['INITIATE']}
             </Badge>{' '}
             | Failed:
-            <Badge pill color="light-danger">
+            <Badge pill color="danger">
               {executionStatusCount['FAILED']}
             </Badge>
           </h5>
@@ -579,7 +575,7 @@ const SampleTestMetersModal = (props) => {
             ''
           ) : (
             <>
-              <Button.Ripple
+              <Button
                 color="primary"
                 type=""
                 onClick={() => {
@@ -593,8 +589,8 @@ const SampleTestMetersModal = (props) => {
                 <span className="align-middle ml-25 " id="new_cyclw">
                   Detailed Report
                 </span>
-              </Button.Ripple>
-              <Button.Ripple
+              </Button>
+              <Button
                 color="success"
                 type=""
                 onClick={() => generateReports({ id: props.rowData.id })}
@@ -605,7 +601,7 @@ const SampleTestMetersModal = (props) => {
                 <span className="align-middle ml-25 " id="new_cyclw">
                   Summary Report
                 </span>
-              </Button.Ripple>
+              </Button>
             </>
           )}
         </Col>
