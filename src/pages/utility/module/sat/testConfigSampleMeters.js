@@ -1,48 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import DataTabled from '../../../../ui-elements/dataTableUpdated';
-import { caseInsensitiveSort } from '@src/views/utils.js';
-import { useDispatch } from 'react-redux';
-import { useHistory } from 'react-router-dom';
-import authLogout from '../../../../../auth/jwt/logoutlogic';
-import useJwt from '@src/auth/jwt/useJwt';
-import Loader from '@src/views/project/misc/loader';
-import CardInfo from '@src/views/ui-elements/cards/actions/cardInfo';
+import Loader from '../../../../components/loader/loader';
+import CardInfo from '../../../../components/ui-elements/cards/cardInfo';
+import { caseInsensitiveSort } from '../../../../utils';
+import DataTableV1 from '../../../../components/dtTable/DataTableV1';
+import { useGetTestsByIdQuery } from '../../../../api/sat';
 
 const TestConfigSampleMeters = (props) => {
-  const [page, setpage] = useState(0);
-  const [data, setData] = useState([]);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [response, setResponse] = useState([]);
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [logout, setLogout] = useState(false);
-  const [retry, setRetry] = useState(false);
 
-  const dispatch = useDispatch();
-  const history = useHistory();
-  useEffect(() => {
-    if (logout) {
-      authLogout(history, dispatch);
-    }
-  }, [logout]);
-
-  const retryAgain = () => {
-    setRetry(!retry);
+  const setRowCount = (rowCount) => {
+    setPageSize(rowCount);
+    refetch();
   };
 
-  const fetchDataById = async (params) => {
-    return await useJwt
-      .getTestsbyId(params)
-      .then((res) => {
-        const status = res.status;
-        return [status, res];
-      })
-      .catch((err) => {
-        if (err.response) {
-          const status = err.response.status;
-          return [status, err];
-        } else {
-          return [0, err];
-        }
-      });
+  const retryAgain = () => {
+    refetch();
   };
 
   const shuffleArray = (array) => {
@@ -58,44 +33,27 @@ const TestConfigSampleMeters = (props) => {
     return array;
   };
 
-  useEffect(async () => {
-    if (props.id || retry) {
-      setLoading(true);
-      const params = {
-        id: props.id,
-      };
-      const [statusCode, response] = await fetchDataById(params);
-      if (statusCode === 200) {
-        try {
-          setData(
-            shuffleArray(
-              response.data.sampleMeters.map((e) => {
-                return { meterSerial: e.meterSerial };
-              })
-            )
-          );
-          setLoading(false);
-          setRetry(false);
-          setError('');
-        } catch (error) {
-          setLoading(false);
-          setRetry(false);
-          setError('Something went wrong, please retry');
-        }
-      } else if (statusCode === 401 || statusCode === 403) {
-        setLogout(true);
-      } else {
-        setError('Network error');
-        setRetry(false);
-        setLoading(false);
-      }
+  const { isFetching, data, isError, status, refetch } = useGetTestsByIdQuery({
+    id: props.id,
+  });
+  useEffect(() => {
+    if (status === 'fulfilled') {
+      setResponse(
+        shuffleArray(
+          data?.sampleMeters.map((e) => {
+            return { meterSerial: e.meterSerial };
+          })
+        )
+      );
+    } else if (isError) {
+      setError('Something went wrong, please retry.');
     }
-  }, [retry]);
+  }, [status, data, isError]);
 
   const tblColumn = () => {
     const column = [];
     const custom_width = ['create_time'];
-    for (const i in data[0]) {
+    for (const i in response[0]) {
       const col_config = {};
       if (i !== 'id') {
         col_config.name = `${i.charAt(0).toUpperCase()}${i.slice(
@@ -124,36 +82,45 @@ const TestConfigSampleMeters = (props) => {
       cell: (row, i) => {
         return (
           <div className="d-flex justify-content-center">
-            {page * 10 + 1 + i}
+            {(page - 1) * pageSize + 1 + i}
           </div>
         );
       },
     });
     return column;
   };
+  const onPageChange = (number) => {
+    setPage(number + 1);
+  };
+  const refresh = () => {
+    refetch();
+    setPage(1);
+  };
   return (
     <>
-      {loading ? (
+      {isFetching ? (
         <Loader hight="min-height-475" />
-      ) : error.length > 0 ? (
+      ) : isError ? (
         <CardInfo
           props={{
             message: { error },
             retryFun: { retryAgain },
-            retry: { retry },
+            retry: { isFetching },
           }}
         />
       ) : (
-        <DataTabled
-          rowCount={10}
-          currentpage={page}
-          ispagination
-          selectedPage={setpage}
+        <DataTableV1
+          rowCount={pageSize}
+          setRowCount={setRowCount}
+          currentPage={page}
+          onPageChange={onPageChange}
           columns={tblColumn()}
-          tblData={data}
+          data={response}
           tableName={'Meters List'}
-          // handleRowClick={onCellClick}
-          pointerOnHover
+          totalRowsCount={response?.length}
+          refreshFn={refresh}
+          showRefreshButton={true}
+          pointerOnHover={true}
         />
       )}
     </>

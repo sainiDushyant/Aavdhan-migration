@@ -19,6 +19,7 @@ import DataTableV1 from '../../../../components/dtTable/DataTableV1';
 
 const CreateSatProject = (props) => {
   const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
   const [response, setResponse] = useState([]);
 
   const [centeredModal, setCenteredModal] = useState(false);
@@ -44,6 +45,9 @@ const CreateSatProject = (props) => {
   //     setError(false);
   //   }
   // }
+  const setRowCount = (rowCount) => {
+    setPageSize(rowCount);
+  };
 
   const { data, isFetching, isError, status, refetch } =
     useGetTestCyclesQuery();
@@ -123,7 +127,11 @@ const CreateSatProject = (props) => {
       name: 'Sr No.',
       width: '90px',
       cell: (row, i) => {
-        return <div className="d-flex justify-content-center">{page + i}</div>;
+        return (
+          <div className="d-flex justify-content-center">
+            {i + 1 + pageSize * (page - 1)}
+          </div>
+        );
       },
     });
 
@@ -171,7 +179,7 @@ const CreateSatProject = (props) => {
   };
 
   const onPageChange = (page) => {
-    setPage(page);
+    setPage(page + 1);
   };
 
   return (
@@ -182,7 +190,7 @@ const CreateSatProject = (props) => {
             color="primary"
             type=""
             onClick={() => testCycleModal()}
-            className="float-right mb-1"
+            className="float-end mb-1"
           >
             <span className="align-middle ml-25 " id="new_cyclw">
               New Test Cycle
@@ -204,14 +212,15 @@ const CreateSatProject = (props) => {
       ) : (
         !isFetching && (
           <DataTableV1
-            rowCount={10}
+            rowCount={pageSize}
+            setRowCount={setRowCount}
             currentPage={page}
             onPageChange={onPageChange}
             columns={tblColumn()}
             data={response}
             totalRowsCount={response.length}
             tableName={'Test Cycles'}
-            pointerOnHover
+            pointerOnHover={true}
             showRefreshButton={true}
             refreshFn={refresh}
             onRowClicked={onRowClicked}

@@ -3,11 +3,12 @@ import { caseInsensitiveSort } from '../../../../utils';
 import Loader from '../../../../components/loader/loader';
 import CardInfo from '../../../../components/ui-elements/cards/cardInfo';
 import { useGetTestCyclesQuery } from '../../../../api/sat';
+//import { useGetTestsByIdQuery } from '../../../../api/sat';
 import DataTableV1 from '../../../../components/dtTable/DataTableV1';
 
 const UploadedCsvMetersModal = (props) => {
   const [page, setPage] = useState(1);
-
+  const [pageSize, setPageSize] = useState(10);
   const [error, setError] = useState('');
   const [response, setResponse] = useState([]);
 
@@ -15,11 +16,16 @@ const UploadedCsvMetersModal = (props) => {
     id: props.rowData.id,
   };
 
+  const setRowCount = (rowCount) => {
+    setPageSize(rowCount);
+    refetch();
+  };
+
   const { data, isFetching, status, isError, refetch } =
     useGetTestCyclesQuery(params);
 
   const onPageChange = (page) => {
-    setPage(page);
+    setPage(page + 1);
   };
 
   const retryAgain = () => {
@@ -28,7 +34,7 @@ const UploadedCsvMetersModal = (props) => {
 
   useEffect(() => {
     if (status === 'fulfilled') {
-      setResponse(data);
+      setResponse(data.meters);
     } else if (isError) {
       setError('Something went wrong, please retry.');
     }
@@ -36,7 +42,7 @@ const UploadedCsvMetersModal = (props) => {
 
   const tblColumn = () => {
     const column = [];
-    if (response?.length > 0) {
+    if (response.length > 0) {
       for (const i in response[0]) {
         const col_config = {};
         if (i !== 'id') {
@@ -64,7 +70,11 @@ const UploadedCsvMetersModal = (props) => {
       name: 'Sr No.',
       width: '90px',
       cell: (row, i) => {
-        return <div className="d-flex justify-content-center">{page + i}</div>;
+        return (
+          <div className="d-flex justify-content-center">
+            {(page - 1) * pageSize + 1 + i}
+          </div>
+        );
       },
     });
     return column;
@@ -83,12 +93,13 @@ const UploadedCsvMetersModal = (props) => {
         />
       ) : (
         <DataTableV1
-          rowCount={10}
+          rowCount={pageSize}
+          setRowCount={setRowCount}
           currentPage={page}
           onPageChange={onPageChange}
           columns={tblColumn()}
           data={response}
-          tableName={response?.fileName || 'Meters'}
+          tableName={data?.fileName || 'Meters'}
           totalRowsCount={response?.length}
           refreshFn={refetch}
           showRefreshButton={true}

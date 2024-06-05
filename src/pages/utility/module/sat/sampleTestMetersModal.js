@@ -36,12 +36,11 @@ const SampleTestMetersModal = (props) => {
   const [cmdResponseModal, setcmdResponseModal] = useState(false);
   const [histyData, setHistyData] = useState();
   const [tapHistyData, setTapHistyData] = useState(undefined);
-
-  const [logout, setLogout] = useState(false);
   const [rowData, setRowData] = useState([]);
 
   const [executionStatusCount, setExecutionStatusCount] = useState({});
   const [page, setpage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
   const [row, setRow] = useState({});
   const [fetchDlmsHistory, dlmsHistoryResponse] =
     useLazyGetMdasDlmsHistoryDataQuery();
@@ -56,6 +55,9 @@ const SampleTestMetersModal = (props) => {
       },
       { preferCahceValue: true }
     );
+  };
+  const setRowCount = (rowCount) => {
+    setPageSize(rowCount);
   };
 
   useEffect(() => {
@@ -408,7 +410,7 @@ const SampleTestMetersModal = (props) => {
       cell: (row, i) => {
         return (
           <div className="d-flex justify-content-center">
-            {(page - 1) * 10 + 1 + i}
+            {(page - 1) * pageSize + 1 + i}
           </div>
         );
       },
@@ -617,7 +619,8 @@ const SampleTestMetersModal = (props) => {
       ) : (
         !isFetching && (
           <DataTableV1
-            rowCount={10}
+            rowCount={pageSize}
+            setRowCount={setRowCount}
             currentPage={page}
             onPageChange={onPageChange}
             columns={tblColumn()}
@@ -625,9 +628,10 @@ const SampleTestMetersModal = (props) => {
             tableName={'Meters'}
             onRowClicked={onRowClick}
             totalRowsCount={response?.length}
-            pointerOnHover
+            pointerOnHover={true}
+            showRefreshButton={true}
             refreshFn={refresh}
-            extras={
+            extraTextToShow={
               <>
                 <h5 className=" d-inline inline-block">
                   Test Result:{' '}

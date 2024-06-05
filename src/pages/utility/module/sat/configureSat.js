@@ -18,12 +18,13 @@ import SampleTestMetersModal from './sampleTestMetersModal';
 import CommandExecutionSat from './commandExecutionSat';
 
 import CopyTestConfig from './copyTestConfig';
-// import TestConfigSampleMeters from './testConfigSampleMeters';
+import TestConfigSampleMeters from './testConfigSampleMeters';
 import { useGetTestsQuery } from '../../../../api/sat';
 import DataTableV1 from '../../../../components/dtTable/DataTableV1';
 
 const ConfigureSat = (props) => {
   const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
   const [response, setResponse] = useState([]);
   const [rowData, setRowData] = useState([]);
   const [testRowData, setTestRowData] = useState([]);
@@ -50,6 +51,10 @@ const ConfigureSat = (props) => {
     } else {
       return;
     }
+  };
+  const setRowCount = (rowCount) => {
+    setPageSize(rowCount);
+    refetch();
   };
   const { isFetching, data, isError, status, refetch } = useGetTestsQuery(
     getParams()
@@ -189,7 +194,7 @@ const ConfigureSat = (props) => {
       cell: (row, i) => {
         return (
           <div className="d-flex justify-content-center">
-            {page * 10 + 1 + i}
+            {(page - 1) * pageSize + 1 + i}
           </div>
         );
       },
@@ -207,7 +212,7 @@ const ConfigureSat = (props) => {
   };
 
   const onPageChange = (page) => {
-    setPage(page);
+    setPage(page + 1);
   };
 
   return (
@@ -219,7 +224,7 @@ const ConfigureSat = (props) => {
             color="primary"
             type=""
             onClick={() => testConfigModal()}
-            className="float-right mb-1"
+            className="float-end mb-1"
           >
             {/* <Plus size={14} /> */}
             <span className="align-middle ml-25 " id="new_cyclw">
@@ -241,14 +246,16 @@ const ConfigureSat = (props) => {
         />
       ) : (
         <DataTableV1
-          rowCount={10}
+          rowCount={pageSize}
+          setRowCount={setRowCount}
           currentPage={page}
           onPageChange={onPageChange}
           columns={tblColumn()}
           data={response}
           totalRowsCount={response.length}
           tableName={'Tests'}
-          pointerOnHover
+          pointerOnHover={true}
+          showRefreshButton={true}
           refreshFn={refresh}
           donotShowDownload={true}
           onRowClicked={onRowClicked}
@@ -322,10 +329,10 @@ const ConfigureSat = (props) => {
       >
         <ModalHeader toggle={testConfigSampleMeterModal}>Meters</ModalHeader>
         <ModalBody>
-          {/* <TestConfigSampleMeters
+          <TestConfigSampleMeters
             testConfigSampleMeters={testConfigSampleMeters}
             id={meterId}
-          /> */}
+          />
         </ModalBody>
       </Modal>
     </>

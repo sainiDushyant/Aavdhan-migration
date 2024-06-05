@@ -10,8 +10,8 @@ export const satApi = createApi({
   endpoints: (builder) => ({
     getTestCycles: builder.query({
       query: (params) => ({
-        url: `${sat}/testcycles`,
-        params: params,
+        url: `${sat}/testcycles/${params?.id || ''}`,
+        // params: params,
       }),
       providesTags: ['testcycles'],
     }),
