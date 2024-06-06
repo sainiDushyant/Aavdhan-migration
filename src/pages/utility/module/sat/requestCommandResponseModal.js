@@ -16,7 +16,12 @@ const RequestCommandResponseModal = (props) => {
   const [postCmdRes] = usePostCmdResReqMutation();
 
   const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
   const [response, setResponse] = useState([]);
+
+  const setRowCount = (rowCount) => {
+    setPageSize(rowCount);
+  };
 
   const { isError, isFetching, data, status, refetch } = useGetCmdResDataQuery({
     id: props.rowData.id,
@@ -186,13 +191,14 @@ const RequestCommandResponseModal = (props) => {
       ) : (
         !isFetching && (
           <DataTableV1
-            rowCount={10}
+            rowCount={pageSize}
+            setRowCount={setRowCount}
             currentPage={page}
             onPageChange={onPageChange}
             columns={tblColumn()}
             data={response}
             tableName={'Requests'}
-            pointerOnHover
+            pointerOnHover={true}
             refreshFn={refresh}
             totalRowsCount={response.length}
             showRefreshButton={true}

@@ -58,6 +58,7 @@ const SampleTestMetersModal = (props) => {
   };
   const setRowCount = (rowCount) => {
     setPageSize(rowCount);
+    refetch();
   };
 
   useEffect(() => {

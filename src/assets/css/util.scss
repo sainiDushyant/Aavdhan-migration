@@ -886,3 +886,8 @@ body::-webkit-scrollbar-thumb:hover {
     align-self: flex-end;
   }
 }
+
+.data-table-container {
+  max-height: 620px; /* Adjust based on the desired height */
+  overflow-y: auto;
+}

@@ -310,28 +310,32 @@ const DataTableV1 = (props) => {
               <div className="dot-pulse"></div>
             </div>
           ) : (
-            <DataTable
-              noHeader
-              pagination
-              data={currentPageData}
-              columns={props.columns}
-              className="react-dataTable webi_scroller"
-              sortIcon={<ChevronDown size={10} />}
-              paginationPerPage={props.rowCount}
-              paginationComponent={CustomPagination}
-              paginationDefaultPage={props.currentPage}
-              customStyles={
-                props.customStyles
-                  ? { ...customStyles, ...props.customStyles }
-                  : customStyles
-              }
-              conditionalRowStyles={props.conditionalRowStyles}
-              pointerOnHover={props.pointerOnHover}
-              highlightOnHover={false}
-              onRowClicked={props.onRowClicked}
-              onSort={props.onSort}
-              sortServer={props.sortServer}
-            />
+            <div
+              className={`${props.rowCount > 10 ? 'data-table-container' : ''}`}
+            >
+              <DataTable
+                noHeader
+                pagination
+                data={currentPageData}
+                columns={props.columns}
+                className="react-dataTable webi_scroller"
+                sortIcon={<ChevronDown size={10} />}
+                paginationPerPage={props.rowCount}
+                paginationComponent={CustomPagination}
+                paginationDefaultPage={props.currentPage}
+                customStyles={
+                  props.customStyles
+                    ? { ...customStyles, ...props.customStyles }
+                    : customStyles
+                }
+                conditionalRowStyles={props.conditionalRowStyles}
+                pointerOnHover={props.pointerOnHover}
+                highlightOnHover={false}
+                onRowClicked={props.onRowClicked}
+                onSort={props.onSort}
+                sortServer={props.sortServer}
+              />
+            </div>
           )}
         </Card>
       </>
