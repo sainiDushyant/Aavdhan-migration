@@ -47,16 +47,6 @@ const SLA_Reports = () => {
             Billing SLA
           </NavLink>
         </NavItem>
-        {/* <NavItem>
-          <NavLink
-            active={active === '4'}
-            onClick={() => {
-              toggle('4');
-            }}
-          >
-            RC/DC SLA
-          </NavLink>
-        </NavItem> */}
       </Nav>
       <TabContent className="py-50" activeTab={active}>
         <TabPane tabId="1">{active === '1' && <BlockloadSlaReport />}</TabPane>
@@ -64,9 +54,6 @@ const SLA_Reports = () => {
         <TabPane tabId="3">
           {active === '3' && <BillingDataSLAReport />}
         </TabPane>
-        {/* <TabPane tabId="4"> */}
-        {/* {active === '4' && <RCDCSLAReport />} */}
-        {/* </TabPane> */}
       </TabContent>
     </React.Fragment>
   );

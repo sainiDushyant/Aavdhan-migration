@@ -7,8 +7,16 @@ import CardInfo from '../../../../components/ui-elements/cards/cardInfo';
 import moment from 'moment';
 import { useGetBlockLoadSLAQuery } from '../../../../api/sla-reports';
 import DataTableV1 from '../../../../components/dtTable/DataTableV1';
+import { slaReportsApi } from '../../../../api/sla-reports';
+import { setCurrentSelectedModule } from '../../../../app/redux/previousSelectedModuleSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 
 const BlockloadSlaReport = () => {
+  const location = useLocation();
+  const dispatch = useDispatch();
+  const project = location.pathname.split('/')[2];
+
   const defaultStartDate = moment()
     .subtract(1, 'days')
     .startOf('day')
@@ -24,6 +32,15 @@ const BlockloadSlaReport = () => {
     startDate: defaultStartDate,
     endDate: defaultEndDate,
   });
+
+  const currentSelectedModule = useSelector(
+    (state) => state.currentSelectedModule
+  );
+
+  if (currentSelectedModule !== project) {
+    dispatch(slaReportsApi.util.invalidateTags(['block-load-sla']));
+    dispatch(setCurrentSelectedModule(project));
+  }
 
   const setRowCount = (rowCount) => {
     setPageSize(rowCount);
@@ -49,7 +66,6 @@ const BlockloadSlaReport = () => {
 
   const tblColumn = () => {
     const column = [];
-    const custom_width = ['create_time'];
     for (const i in response[0]) {
       const col_config = {};
       if (i !== 'id' && i !== 'site_id' && i !== 'year') {
@@ -129,10 +145,6 @@ const BlockloadSlaReport = () => {
 
   const filterParams = (val) => {
     setAppliedParams(val);
-  };
-
-  const onPageChange = (page) => {
-    setPage(page);
   };
 
   return (

@@ -27,7 +27,7 @@ function Drawer({ SideBar }) {
         }}
       >
         <div
-          className="offcanvas-title d-flex flex-row align-items-center gap-1 pt-1"
+          className="offcanvas-title d-flex flex-row align-items-center gap-1"
           id="drawerLabel"
           style={{ flexWrap: 'nowrap' }}
         >

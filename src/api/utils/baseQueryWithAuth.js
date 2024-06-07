@@ -45,6 +45,8 @@ export const baseQueryWithReauth = async (args, api, extraOptions) => {
                 console.error(error);
               }
             }
+          } else {
+            window.location.href = '/';
           }
         } else {
           window.location.href = '/';

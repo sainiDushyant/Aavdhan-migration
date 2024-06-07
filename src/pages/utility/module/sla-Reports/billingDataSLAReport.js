@@ -7,8 +7,14 @@ import { caseInsensitiveSort } from '../../../../utils';
 import CardInfo from '../../../../components/ui-elements/cards/cardInfo';
 import moment from 'moment';
 import { useGetBillingHistorySLAQuery } from '../../../../api/sla-reports';
+import { useLocation } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { setCurrentSelectedModule } from '../../../../app/redux/previousSelectedModuleSlice';
+import { slaReportsApi } from '../../../../api/sla-reports';
 
 const BillingDataSLAReport = () => {
+  const location = useLocation();
+  const dispatch = useDispatch();
   const defaultStartDate = moment()
     .subtract(1, 'days')
     .startOf('day')
@@ -23,6 +29,17 @@ const BillingDataSLAReport = () => {
     startDate: defaultStartDate,
     endDate: defaultEndDate,
   });
+
+  const project = location.pathname.split('/')[2];
+
+  const currentSelectedModule = useSelector(
+    (state) => state.currentSelectedModule
+  );
+
+  if (currentSelectedModule !== project) {
+    dispatch(slaReportsApi.util.invalidateTags(['billing-sla']));
+    dispatch(setCurrentSelectedModule(project));
+  }
 
   const setRowCount = (rowCount) => {
     setPageSize(rowCount);

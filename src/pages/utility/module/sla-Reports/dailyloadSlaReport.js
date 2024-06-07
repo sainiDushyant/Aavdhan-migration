@@ -12,8 +12,14 @@ import moment from 'moment';
 // import { useHistory } from 'react-router-dom';
 import { useGetDailyLoadSLAQuery } from '../../../../api/sla-reports';
 import DataTableV1 from '../../../../components/dtTable/DataTableV1';
+import { useLocation } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { setCurrentSelectedModule } from '../../../../app/redux/previousSelectedModuleSlice';
+import { slaReportsApi } from '../../../../api/sla-reports';
 
 const DailyloadSlaReport = () => {
+  const location = useLocation();
+  const dispatch = useDispatch();
   const defaultStartDate = moment()
     .subtract(1, 'days')
     .startOf('day')
@@ -28,6 +34,17 @@ const DailyloadSlaReport = () => {
     startDate: defaultStartDate,
     endDate: defaultEndDate,
   });
+
+  const project = location.pathname.split('/')[2];
+
+  const currentSelectedModule = useSelector(
+    (state) => state.currentSelectedModule
+  );
+
+  if (currentSelectedModule !== project) {
+    dispatch(slaReportsApi.util.invalidateTags(['daily-load-sla']));
+    dispatch(setCurrentSelectedModule(project));
+  }
 
   const setRowCount = (rowCount) => {
     setPageSize(rowCount);

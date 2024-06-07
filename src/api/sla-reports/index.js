@@ -13,18 +13,21 @@ export const slaReportsApi = createApi({
         url: `${url}/sla/block-load`,
         params: params,
       }),
+      providesTags: ['block-load-sla'],
     }),
     getDailyLoadSLA: builder.query({
       query: (params) => ({
         url: `${url}/sla/daily-load`,
         params: params,
       }),
+      providesTags: ['daily-load-sla'],
     }),
     getBillingHistorySLA: builder.query({
       query: (params) => ({
         url: `${url}/sla/billing-history`,
         params: params,
       }),
+      providesTags: ['billing-sla'],
     }),
   }),
 });
