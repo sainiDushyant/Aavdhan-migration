@@ -3,7 +3,7 @@ import Select from 'react-select';
 
 import moment from 'moment';
 import Flatpickr from 'react-flatpickr';
-import { setCurrentSelectedModule } from '../../../../../app/redux/commandExecutionSlice';
+import { setCurrentSelectedModule } from '../../../../../app/redux/previousSelectedModuleSlice';
 // import { useSelector } from 'react-redux'
 
 import { useState, useEffect, useLayoutEffect } from 'react';

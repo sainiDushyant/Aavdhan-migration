@@ -97,14 +97,15 @@ const SampleTestMetersModal = (props) => {
   useEffect(() => {
     if (status === 'fulfilled') {
       data.sampleMeters.map((item) => {
-        const updateTime = moment(item.updateTime);
+        let itemCopy = { ...item };
+        const updateTime = moment(itemCopy.updateTime);
         const currentTime = moment();
         if (updateTime.isAfter(currentTime)) {
-          item.updateTime = item.executionStartTime;
-          item.executionStatus = 'IN_PROGRESS';
+          itemCopy.updateTime = itemCopy.executionStartTime;
+          itemCopy.executionStatus = 'IN_PROGRESS';
         }
 
-        return item;
+        return itemCopy;
       });
 
       // Render the component based on executionStatus

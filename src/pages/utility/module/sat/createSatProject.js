@@ -16,8 +16,14 @@ import CreateSatProjectModal from './createSatProjectModal';
 import UploadedCsvMetersModal from './uploadedCsvMetersModal';
 import { useGetTestCyclesQuery } from '../../../../api/sat';
 import DataTableV1 from '../../../../components/dtTable/DataTableV1';
+import { useDispatch, useSelector } from 'react-redux';
+import { useLocation } from 'react-router-dom';
+import { setCurrentSelectedModule } from '../../../../app/redux/previousSelectedModuleSlice';
+import { satApi } from '../../../../api/sat';
 
 const CreateSatProject = (props) => {
+  const dispatch = useDispatch();
+  const location = useLocation();
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [response, setResponse] = useState([]);
@@ -27,24 +33,16 @@ const CreateSatProject = (props) => {
   const [rowData, setRowData] = useState();
 
   const [errorMessage, setErrorMessage] = useState('');
+  const project = location.pathname.split('/')[2];
+  const currentSelectedModule = useSelector(
+    (state) => state.currentSelectedModule
+  );
 
-  // const [selected_project, set_selected_project] = useState(undefined);
-  // const currentSelectedModuleStatus = useSelector(
-  //   (state) => state.CurrentSelectedModuleStatusReducer.responseData
-  // );
-  // if (currentSelectedModuleStatus.prev_project) {
-  //   if (
-  //     selected_project !== currentSelectedModuleStatus.project &&
-  //     currentSelectedModuleStatus.prev_project !==
-  //       currentSelectedModuleStatus.project
-  //   ) {
-  //     set_selected_project(currentSelectedModuleStatus.project);
-  //     setPage(0);
-  //     setFetchingData(true);
-  //     setRetry(true);
-  //     setError(false);
-  //   }
-  // }
+  if (currentSelectedModule !== project) {
+    dispatch(satApi.util.invalidateTags(['testcycles']));
+    dispatch(setCurrentSelectedModule(project));
+  }
+
   const setRowCount = (rowCount) => {
     setPageSize(rowCount);
   };

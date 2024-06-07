@@ -7,8 +7,8 @@ import logoutApi from '../api/logoutSlice';
 import {
   utilityMDASAssetListReducer,
   utilityMDASDlmsCommandReducer,
-  currentSelectedModuleReducer,
 } from '../app/redux/commandExecutionSlice';
+import { currentSelectedModuleReducer } from './redux/previousSelectedModuleSlice';
 import { MDMSHierarchyProgressReducer } from './redux/mdmsHeirarchySlice';
 import { pushDataApi } from '../api/hes/push-dataSlice';
 import { meterConfigurationApi } from '../api/hes/meter-configurationSlice';

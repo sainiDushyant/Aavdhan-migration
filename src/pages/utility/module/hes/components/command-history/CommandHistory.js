@@ -73,8 +73,6 @@ const CommandHistory = (props) => {
 
   const currentTime = moment().tz('Asia/Kolkata');
 
-  dispatch(setCurrentSelectedModule(projectName));
-
   // useEffect(() => {
   //   if (filterAppliedParams) {
   //     setParams({ ...params, ...filterAppliedParams });

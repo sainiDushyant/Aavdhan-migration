@@ -9,8 +9,6 @@ const initialDlmsState = {
   responseData: [],
 };
 
-const initialModuleState = '';
-
 // Slice
 const utilityMDASAssetListSlice = createSlice({
   name: 'utilityMDASAssetList',
@@ -34,23 +32,11 @@ const utilityMDASDlmsCommandSlice = createSlice({
   },
 });
 
-const currentSelectedModuleSlice = createSlice({
-  name: 'currentSelectedModule',
-  initialState: initialModuleState,
-  reducers: {
-    setCurrentSelectedModule(state, action) {
-      return action.payload;
-    },
-  },
-});
-
 // Actions
 export const { setMDASAssetList } = utilityMDASAssetListSlice.actions;
 export const { setMDASDlmsCommandList } = utilityMDASDlmsCommandSlice.actions;
-export const { setCurrentSelectedModule } = currentSelectedModuleSlice.actions;
 
 // Export reducers
 export const utilityMDASAssetListReducer = utilityMDASAssetListSlice.reducer;
 export const utilityMDASDlmsCommandReducer =
   utilityMDASDlmsCommandSlice.reducer;
-export const currentSelectedModuleReducer = currentSelectedModuleSlice.reducer;

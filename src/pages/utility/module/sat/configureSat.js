@@ -21,8 +21,14 @@ import CopyTestConfig from './copyTestConfig';
 import TestConfigSampleMeters from './testConfigSampleMeters';
 import { useGetTestsQuery } from '../../../../api/sat';
 import DataTableV1 from '../../../../components/dtTable/DataTableV1';
+import { useDispatch, useSelector } from 'react-redux';
+import { useLocation } from 'react-router-dom';
+import { setCurrentSelectedModule } from '../../../../app/redux/previousSelectedModuleSlice';
 
 const ConfigureSat = (props) => {
+  const previousSelectedModule = useSelector(
+    (state) => state.currentSelectedModule
+  );
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [response, setResponse] = useState([]);
@@ -30,6 +36,8 @@ const ConfigureSat = (props) => {
   const [testRowData, setTestRowData] = useState([]);
   const [meterId, setMeterId] = useState('');
   const [disabled, setDisabled] = useState(false);
+  const location = useLocation();
+  const dispatch = useDispatch();
 
   const [testSatModal, setTestSatModal] = useState(false);
   const [updatedTestSatModal, setUpdatedTestSatModal] = useState(false);
@@ -41,6 +49,7 @@ const ConfigureSat = (props) => {
 
   // Error Handling
   const [errorMessage, setErrorMessage] = useState('');
+  const project = location.pathname.split('/')[2];
 
   const getParams = () => {
     let params = {};
@@ -56,6 +65,12 @@ const ConfigureSat = (props) => {
     setPageSize(rowCount);
     refetch();
   };
+
+  if (previousSelectedModule !== project) {
+    props.stepper.previous();
+    dispatch(setCurrentSelectedModule(project));
+  }
+
   const { isFetching, data, isError, status, refetch } = useGetTestsQuery(
     getParams()
   );

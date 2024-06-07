@@ -2,6 +2,7 @@ import { CardBody, Card, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import React, { useState, useEffect, useLayoutEffect } from 'react';
 
 import { useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import CommonMeterDropdown from '../commonMeterDropdown';
 
@@ -21,6 +22,7 @@ import { useGetBlockLoadDataQuery } from '../../../../../../api/hes/push-dataSli
 import { setCurrentSelectedModule } from '../../../../../../app/redux/commandExecutionSlice';
 
 const BlockLoadData = (props) => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const defaultStartDate = moment()
     .subtract(1, 'days')
