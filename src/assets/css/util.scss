@@ -887,7 +887,8 @@ body::-webkit-scrollbar-thumb:hover {
   }
 }
 
+//data table scroll logic
 .data-table-container {
-  max-height: 620px; /* Adjust based on the desired height */
-  overflow-y: auto;
+  max-height: 525px; /* Adjust based on the desired height */
+  overflow-y: auto !important;
 }

@@ -82,6 +82,10 @@ const CommandHistory = (props) => {
   // const setRowCount = (rowCount) => {
   //   setParams((prevParams) => ({...prevParams, page_size:rowCount}))
   // }
+  const setRowCount = (rowCount) => {
+    setPageSize(rowCount);
+  };
+
   const getParams = () => {
     let params = {};
     if (filterAppliedParams) {
@@ -127,21 +131,22 @@ const CommandHistory = (props) => {
       return params;
     }
   };
-  const setRowCount = (newRowCount) => {
-    const oldRowCount = pageSize;
-    const newPage =
-      newRowCount > oldRowCount
-        ? Math.min(currentPage, Math.ceil(totalCount / newRowCount))
-        : Math.ceil(totalCount / newRowCount);
+  // const setRowCount = (newRowCount) => {
+  //   const oldRowCount = pageSize;
+  //   const newPage =
+  //     newRowCount > oldRowCount
+  //       ? Math.min(currentPage, Math.ceil(totalCount / newRowCount))
+  //       : Math.ceil(totalCount / newRowCount);
 
-    // setParams((prevParams) => ({
-    //   ...prevParams,
-    //   page_size: newRowCount,
-    //   page: newPage,
-    // }));
-    setPageSize(newRowCount);
-    setCurrentPage(newPage);
-  };
+  //   // setParams((prevParams) => ({
+  //   //   ...prevParams,
+  //   //   page_size: newRowCount,
+  //   //   page: newPage,
+  //   // }));
+  //   setPageSize(newRowCount);
+  //   setCurrentPage(newPage);
+  // };
+
   // const getParams = () => {
   //   let updatedParams = { ...params };
 
