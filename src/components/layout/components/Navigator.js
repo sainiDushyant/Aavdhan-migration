@@ -6,7 +6,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { setCollapsed } from '../../../app/redux/layoutSlice';
 import '../../../styles/layout.scss';
 import { Award, Circle } from 'react-feather'; // Import necessary icons
-import { routes } from '../../../pages/Routes';
+import { routes } from '../../../pages/router/Routes';
 
 function SideBar() {
   const navigate = useNavigate();

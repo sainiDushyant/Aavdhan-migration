@@ -1,10 +1,12 @@
 import React from 'react';
 
 // Import lazy-loaded components
-const LazyHesUtility = React.lazy(() => import('./utility/module/hes'));
-const LazyMdmsUtility = React.lazy(() => import('./utility/module/mdms'));
-const LazySlaReports = React.lazy(() => import('./utility/module/sla-Reports'));
-const LazySat = React.lazy(() => import('./utility/module/sat'));
+const LazyHesUtility = React.lazy(() => import('../utility/module/hes'));
+const LazyMdmsUtility = React.lazy(() => import('../utility/module/mdms'));
+const LazySlaReports = React.lazy(() =>
+  import('../utility/module/sla-Reports')
+);
+const LazySat = React.lazy(() => import('../utility/module/sat'));
 
 export const routes = [
   {
