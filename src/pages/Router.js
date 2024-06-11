@@ -1,52 +1,53 @@
-import React, { useEffect } from 'react';
+import React, { Suspense, lazy } from 'react';
 import { HashRouter, Routes, Route } from 'react-router-dom';
-import Login from './login';
-import ForgotPassword from './forgotPassword';
-import HesUtility from './utility/module/hes';
-import MdmsUtility from './utility/module/mdms';
 import LayoutWrapper from '../components/layout/LayoutWrapper';
-import SLA_Reports from './utility/module/sla-Reports';
-import Sat from './utility/module/sat';
+import Error from './Error';
+import { routes } from './Routes';
+import Loader from '../components/loader/loader';
+const LazyLogin = lazy(() => import('./login'));
+const LazyForgotPassword = lazy(() => import('./forgotPassword'));
 
 const Router = () => {
   return (
     <HashRouter>
       <Routes>
-        <Route path="/" element={<Login />} />
+        {/* Map through the main routes */}
+        {routes.map((mainRoute) =>
+          mainRoute.modules.map((module) => (
+            <Route
+              key={module.key}
+              path={module.path}
+              element={
+                <LayoutWrapper
+                  children={
+                    <Suspense fallback={<Loader hight={'min-height-800'} />}>
+                      <module.component />
+                    </Suspense>
+                  }
+                />
+              }
+            />
+          ))
+        )}
+        {/* Route for Login and ForgotPassword */}
         <Route
-          path="utility/lpdd/hes"
-          element={<LayoutWrapper children={<HesUtility />} />}
+          path="/"
+          element={
+            <Suspense fallback={<Loader hight={'min-height-800'} />}>
+              <LazyLogin />
+            </Suspense>
+          }
         />
         <Route
-          path="utility/sbpdcl/hes"
-          element={<LayoutWrapper children={<HesUtility />} />}
+          path="/forgot-password"
+          element={
+            <Suspense fallback={<Loader hight={'min-height-800'} />}>
+              <LazyForgotPassword />
+            </Suspense>
+          }
         />
-        <Route
-          path="utility/lpdd/mdms"
-          element={<LayoutWrapper children={<MdmsUtility />} />}
-        />
-        <Route
-          path="utility/sbpdcl/mdms"
-          element={<LayoutWrapper children={<MdmsUtility />} />}
-        />
-        <Route
-          path="utility/lpdd/sla-reports"
-          element={<LayoutWrapper children={<SLA_Reports />} />}
-        />
-        <Route
-          path="utility/sbpdcl/sla-reports"
-          element={<LayoutWrapper children={<SLA_Reports />} />}
-        />
-        <Route
-          path="utility/lpdd/sat"
-          element={<LayoutWrapper children={<Sat />} />}
-        />
-        <Route
-          path="utility/sbpdcl/sat"
-          element={<LayoutWrapper children={<Sat />} />}
-        />
-
-        <Route path="forgot-password" element={<ForgotPassword />} />
+        {/* Route for Error */}
+        <Route path="*" element={<Error />} />
       </Routes>
     </HashRouter>
   );

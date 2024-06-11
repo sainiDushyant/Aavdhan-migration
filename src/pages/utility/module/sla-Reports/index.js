@@ -5,7 +5,7 @@ import DailyloadSlaReport from './dailyloadSlaReport';
 import BillingDataSLAReport from './billingDataSLAReport';
 // import RCDCSLAReport from './rcdcSLAReport';
 
-const SLA_Reports = () => {
+const SlaReports = () => {
   const [active, setActive] = useState('1');
 
   const toggle = (tab) => {
@@ -59,4 +59,4 @@ const SLA_Reports = () => {
   );
 };
 
-export default SLA_Reports;
+export default SlaReports;

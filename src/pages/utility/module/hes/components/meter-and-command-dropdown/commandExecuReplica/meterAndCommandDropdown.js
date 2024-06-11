@@ -1,15 +1,10 @@
-import React, { useEffect, useState, Fragment } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Card,
   CardBody,
   CardHeader,
   Col,
   Row,
-  TabContent,
-  TabPane,
-  Nav,
-  NavItem,
-  NavLink,
   UncontrolledTooltip,
   Button,
 } from 'reactstrap';
@@ -18,25 +13,14 @@ import {
   useCommandInfoDLMSQuery,
   useCommandInfoAssetsQuery,
 } from '../../../../../../../api/hes/drop-downSlice';
-// import useJwt from '@src/auth/jwt/useJwt';
 
-import { ChevronDown, Command, X } from 'react-feather';
+import { ChevronDown, X } from 'react-feather';
 
-// import '@styles/react/libs/noui-slider/noui-slider.scss';
-
-import { useLocation, useHistory, useFetcher } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { useSelector, useDispatch, batch } from 'react-redux';
 import CommandTab from './index';
 
-// import {
-//   handleMDASAssetList,
-//   handleMDASDlmsCommandList,
-//   handleMDASTapCommandList,
-// } from '@store/actions/UtilityProject/MDAS/CommandExecution';
-
-// import { useHistory } from 'react-router-dom'
 import CardInfo from '../../../../../../../components/ui-elements/cards/cardInfo';
-// import CommandTab from './commandExecuReplica';
 import {
   setMDASAssetList,
   setMDASDlmsCommandList,
@@ -50,9 +34,6 @@ const MeterAndCommandDropDown = (props) => {
       ? 'ipcl'
       : location.pathname.split('/')[2];
   const verticalName = location.pathname.split('/')[1];
-  // const responseDLSMCommandList = useSelector(
-  //   (state) => state.UtilityMDASDlmsCommandReducer
-  // );
 
   const {
     data: commandInfoDLMSData,
@@ -70,10 +51,7 @@ const MeterAndCommandDropDown = (props) => {
     vertical: verticalName,
   });
 
-  const [logout, setLogout] = useState(false);
-  const [hasError, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const [retry, setRetry] = useState(false);
   const collapsed = useSelector((state) => state.layout.collapsed);
 
   useEffect(() => {
@@ -83,9 +61,6 @@ const MeterAndCommandDropDown = (props) => {
         let dlmsCommandList;
         dlmsCommandList = commandInfoDLMSData?.data?.result;
         dispatch(setMDASDlmsCommandList(dlmsCommandList));
-      } else if (statusCodeDLMS === 401 || statusCodeDLMS === 403) {
-        setLogout(true);
-      } else {
       }
     }
   }, [commandInfoDLMSData]);
@@ -144,17 +119,9 @@ const MeterAndCommandDropDown = (props) => {
           dtr_list,
         };
         dispatch(setMDASAssetList(assets));
-      } else if (statusCode === 401 || statusCode === 403) {
-        setLogout(true);
       }
     }
   }, [commandInfoAssetsResponse]);
-
-  // useEffect(() => {
-  //   if (logout) {
-  //     authLogout(history, dispatch);
-  //   }
-  // }, [logout]);
 
   const [dropDownStyle, setDropDownStyle] = useState('translateY(-100%)');
   const [tabActive, setTabActive] = useState('1');
@@ -174,13 +141,6 @@ const MeterAndCommandDropDown = (props) => {
     }
   };
 
-  const toggle = (tab) => {
-    if (tabActive !== tab) {
-      setTabActive(tab);
-      // resetDefault()
-    }
-  };
-
   const retryAgain = () => {
     if (commandInfoAssetsError) {
       refetch2();
@@ -188,6 +148,8 @@ const MeterAndCommandDropDown = (props) => {
       refetch1();
     }
   };
+
+  console.log(collapsed, 'this is collapsed');
 
   return (
     <Col
