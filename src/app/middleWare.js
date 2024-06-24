@@ -1,4 +1,3 @@
-import { MiddlewareArray } from '@reduxjs/toolkit';
 import { loginApi } from '../api/loginSlice';
 import { forgotPasswordApi } from '../api/forgot-passwordSlice';
 import { commandHistoryApi } from '../api/hes/command-historySlice';
@@ -12,8 +11,9 @@ import { loadsApi } from '../api/mdms/loadSlice';
 import { userConsumptionApi } from '../api/mdms/userConsumptionSlice';
 import { slaReportsApi } from '../api/sla-reports';
 import { satApi } from '../api/sat';
+import { userAccessPanelApi } from '../api/user-access-panel';
 
-const middleware = new MiddlewareArray().concat(
+const middleware = [
   loginApi.middleware,
   forgotPasswordApi.middleware,
   commandHistoryApi.middleware,
@@ -26,7 +26,8 @@ const middleware = new MiddlewareArray().concat(
   loadsApi.middleware,
   userConsumptionApi.middleware,
   slaReportsApi.middleware,
-  satApi.middleware
-);
+  satApi.middleware,
+  userAccessPanelApi.middleware,
+];
 
 export default middleware;

@@ -71,7 +71,7 @@ const UserDetailWrapper = (props) => {
       ) : (
         <>
           {isFetching ? (
-            <Loader height={props.height} />
+            <Loader hight={props.height} />
           ) : response.hasOwnProperty('primaryInformation') ? (
             <UserDetailCard data={response} height={props.height} />
           ) : (

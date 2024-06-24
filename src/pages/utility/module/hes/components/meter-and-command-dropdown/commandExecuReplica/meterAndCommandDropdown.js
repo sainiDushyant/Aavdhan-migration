@@ -149,8 +149,6 @@ const MeterAndCommandDropDown = (props) => {
     }
   };
 
-  console.log(collapsed, 'this is collapsed');
-
   return (
     <Col
       className={`p-0 ${

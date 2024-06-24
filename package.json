@@ -36,6 +36,7 @@
     "react-flatpickr": "^3.10.13",
     "react-hook-form": "^7.51.3",
     "react-intl": "^6.6.6",
+    "react-json-view": "^1.21.3",
     "react-jsx-parser": "^1.29.0",
     "react-paginate": "^8.2.0",
     "react-perfect-scrollbar": "^1.5.8",

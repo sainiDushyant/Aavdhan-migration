@@ -8,6 +8,7 @@ import PrivateRoute from './ProtectedRoute'; // Import the PrivateRoute componen
 
 const LazyLogin = lazy(() => import('../login'));
 const LazyForgotPassword = lazy(() => import('../forgotPassword'));
+const LazyUserAccessPanel = lazy(() => import('../userAccessPanel/index'));
 
 const Router = () => {
   return (
@@ -47,6 +48,16 @@ const Router = () => {
               />
             ))
           )}
+          <Route
+            path="/admin"
+            element={
+              <LayoutWrapper>
+                <Suspense fallback={<Loader hight={'min-height-800'} />}>
+                  <LazyUserAccessPanel />
+                </Suspense>
+              </LayoutWrapper>
+            }
+          />
         </Route>
         {/* Route for Error */}
         <Route path="*" element={<Error />} />

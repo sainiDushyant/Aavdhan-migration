@@ -1,7 +1,7 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
 import { baseQueryWithReauth } from '../utils/baseQueryWithAuth';
 
-const url = process.env.REACT_APP_SlaReports;
+const url = process.env.REACT_APP_SLA_REPORTS;
 
 export const slaReportsApi = createApi({
   reducerPath: 'slaReportsApi',

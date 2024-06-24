@@ -19,6 +19,7 @@ import { loadsApi } from '../api/mdms/loadSlice';
 import { userConsumptionApi } from '../api/mdms/userConsumptionSlice';
 import { slaReportsApi } from '../api/sla-reports';
 import { satApi } from '../api/sat';
+import { userAccessPanelApi } from '../api/user-access-panel';
 
 const rootReducer = combineReducers({
   [loginApi.reducerPath]: loginApi.reducer,
@@ -32,9 +33,10 @@ const rootReducer = combineReducers({
   [loadsApi.reducerPath]: loadsApi.reducer,
   [userConsumptionApi.reducerPath]: userConsumptionApi.reducer,
   [slaReportsApi.reducerPath]: slaReportsApi.reducer,
-  layout: layoutReducer,
+  [userAccessPanelApi.reducerPath]: userAccessPanelApi.reducer,
   [dropdownsApi.reducerPath]: dropdownsApi.reducer,
   [satApi.reducerPath]: satApi.reducer,
+  layout: layoutReducer,
   utilityMDASAssetList: utilityMDASAssetListReducer,
   utilityMDASDlmsCommand: utilityMDASDlmsCommandReducer,
   currentSelectedModule: currentSelectedModuleReducer,
